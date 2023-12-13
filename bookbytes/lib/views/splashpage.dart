@@ -136,7 +136,7 @@ class _SplashPageState extends State<SplashPage> {
           const Duration(seconds: 3),
           () => Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (content) => const WelcomePage()),
+            MaterialPageRoute(builder: (content) => const LoginPage()),
           ),
         );
       } else {
