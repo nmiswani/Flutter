@@ -20,7 +20,7 @@ if ($result->num_rows > 0) {
         $userlist['useremail'] = $row['user_email'];
         $userlist['username'] = $row['user_name'];
         $userlist['userphone'] = $row['user_phone'];
-        $userlist['userpassword'] = $_POST['password'];
+        $userlist['userpassword'] = $_POST['user_password'];
     }
     $response = array('status' => 'success', 'data' => $userlist);
     sendJsonResponse($response);

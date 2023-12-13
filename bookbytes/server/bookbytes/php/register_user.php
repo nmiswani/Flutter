@@ -1,6 +1,6 @@
 <?php
 //error_reporting(0);
-if (!isset($_POST['email']) && !isset($_POST['name']) && !isset($_POST['phone'])&& !isset($_POST['password'])) {
+if (isset($_POST['email']) && isset($_POST['name']) && isset($_POST['phone'])&& isset($_POST['password'])) {
     $response = array('status' => 'failed', 'data' => null);
     sendJsonResponse($response);
     die();

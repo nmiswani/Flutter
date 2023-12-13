@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class BookPage extends StatefulWidget {
+  const BookPage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<BookPage> createState() => _BookPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _BookPageState extends State<BookPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: const Center(
         child: Text(
-          'Profile Page',
+          'Book Page',
           style: TextStyle(fontSize: 18),
         ),
       ),

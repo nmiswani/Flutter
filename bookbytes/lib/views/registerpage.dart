@@ -1,16 +1,14 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, unused_element, avoid_print
+// ignore_for_file: avoid_print, no_leading_underscores_for_local_identifiers
 
 import 'dart:convert';
-
 import 'package:bookbytes/shared/myserverconfig.dart';
-import 'package:bookbytes/main.dart';
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -26,45 +24,11 @@ class _RegisterPageState extends State<RegisterPage> {
   bool agreeWithTerms = false;
   String eula = "";
 
-  // Function to navigate to the login page
-  void _navigateToLogin() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
-      ),
-    );
-  }
-
-  // Function to navigate back to the main app
-  void _navigateToMyApp() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MyApp(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            _navigateToMyApp(); // Navigate back to MyApp
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Colors.black,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -77,6 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
+                    const SizedBox(height: 90), // Add space above "Register"
                     const Text(
                       "Register",
                       style:
@@ -87,9 +52,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     Text(
                       "Create an account, It's free",
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[800]),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                   ],
                 ),
                 Column(
@@ -161,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 showConfirmationDialog(context);
                               }
                             },
-                            color: Colors.lightBlueAccent,
+                            color: Colors.deepOrangeAccent,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
@@ -179,10 +144,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    const SizedBox(height: 50),
                     const Text("Already have an account?"),
                     GestureDetector(
                       onTap: () {
@@ -197,13 +162,20 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
-                const SizedBox(
-                    height:
-                        20), // Removed space below "Already have an account"
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+// Function to navigate to the login page
+  void _navigateToLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
       ),
     );
   }
@@ -215,6 +187,9 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     if (RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(value)) {
       return 'Username cannot contain symbols';
+    }
+    if (value.contains(RegExp(r'\s'))) {
+      return 'Username cannot contain white space';
     }
     return null;
   }
@@ -247,8 +222,8 @@ class _RegisterPageState extends State<RegisterPage> {
     if (value == null || value.isEmpty) {
       return 'Enter a password';
     } else {
-      if (value.length < 8) {
-        return 'Password must be at least 8 characters';
+      if (value.length < 6) {
+        return 'Password must be at least 6 characters long';
       }
     }
     return null;
@@ -285,7 +260,7 @@ class _RegisterPageState extends State<RegisterPage> {
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
+              borderSide: BorderSide(color: Colors.grey.shade600),
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey.shade400),
@@ -324,7 +299,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 Navigator.of(context).pop();
                 if (agreeWithTerms) {
                   _registerSuccessful();
-                  _navigateToLogin();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (content) => const LoginPage()));
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -339,7 +317,7 @@ class _RegisterPageState extends State<RegisterPage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Registration canceled"),
+                  content: Text("Registration Canceled"),
                   backgroundColor: Colors.red,
                 ));
               },
@@ -364,7 +342,6 @@ class _RegisterPageState extends State<RegisterPage> {
         return AlertDialog(
           title: const Text(
             "EULA",
-            style: TextStyle(),
           ),
           content: SizedBox(
             height: MediaQuery.of(context).size.height,
@@ -378,8 +355,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     softWrap: true,
                     textAlign: TextAlign.justify,
                     text: TextSpan(
-                        style: const TextStyle(
-                            fontSize: 12.0, color: Colors.black),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.black),
                         text: eula),
                   )),
                 ),
@@ -421,14 +398,14 @@ class _RegisterPageState extends State<RegisterPage> {
         print(data);
         if (data['status'] == "success") {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Registration successful"),
+            content: Text("Registration Successful"),
             backgroundColor: Colors.green,
           ));
           Navigator.push(context,
               MaterialPageRoute(builder: (content) => const LoginPage()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Registration failed"),
+            content: Text("Registration Failed"),
             backgroundColor: Colors.red,
           ));
         }

@@ -31,7 +31,7 @@ CREATE TABLE `tbl_users` (
   `user_id` int(5) NOT NULL,
   `user_email` varchar(50) NOT NULL,
   `user_name` varchar(100) NOT NULL,
-  `user_phone` int(15) NOT NULL,
+  `user_phone` varchar(15) NOT NULL,
   `user_password` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

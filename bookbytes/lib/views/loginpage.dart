@@ -1,17 +1,16 @@
-// ignore_for_file: unused_element, use_build_context_synchronously, duplicate_ignore, unused_local_variable
+// ignore_for_file: unused_element, use_build_context_synchronously, duplicate_ignore, unused_local_variable, no_leading_underscores_for_local_identifiers, avoid_print
 
 import 'dart:convert';
-import 'package:bookbytes/shared/myserverconfig.dart';
-import 'menupage.dart';
+import 'mainpage.dart';
 import 'registerpage.dart';
-import 'package:bookbytes/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bookbytes/shared/myserverconfig.dart';
 import '../models/user.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -23,38 +22,13 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isChecked = false;
   bool isPasswordVisible = false;
-  bool rememberMe = false;
 
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
     loadpref();
   }
 
-  // Load saved credentials if "Remember Me" is enabled
-  void _loadSavedCredentials() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      rememberMe = prefs.getBool('rememberMe') ?? false;
-      if (rememberMe) {
-        emailController.text = prefs.getString('email') ?? '';
-        passwordController.text = prefs.getString('password') ?? '';
-      }
-    });
-  }
-
-  // Save credentials to SharedPreferences
-  void _saveCredentials() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('rememberMe', rememberMe);
-    if (rememberMe) {
-      prefs.setString('email', emailController.text);
-      prefs.setString('password', passwordController.text);
-    }
-  }
-
-  // Navigate to the registration page
   void _navigateToRegistration() {
     Navigator.push(
       context,
@@ -64,23 +38,63 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Navigate to the main application page
-  void _navigateToMyApp() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MyApp(),
-      ),
-    );
+  // Validator for the email
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter an email address';
+    }
+    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+        .hasMatch(value)) {
+      return 'Enter a valid email address';
+    }
+    return null;
   }
 
-  // Navigate to the main page after successful login
-  void _navigateToMainPage() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MenuPage(),
-      ),
+  // Validator for the password
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter a password';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    return null;
+  }
+
+  // Inside the makeInput function
+  Widget makeInput({
+    required IconData icon,
+    required String hint,
+    obscureText = false,
+    required TextEditingController controller,
+    Widget? suffixIcon,
+    String? labelText,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 20),
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon),
+            suffixIcon: suffixIcon,
+            labelText: labelText,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade600),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+          ),
+          validator: validator,
+        ),
+      ],
     );
   }
 
@@ -89,28 +103,17 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            _navigateToMyApp();
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Colors.black,
-          ),
-        ),
-      ),
       body: Column(
         children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height / 3.5,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/loginpage.jpg'),
-                fit: BoxFit.cover,
+          Padding(
+            padding: const EdgeInsets.only(top: 60.0),
+            child: Container(
+              height: MediaQuery.of(context).size.height / 3,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/loginpage.png'),
+                  //fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -121,51 +124,52 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const SizedBox(
-                      height: 10,
-                    ),
                     const Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Text(
-                          "Login",
-                          style: TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold),
-                        ),
                         SizedBox(
                           height: 10,
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: makeInput(
-                        icon: Icons.email,
-                        hint: "Email",
-                        controller: emailController,
-                        labelText: 'Email',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: makeInput(
-                        icon: Icons.lock,
-                        hint: "Password",
-                        obscureText: !isPasswordVisible,
-                        controller: passwordController,
-                        labelText: 'Password',
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isPasswordVisible = !isPasswordVisible;
-                            });
-                          },
-                          icon: Icon(
-                            isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: makeInput(
+                              icon: Icons.email,
+                              hint: "Email",
+                              controller: emailController,
+                              labelText: 'Email',
+                              validator: _validateEmail,
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: makeInput(
+                              icon: Icons.lock,
+                              hint: "Password",
+                              obscureText: !isPasswordVisible,
+                              controller: passwordController,
+                              labelText: 'Password',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isPasswordVisible = !isPasswordVisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
+                              validator: _validatePassword,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(
@@ -176,12 +180,16 @@ class _LoginPageState extends State<LoginPage> {
                       children: <Widget>[
                         const SizedBox(width: 30),
                         Checkbox(
-                          value: rememberMe,
+                          value: _isChecked,
                           onChanged: (bool? value) {
+                            if (!_formKey.currentState!.validate()) {
+                              return;
+                            }
+                            saveremovepref(value!);
                             setState(() {
-                              rememberMe = value ?? false;
+                              _isChecked = value;
                             });
-                            _saveCredentials();
+                            //_saveCredentials();
                           },
                         ),
                         const Text("Remember me"),
@@ -191,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              _navigateToMainPage();
+                              //_navigateToRememberMePage();
                             },
                             child: const Text(
                               "Forgot Password?",
@@ -224,9 +232,9 @@ class _LoginPageState extends State<LoginPage> {
                           minWidth: double.infinity,
                           height: 50,
                           onPressed: () {
-                            _navigateToMainPage();
+                            _loginUser(); // Navigate to LoginPage
                           },
-                          color: Colors.lightBlueAccent,
+                          color: Colors.deepOrangeAccent,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
@@ -241,12 +249,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 30,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        const SizedBox(
-                          height: 70,
-                        ),
                         const Text("Don't have an account?"),
                         GestureDetector(
                           onTap: () {
@@ -272,42 +280,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Widget to create input fields with common styling
-  Widget makeInput({
-    required IconData icon,
-    required String hint,
-    obscureText = false,
-    required TextEditingController controller,
-    Widget? suffixIcon,
-    String? labelText,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(height: 20),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: Icon(icon),
-            suffixIcon: suffixIcon,
-            labelText: labelText,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Function to perform user login
   void _loginUser() {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -318,19 +290,24 @@ class _LoginPageState extends State<LoginPage> {
     http.post(
         Uri.parse("${MyServerConfig.server}/bookbytes/php/login_user.php"),
         body: {"email": email, "password": pass}).then((response) {
+      print(response.body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['status'] == "success") {
           User user = User.fromJson(data['data']);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Login Success"),
+            content: Text("Login Successful"),
             backgroundColor: Colors.green,
           ));
-          Navigator.push(context,
-              MaterialPageRoute(builder: (content) => const MenuPage()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (content) => MainPage(
+                        userdata: user,
+                      )));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Login Failed"),
+            content: Text("Login Failed. Please create a new account"),
             backgroundColor: Colors.red,
           ));
         }
@@ -338,7 +315,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Function to save or remove preferences based on the checkbox state
   void saveremovepref(bool value) async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -352,6 +328,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.green,
       ));
     } else {
+      //remove pref
       await prefs.setString('email', '');
       await prefs.setString('pass', '');
       await prefs.setBool('rem', false);
@@ -364,7 +341,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Function to load preferences and set the state
   Future<void> loadpref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String email = (prefs.getString('email')) ?? '';
