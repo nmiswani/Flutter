@@ -1,12 +1,8 @@
-import 'package:bookbytes/views/splashpage.dart';
+import 'package:bookbytes/models/user.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class AddToCartPage extends StatelessWidget {
+  const AddToCartPage({Key? key, required User userdata}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +11,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: const SplashPage(),
     );
   }
 }

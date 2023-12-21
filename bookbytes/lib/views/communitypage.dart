@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'loginpage.dart';
+
 import '../models/user.dart';
+import '../shared/mydrawer.dart';
 
 class CommunityPage extends StatefulWidget {
   final User userdata;
@@ -15,47 +16,51 @@ class _CommunityPageState extends State<CommunityPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            _navigateToLogin(); // Navigate back to LoginPage
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Colors.black,
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: const Row(
+            children: [
+              Text(
+                "Community Page",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(
+                width: 40,
+              ),
+            ],
           ),
-        ),
-        title: const Row(
+          elevation: 0.0,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1.0),
+            child: Container(
+              color: Colors.grey,
+              height: 1.0,
+            ),
+          )),
+      drawer: MyDrawer(
+        page: "community",
+        userdata: widget.userdata,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Login',
+            Image.asset(
+              'assets/images/communitypage.png', // Replace with your image asset path
+              height: 300, // Adjust the height as needed
+              width: 300, // Adjust the width as needed
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Community Page",
               style: TextStyle(
-                fontSize: 18,
-                color: Colors.black,
+                fontSize: 20, // Adjust the font size as needed
               ),
             ),
           ],
         ),
-      ),
-      body: const Center(
-        child: Text(
-          'Community Page',
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
-    );
-  }
-
-  // Function to navigate to the login page
-  void _navigateToLogin() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
       ),
     );
   }

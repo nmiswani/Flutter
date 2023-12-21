@@ -219,31 +219,23 @@ class _LoginPageState extends State<LoginPage> {
                       width: MediaQuery.of(context).size.width / 2,
                       child: Container(
                         padding: const EdgeInsets.only(top: 3, left: 3),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: const Border(
-                            bottom: BorderSide(color: Colors.black),
-                            top: BorderSide(color: Colors.black),
-                            left: BorderSide(color: Colors.black),
-                            right: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        child: MaterialButton(
-                          minWidth: double.infinity,
-                          height: 50,
+                        child: ElevatedButton(
                           onPressed: () {
                             _loginUser(); // Navigate to LoginPage
                           },
-                          color: Colors.deepOrangeAccent,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 50),
+                            backgroundColor: Colors.deepOrange,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
                           ),
                           child: const Text(
                             "Login",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                              fontSize: 18,
+                              color: Colors.white,
                             ),
                           ),
                         ),
