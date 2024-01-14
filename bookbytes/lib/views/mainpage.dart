@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
 import 'dart:convert';
 import 'dart:developer';
 import 'package:bookbytes/models/book.dart';
@@ -7,7 +5,7 @@ import 'package:bookbytes/models/user.dart';
 import 'package:bookbytes/shared/mydrawer.dart';
 import 'package:bookbytes/shared/myserverconfig.dart';
 import 'package:bookbytes/views/bookdetails.dart';
-import 'package:bookbytes/views/newbookpage.dart';
+import 'package:bookbytes/views/cartpage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,7 +23,6 @@ class _MainPageState extends State<MainPage> {
   int numofpage = 1;
   int curpage = 1;
   int numofresult = 0;
-
   var color;
   String title = "";
 
@@ -60,6 +57,14 @@ class _MainPageState extends State<MainPage> {
             onPressed: showSearchDialog,
             icon: const Icon(Icons.search, color: Colors.white),
           ),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (content) => CartPage(user: widget.userdata)));
+              },
+              icon: const Icon(Icons.shopping_cart)),
         ],
         elevation: 0.0,
       ),
@@ -105,7 +110,7 @@ class _MainPageState extends State<MainPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (content) => BookDetails(
-                                    user: widget.userdata,
+                                    userdata: widget.userdata,
                                     book: book,
                                   ),
                                 ),
@@ -196,28 +201,8 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ],
               ),
-        /*floatingActionButton: FloatingActionButton(
-        onPressed: newBook,
-        child: const Icon(Icons.add),
-      ),*/
       ),
     );
-  }
-
-  void newBook() {
-    if (widget.userdata.userid.toString() == "0") {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Please register an account"),
-        backgroundColor: Colors.red,
-      ));
-    } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (content) => NewBookPage(
-                    userdata: widget.userdata,
-                  )));
-    }
   }
 
   String truncateString(String str) {
@@ -267,7 +252,7 @@ class _MainPageState extends State<MainPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            "Search Title",
+            "Search title",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -278,9 +263,9 @@ class _MainPageState extends State<MainPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.deepOrange),
+                  border: Border.all(color: Colors.black),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
@@ -288,7 +273,7 @@ class _MainPageState extends State<MainPage> {
                   decoration: const InputDecoration(
                     hintText: "Enter book title",
                     border: InputBorder.none,
-                    prefixIcon: Icon(Icons.search, color: Colors.deepOrange),
+                    prefixIcon: Icon(Icons.search, color: Colors.black),
                   ),
                 ),
               ),
@@ -305,7 +290,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                   child: Text(
                     "Search",
                     style: TextStyle(
