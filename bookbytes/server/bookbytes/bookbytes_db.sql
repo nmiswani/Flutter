@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 21, 2023 at 06:41 PM
+-- Generation Time: Jan 14, 2024 at 11:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,30 +44,71 @@ CREATE TABLE `tbl_books` (
 --
 
 INSERT INTO `tbl_books` (`book_id`, `user_id`, `book_isbn`, `book_title`, `book_desc`, `book_author`, `book_price`, `book_qty`, `book_status`) VALUES
-(1, '1', '0-316-32223-X', 'In Cold Blood', 'Truman Capote\\\'s non-fiction novel recounts the real-life murder of a wealthy farm family in Kansas and the subsequent trial and execution of the killers.', 'Truman Capote', 400.00, 1, 'Used'),
+(1, '1', '0-316-32223-X', 'In Cold Blood', 'Truman Capote\\\'s non-fiction novel recounts the real-life murder of a wealthy farm family in Kansas and the subsequent trial and execution of the killers.', 'Truman Capote', 120.00, 0, 'Used'),
 (2, '1', '0-399-12321-5', 'The Alchemist', 'Paulo Coelho\'s inspirational novel about a shepherd boy named Santiago who travels from Spain to Egypt in search of a personal treasure.', 'Paulo Coelho', 22.90, 2, 'New'),
-(3, '1', '0-06-092798-7', 'The Martian', 'Andy Weir\'s science fiction novel about an astronaut stranded on Mars who must use his ingenuity to survive and find a way to communicate with Earth.', 'Andy Weir', 31.00, 18, 'Digital'),
-(4, '1', '0-7475-6320-6', 'The Secret Garden', 'Frances Hodgson Burnett\'s classic children\'s novel about a young girl named Mary Lennox who discovers a hidden garden on her uncle\'s estate and brings it back to life.', 'Frances Hodgson Burnett', 29.00, 12, 'Digital'),
+(3, '1', '0-06-092798-7', 'The Martian', 'Andy Weir\'s science fiction novel about an astronaut stranded on Mars who must use his ingenuity to survive and find a way to communicate with Earth.', 'Andy Weir', 31.00, 18, 'Used'),
+(4, '1', '0-7475-6320-6', 'The Secret Garden', 'Frances Hodgson Burnett\'s classic children\'s novel about a young girl named Mary Lennox who discovers a hidden garden on her uncle\'s estate and brings it back to life.', 'Frances Hodgson Burnett', 29.00, 12, 'Used'),
 (5, '1', '0-14-194949-5', 'The Great Gatsby', 'The story follows the mysterious Jay Gatsby and his obsession with the beautiful Daisy Buchanan. The novel explores themes of wealth, decadence, and the American Dream.', 'F. Scott Fitzgerald', 75.00, 2, 'Used'),
-(6, '1', '0-394-55808-X', '1984', 'The story is set in a totalitarian society ruled by the Party and its leader, Big Brother. The protagonist, Winston Smith, struggles against the oppressive regime, and the novel explores themes of surveillance, propaganda, and the loss of personal freedom.', 'George Orwell', 9.99, 17, 'New'),
-(7, '1', '0-399-12327-3', 'To Kill a Mockingbird', 'The story is set in the fictional town of Maycomb, Alabama, during the Great Depression. It follows the life of Scout Finch, a young girl, as her father, attorney Atticus Finch, defends a black man accused of raping a white woman.', 'Harper Lee', 12.99, 3, 'New'),
-(8, '2', '0-06-130362-7', 'Love of the Blue Bear', 'A heartwarming coming-of-age story by Ain Maisarah, following the journey of Maisarah, a young girl navigating the complexities of first love and family relationships. It explores themes of self-discovery, acceptance, and the power of imagination.', 'Ain Maisarah', 32.00, 6, 'New'),
-(9, '2', '0-743-29803-2', 'The Tale of Si Tanggang', ' A classic Malay folklore retold by Mohd Faizal Mohd Noh, exploring themes of filial piety, forgiveness, and the consequences of betrayal. It delves into the importance of cultural values and traditions.', 'Mohd Faizal Mohd Noh', 25.00, 2, 'Used'),
-(10, '2', '0-316-00613-9', 'Whispers of the Wild', 'A collection of evocative poems by Faisal Tehrani, capturing the beauty and power of nature, the complexities of human emotions, and the search for meaning in a chaotic world.', 'Faisal Tehrani', 12.99, 15, 'Digital'),
-(11, '2', '8-9052-1128-9', 'The Red Onion and the White Onion', 'A charming retelling of a beloved Malay folktale about two sisters with contrasting personalities, teaching valuable lessons about kindness, jealousy, and the importance of family.', 'A. F. Abdullah', 18.00, 21, 'Digital'),
-(12, '2', '0-141-00807-0', 'Tun Teja', 'A thrilling historical novel by Faisal Tehrani, bringing to life the legendary Malay warrior Tun Teja and his valiant fight against Portuguese invaders. It offers a glimpse into the rich history and culture of Malaysia.', 'Faisal Tehrani', 35.00, 2, 'Used'),
-(13, '2', '0-099-54281-9', 'Pachinko', 'Min Jin Lee\'s epic historical saga follows four generations of a Korean family as they navigate discrimination, displacement, and resilience in Japan during the 20th century. It\'s a powerful story of family, perseverance, and the enduring human spirit.', 'Min Jin Lee', 54.80, 1, 'Used'),
-(14, '2', '0-316-06529-2', 'Three-Body Problem', 'Cixin Liu\'s science fiction masterpiece catapults you into a cosmic adventure where humanity faces the imminent arrival of an alien civilization. It\'s a thrilling and thought-provoking exploration of first contact, existential questions, and the future of our species.', 'Cixin Liu', 38.00, 9, 'Digital'),
-(15, '5', '9-787-50868-0', 'Moon and Sixpence', 'A compelling story of a man who abandons his conventional life to pursue his artistic passion in Paris.', '毛姆 (Somerset Maugham)', 38.00, 4, 'Used'),
-(16, '5', '9-787-50865-1', 'To Live', 'An epic saga of a family\'s struggles during turbulent times in China\'s 20th century.', 'Yu Hua', 78.00, 5, 'Digital'),
-(17, '5', '9-787-50651-8', 'One Hundred Years of Solitude', 'A magical realist masterpiece about a family\'s cyclical rise and fall in a Colombian village.', 'Gabriel García Márquez', 52.00, 8, 'New'),
-(18, '5', '9-787-50510-4', 'The Besieged City', 'A witty and satirical novel about love, marriage, and academia in China\'s 1930s.', '钱钟书 (Qian Zhongshu)', 55.90, 2, 'Used'),
-(19, '5', '9-787-50754-1', 'Dream of the Red Chamber', 'An epic novel about the rise and fall of two aristocratic families in Qing Dynasty China.', '曹雪芹 (Cao Xueqin)', 60.00, 23, 'Digital'),
-(20, '1', '8-067-00446-0', 'The God of Small Things', 'A hauntingly beautiful story of childhood, loss, and the complexities of family in Kerala, India.', 'Arundhati Roy', 39.00, 6, 'New'),
-(21, '1', '8-812-91020-0', 'Train to Pakistan', 'A powerful historical novel set during the partition of India and Pakistan, exploring themes of love, loss, and political turmoil.', 'Khushwant Singh', 42.00, 5, 'Digital'),
-(22, '1', '8-014-02452-3', 'Midnight\'s Children', 'A magical realist epic following the lives of 106 children born at the stroke of midnight on India\'s independence day, weaving fantasy and history together.', 'Salman Rushdie', 55.00, 9, 'New'),
-(23, '1', '8-067-97463-0', 'A Fine Balance', 'A powerful and heartbreaking novel set during the Emergency in India, following the lives of four characters caught in the midst of political upheaval and human suffering.', 'Rohinton Mistry', 88.00, 1, 'Used'),
-(24, '1', '7-801-43420-1', 'Legends of Khasak', 'A collection of charming and heartwarming stories set in the fictional Himalayan town of Khasak, capturing the beauty and simplicity of life in the mountains.', 'Ruskin Bond', 32.00, 10, 'Digital');
+(6, '2', '0-394-55808-X', '1984', 'The story is set in a totalitarian society ruled by the Party and its leader, Big Brother. The protagonist, Winston Smith who struggles against the oppressive regime.', 'George Orwell', 9.99, 17, 'New'),
+(7, '2', '0-399-12327-3', 'To Kill a Mockingbird', 'The story is set in the fictional town of Maycomb, Alabama, during the Great Depression. Scout Finch\'s father, defends a black man accused of raping a white woman.', 'Harper Lee', 12.99, 3, 'New'),
+(8, '2', '0-06-130362-7', 'Love of the Blue Bear', 'A heartwarming coming-of-age story by Ain Maisarah, following the journey of Maisarah, a young girl navigating the complexities of first love and family relationships.', 'Ain Maisarah', 32.00, 6, 'New'),
+(9, '2', '0-743-29803-2', 'The Tale of Si Tanggang', ' A classic Malay folklore retold by Mohd Faizal Mohd Noh, exploring themes of filial piety, forgiveness, and the consequences of betrayal.', 'Mohd Faizal Mohd Noh', 25.00, 2, 'Used'),
+(10, '2', '0-316-00613-9', 'Whispers of the Wild', 'A collection of evocative poems by Faisal Tehrani, capturing the beauty and power of nature, the complexities of human emotions, and the meaning in a chaotic world.', 'Faisal Tehrani', 12.99, 15, 'New'),
+(11, '3', '8-9052-1128-9', 'The Red Onion and the White Onion', 'A charming retelling of a beloved Malay folktale about two sisters with contrasting personalities, teaching valuable lessons about kindness and the importance of family.', 'A. F. Abdullah', 18.00, 21, 'New'),
+(12, '3', '0-141-00807-0', 'Tun Teja', 'A thrilling historical novel by Faisal Tehrani, bringing to life the legendary Malay warrior Tun Teja and his valiant fight against Portuguese invaders.', 'Faisal Tehrani', 35.00, 2, 'Used'),
+(13, '3', '0-099-54281-9', 'Pachinko', 'Min Jin Lee\'s epic historical saga follows four generations of a Korean family as they navigate discrimination, displacement, and resilience in Japan during the 20th century.', 'Min Jin Lee', 54.80, 1, 'Used'),
+(14, '3', '0-316-06529-2', 'Three-Body Problem', 'Cixin Liu\'s science fiction masterpiece catapults you into a cosmic adventure where humanity faces the imminent arrival of an alien civilization.', 'Cixin Liu', 38.00, 9, 'New'),
+(15, '3', '9-787-50868-0', 'Moon and Sixpence', 'A compelling story of a man who abandons his conventional life to pursue his artistic passion in Paris.', '毛姆 (Somerset Maugham)', 38.00, 4, 'Used'),
+(16, '4', '9-787-50865-1', 'To Live', 'An epic saga of a family\'s struggles during turbulent times in China\'s 20th century.', 'Yu Hua', 78.00, 5, 'Used'),
+(17, '4', '9-787-50651-8', 'One Hundred Years of Solitude', 'A magical realist masterpiece about a family\'s cyclical rise and fall in a Colombian village.', 'Gabriel García Márquez', 52.00, 8, 'New'),
+(18, '4', '9-787-50510-4', 'The Besieged City', 'A witty and satirical novel about love, marriage, and academia in China\'s 1930s.', '钱钟书 (Qian Zhongshu)', 55.90, 2, 'Used'),
+(19, '4', '9-787-50754-1', 'Dream of the Red Chamber', 'An epic novel about the rise and fall of two aristocratic families in Qing Dynasty China.', '曹雪芹 (Cao Xueqin)', 60.00, 23, 'New'),
+(20, '4', '8-067-00446-0', 'The God of Small Things', 'A hauntingly beautiful story of childhood, loss, and the complexities of family in Kerala, India.', 'Arundhati Roy', 39.00, 6, 'New'),
+(21, '5', '8-812-91020-0', 'Train to Pakistan', 'A powerful historical novel set during the partition of India and Pakistan, exploring themes of love, loss, and political turmoil.', 'Khushwant Singh', 42.00, 5, 'Used'),
+(22, '5', '8-014-02452-3', 'Midnight\'s Children', 'A magical realist epic following the lives of 106 children born at the stroke of midnight on India\'s independence day, weaving fantasy and history together.', 'Salman Rushdie', 55.00, 9, 'New'),
+(23, '5', '8-067-97463-0', 'A Fine Balance', 'A powerful and heartbreaking novel set during the Emergency in India, following the lives of four characters caught in the midst of political upheaval and human suffering.', 'Rohinton Mistry', 88.00, 1, 'Used'),
+(24, '5', '7-801-43420-1', 'Legends of Khasak', 'A collection of charming and heartwarming stories set in the fictional Himalayan town of Khasak, capturing the beauty and simplicity of life in the mountains.', 'Ruskin Bond', 32.00, 10, 'New');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_carts`
+--
+
+CREATE TABLE `tbl_carts` (
+  `cart_id` int(5) NOT NULL,
+  `buyer_id` varchar(5) NOT NULL,
+  `seller_id` varchar(5) NOT NULL,
+  `book_id` varchar(5) NOT NULL,
+  `cart_qty` int(5) NOT NULL,
+  `cart_status` varchar(10) NOT NULL,
+  `order_id` varchar(5) NOT NULL,
+  `cart_date` datetime(6) NOT NULL DEFAULT current_timestamp(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_carts`
+--
+
+INSERT INTO `tbl_carts` (`cart_id`, `buyer_id`, `seller_id`, `book_id`, `cart_qty`, `cart_status`, `order_id`, `cart_date`) VALUES
+(2, '1', '5', '22', 1, 'New', '', '2024-01-14 21:05:18.820591'),
+(5, '1', '1', '3', 1, 'New', '', '2024-01-14 22:46:21.957688'),
+(7, '1', '4', '16', 1, 'New', '', '2024-01-14 23:24:15.189584');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_orders`
+--
+
+CREATE TABLE `tbl_orders` (
+  `order_id` int(5) NOT NULL,
+  `buyer_id` varchar(5) NOT NULL,
+  `seller_id` varchar(5) NOT NULL,
+  `order_total` decimal(5,2) NOT NULL,
+  `order_date` datetime(6) NOT NULL DEFAULT current_timestamp(6),
+  `order_status` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -109,6 +150,18 @@ ALTER TABLE `tbl_books`
   ADD UNIQUE KEY `book_isbn` (`book_isbn`);
 
 --
+-- Indexes for table `tbl_carts`
+--
+ALTER TABLE `tbl_carts`
+  ADD PRIMARY KEY (`cart_id`);
+
+--
+-- Indexes for table `tbl_orders`
+--
+ALTER TABLE `tbl_orders`
+  ADD PRIMARY KEY (`order_id`);
+
+--
 -- Indexes for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
@@ -124,6 +177,18 @@ ALTER TABLE `tbl_users`
 --
 ALTER TABLE `tbl_books`
   MODIFY `book_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT for table `tbl_carts`
+--
+ALTER TABLE `tbl_carts`
+  MODIFY `cart_id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `tbl_orders`
+--
+ALTER TABLE `tbl_orders`
+  MODIFY `order_id` int(5) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`

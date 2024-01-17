@@ -1,5 +1,7 @@
 <?php
-if (!isset($_POST)) {
+//error_reporting(0);
+
+if (!isset($_POST['cart_id']) || !isset($_POST['cart_qty'])) {
     $response = array('status' => 'failed', 'data' => null);
     sendJsonResponse($response);
     die();
@@ -7,24 +9,23 @@ if (!isset($_POST)) {
 
 include_once("dbconnect.php");
 
-$cartid = $_POST['cartid'];
-$newqty = $_POST['newqty'];
-$newprice = $_POST['newprice'];
+$cartId = $_POST['cart_id'];
+$newQuantity = $_POST['cart_qty'];
 
-$sql = "UPDATE `tbl_carts` SET `cart_qty`= $newqty ,`cart_price`= $newprice WHERE  `cart_id` = '$cartid'";
+$sqlupdate = "UPDATE `tbl_carts` SET `cart_qty` = '$newQuantity' WHERE `cart_id` = '$cartId'";
 
-if ($conn->query($sql) === TRUE) {
-		$response = array('status' => 'success', 'data' => $sql);
-		sendJsonResponse($response);
-	}else{
-		$response = array('status' => 'failed', 'data' => $sql);
-		sendJsonResponse($response);
-	}
+if ($conn->query($sqlupdate) === TRUE) {
+    $response = array('status' => 'success', 'data' => $sqlupdate);
+    sendJsonResponse($response);
+} else {
+    $response = array('status' => 'failed', 'data' => $sqlupdate);
+    sendJsonResponse($response);
+}
+
 
 function sendJsonResponse($sentArray)
 {
     header('Content-Type: application/json');
     echo json_encode($sentArray);
 }
-
 ?>
