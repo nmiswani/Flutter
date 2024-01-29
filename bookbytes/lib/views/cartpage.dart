@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bookbytes/models/cart.dart';
 import 'package:bookbytes/models/user.dart';
+import 'package:bookbytes/views/billscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,7 +30,10 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Cart")),
+      appBar: AppBar(
+        title: const Text("Book Cart"),
+        elevation: 0.0,
+      ),
       body: cartList.isEmpty
           ? const Center(child: Text("No Data"))
           : Column(
@@ -82,7 +86,7 @@ class _CartPageState extends State<CartPage> {
                                   children: [
                                     IconButton(
                                       onPressed: () =>
-                                          _decrementQuantity(cartItem),
+                                          decrementQuantity(cartItem),
                                       icon: const Icon(
                                         Icons.remove,
                                         color: Colors.black,
@@ -96,7 +100,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                     IconButton(
                                       onPressed: () =>
-                                          _incrementQuantity(cartItem),
+                                          incrementQuantity(cartItem),
                                       icon: const Icon(
                                         Icons.add,
                                         color: Colors.black,
@@ -104,7 +108,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                     IconButton(
                                       onPressed: () =>
-                                          _showRemoveItemDialog(cartItem),
+                                          showRemoveItemDialog(cartItem),
                                       icon: const Icon(
                                         Icons.delete,
                                         color: Colors.red,
@@ -192,17 +196,30 @@ class _CartPageState extends State<CartPage> {
                               color: Colors.white,
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              // Add your checkout logic here
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (content) => BillScreen(
+                                            user: widget.user,
+                                            totalprice: total,
+                                          )));
+                              loadUserCart();
                             },
-                            child: Text(
+                            icon: const Icon(Icons.shopping_cart,
+                                color: Colors.white),
+                            label: Text(
                               "Check Out (${calculateTotalItems()})",
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Colors.green, // Set the button color
                             ),
                           ),
                         ],
@@ -224,12 +241,12 @@ class _CartPageState extends State<CartPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              onPressed: () => _decrementQuantity(cartItem),
+              onPressed: () => decrementQuantity(cartItem),
               icon: const Icon(Icons.remove),
             ),
             Text(cartItem.cartQty.toString()),
             IconButton(
-              onPressed: () => _incrementQuantity(cartItem),
+              onPressed: () => incrementQuantity(cartItem),
               icon: const Icon(Icons.add),
             ),
           ],
@@ -267,30 +284,29 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  _incrementQuantity(Cart cartItem) async {
-    _updateQuantity(cartItem, int.parse(cartItem.cartQty!) + 1);
+  incrementQuantity(Cart cartItem) async {
+    updateQuantity(cartItem, int.parse(cartItem.cartQty!) + 1);
   }
 
-  _decrementQuantity(Cart cartItem) async {
+  decrementQuantity(Cart cartItem) async {
     int currentQuantity = int.parse(cartItem.cartQty!);
     if (currentQuantity > 1) {
-      _updateQuantity(cartItem, currentQuantity - 1);
+      updateQuantity(cartItem, currentQuantity - 1);
     } else {
-      _showRemoveItemDialog(cartItem);
+      showRemoveItemDialog(cartItem);
     }
   }
 
-  void _showRemoveItemDialog(Cart cartItem) {
+  void showRemoveItemDialog(Cart cartItem) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Remove book?"),
-        content:
-            Text("Are you sure want to remove book of ${cartItem.bookTitle}?"),
+        content: Text("Are you sure want to remove ${cartItem.bookTitle}?"),
         actions: [
           TextButton(
             onPressed: () {
-              _deleteCartItem(cartItem);
+              RemoveCartItem(cartItem);
               Navigator.pop(context);
             },
             child: const Text("Remove"),
@@ -304,16 +320,16 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  _updateQuantity(Cart cartItem, int newQuantity) async {
+  updateQuantity(Cart cartItem, int newQuantity) async {
     setState(() {
       cartItem.cartQty = newQuantity.toString();
       total = recalculateTotal();
     });
 
-    await _updateCartQuantity(cartItem.cartId!, cartItem.cartQty!);
+    await updateCartQuantity(cartItem.cartId!, cartItem.cartQty!);
   }
 
-  _updateCartQuantity(String cartId, String newQuantity) async {
+  updateCartQuantity(String cartId, String newQuantity) async {
     try {
       await http.post(
         Uri.parse("${MyServerConfig.server}/bookbytes/php/update_cart.php"),
@@ -329,7 +345,7 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  _deleteCartItem(Cart cartItem) async {
+  RemoveCartItem(Cart cartItem) async {
     try {
       final response = await http.post(
         Uri.parse("${MyServerConfig.server}/bookbytes/php/delete_cart.php"),
@@ -415,7 +431,7 @@ class _CartPageState extends State<CartPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Delivery charge info"),
-        content: const Text("Charge for each seller is RM10."),
+        content: const Text("Charge price for each seller is RM10"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

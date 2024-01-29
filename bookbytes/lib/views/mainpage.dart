@@ -58,13 +58,16 @@ class _MainPageState extends State<MainPage> {
             icon: const Icon(Icons.search, color: Colors.white),
           ),
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (content) => CartPage(user: widget.userdata)));
-              },
-              icon: const Icon(Icons.shopping_cart)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (content) => CartPage(user: widget.userdata),
+                ),
+              );
+            },
+            icon: const Icon(Icons.shopping_cart),
+          ),
         ],
         elevation: 0.0,
       ),
@@ -80,25 +83,17 @@ class _MainPageState extends State<MainPage> {
             ? const Center(child: Text("No Book's Data"))
             : Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      "BookBytes offers $numofresult books",
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: GridView.count(
                       crossAxisCount: axiscount,
-                      childAspectRatio: 0.8,
+                      childAspectRatio: 0.79,
                       mainAxisSpacing: 5,
                       crossAxisSpacing: 5,
                       padding: const EdgeInsets.all(10),
                       children: List.generate(bookList.length, (index) {
                         return Card(
-                          elevation: 5,
+                          color: Color.fromARGB(255, 221, 246, 255),
+                          elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -123,7 +118,6 @@ class _MainPageState extends State<MainPage> {
                                 Expanded(
                                   flex: 3,
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5),
                                     child: Image.network(
                                       "${MyServerConfig.server}/bookbytes/assets/books/${bookList[index].bookId}.png",
                                       fit: BoxFit.cover,
@@ -136,8 +130,9 @@ class _MainPageState extends State<MainPage> {
                                     padding: const EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          CrossAxisAlignment.center,
                                       children: [
+                                        const SizedBox(height: 5),
                                         Text(
                                           truncateString(bookList[index]
                                               .bookTitle
@@ -152,15 +147,15 @@ class _MainPageState extends State<MainPage> {
                                           "RM${bookList[index].bookPrice}",
                                           style: const TextStyle(
                                             fontSize: 14,
-                                            color: Colors.green,
+                                            color: Colors.black,
                                           ),
                                         ),
                                         const SizedBox(height: 5),
                                         Text(
-                                          "Available ${bookList[index].bookQty} unit",
+                                          "${bookList[index].bookQty} available",
                                           style: const TextStyle(
                                             fontSize: 14,
-                                            color: Colors.black,
+                                            color: Colors.red,
                                           ),
                                         ),
                                       ],
@@ -175,7 +170,7 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                   SizedBox(
-                    height: 40,
+                    height: 35,
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: numofpage,
@@ -193,7 +188,7 @@ class _MainPageState extends State<MainPage> {
                           },
                           child: Text(
                             (index + 1).toString(),
-                            style: TextStyle(color: color, fontSize: 18),
+                            style: TextStyle(color: color, fontSize: 16),
                           ),
                         );
                       },
@@ -218,7 +213,8 @@ class _MainPageState extends State<MainPage> {
     http
         .get(
       Uri.parse(
-          "${MyServerConfig.server}/bookbytes/php/load_books.php?title=$title&pageno=$curpage"),
+        "${MyServerConfig.server}/bookbytes/php/load_books.php?title=$title&pageno=$curpage",
+      ),
     )
         .then((response) {
       log(response.body);
@@ -233,10 +229,12 @@ class _MainPageState extends State<MainPage> {
           numofpage = int.parse(data['numofpage'].toString());
           numofresult = int.parse(data['numberofresult'].toString());
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Book Not Found"),
-            backgroundColor: Colors.red,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Book Not Found"),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
       setState(() {});
@@ -255,7 +253,6 @@ class _MainPageState extends State<MainPage> {
             "Search title",
             style: TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.bold,
             ),
           ),
           content: Column(
@@ -263,10 +260,10 @@ class _MainPageState extends State<MainPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: TextField(
                   controller: searchController,
@@ -290,7 +287,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
                   child: Text(
                     "Search",
                     style: TextStyle(

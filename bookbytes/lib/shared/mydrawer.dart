@@ -1,4 +1,4 @@
-import 'package:bookbytes/views/communitypage.dart';
+import 'package:bookbytes/shared/myserverconfig.dart';
 import 'package:bookbytes/views/loginpage.dart';
 import 'package:flutter/material.dart';
 
@@ -30,9 +30,12 @@ class _MyDrawerState extends State<MyDrawer> {
             decoration: const BoxDecoration(
               color: Colors.deepOrange,
             ),
-            currentAccountPicture: const CircleAvatar(
-                foregroundImage: AssetImage('assets/images/profile.png'),
-                backgroundColor: Colors.white),
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: NetworkImage(
+                "${MyServerConfig.server}/bookbytes/assets/profileimages/${widget.userdata.userid}.jpg",
+              ),
+              backgroundColor: Colors.white,
+            ),
             accountName: Text(widget.userdata.username.toString()),
             accountEmail: Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -40,7 +43,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(widget.userdata.useremail.toString()),
-                    const Text("Registered") //RM100
+                    const Text("Registered")
                   ]),
             ),
           ),
@@ -63,27 +66,11 @@ class _MyDrawerState extends State<MyDrawer> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.people),
-            title: const Text('Community'),
+            leading: const Icon(Icons.account_circle),
+            title: const Text('My Profile'),
             onTap: () {
               Navigator.pop(context);
-              if (widget.page.toString() == "community") {
-                return;
-              }
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  EnterExitRoute(
-                      exitPage: CommunityPage(userdata: widget.userdata),
-                      enterPage: CommunityPage(userdata: widget.userdata)));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.verified_user),
-            title: const Text('My Account'),
-            onTap: () {
-              Navigator.pop(context);
-              if (widget.page.toString() == "account") {
+              if (widget.page.toString() == "profile") {
                 return;
               }
               Navigator.pop(context);
@@ -95,15 +82,8 @@ class _MyDrawerState extends State<MyDrawer> {
             },
           ),
           const Divider(
-            color: Colors.black,
+            color: Colors.grey,
           ),
-          /*ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {
-              //Navigator.pop(context);
-            },
-          ),*/
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),

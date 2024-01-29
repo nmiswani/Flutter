@@ -59,7 +59,7 @@ class _SplashPageState extends State<SplashPage> {
                 Padding(
                   padding: EdgeInsets.only(bottom: 30.0),
                   child: Text(
-                    "Version 1.0",
+                    "Version 3.0",
                     style: TextStyle(fontSize: 15, color: Colors.black),
                   ),
                 ),

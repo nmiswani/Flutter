@@ -27,7 +27,7 @@ class _WelcomePageState extends State<WelcomePage> {
               Column(
                 children: <Widget>[
                   const Text(
-                    "Welcome",
+                    "Welcome!",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 38),
                   ),
                   const SizedBox(
@@ -51,7 +51,7 @@ class _WelcomePageState extends State<WelcomePage> {
               Column(
                 children: <Widget>[
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 2,
+                    width: MediaQuery.of(context).size.width / 2.5,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(

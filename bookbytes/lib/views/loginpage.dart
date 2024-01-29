@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       return 'Enter a password';
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters long';
+      return 'Enter a valid password';
     }
     return null;
   }
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 60.0),
+            padding: const EdgeInsets.only(top: 80.0),
             child: Container(
               height: MediaQuery.of(context).size.height / 3,
               decoration: const BoxDecoration(
@@ -196,27 +196,13 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(
                           width: 74,
                         ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              //_navigateToRememberMePage();
-                            },
-                            child: const Text(
-                              "Forgot Password?",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(
                       height: 30,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 2,
+                      width: MediaQuery.of(context).size.width / 2.5,
                       child: Container(
                         padding: const EdgeInsets.only(top: 3, left: 3),
                         child: ElevatedButton(

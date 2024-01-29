@@ -36,73 +36,52 @@ class _BookDetailsState extends State<BookDetails> {
         title: Text(
           widget.book.bookTitle.toString(),
         ),
+        elevation: 0.0,
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Book Image
             SizedBox(
               height: screenHeight * 0.4,
               width: screenWidth,
-              child: Image.network(
-                "${MyServerConfig.server}/bookbytes/assets/books/${widget.book.bookId}.png",
-                fit: BoxFit.cover,
-              ),
-            ),
-            // Book Details
-            Card(
-              elevation: 5,
-              margin: const EdgeInsets.all(16),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "By ${widget.book.bookAuthor}",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text("ISBN ${widget.book.bookIsbn}"),
-                    const SizedBox(height: 16),
-                    Text(
-                      widget.book.bookDesc.toString(),
-                      textAlign: TextAlign.justify,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "RM${widget.book.bookPrice}",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Quantity Available: ${widget.book.bookQty} (${widget.book.bookStatus} Book)",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
+              child: ClipRRect(
+                child: Image.network(
+                  "${MyServerConfig.server}/bookbytes/assets/books/${widget.book.bookId}.png",
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 2.2,
+            // Book Details Table
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Table(
+                border: TableBorder.all(
+                  color: Colors.grey,
+                  width: 1.0,
+                ),
+                columnWidths: const {
+                  0: FlexColumnWidth(1.5),
+                  1: FlexColumnWidth(3.5),
+                },
+                children: [
+                  buildTableRow("Author", widget.book.bookAuthor.toString()),
+                  buildTableRow("ISBN", widget.book.bookIsbn.toString()),
+                  buildTableRow("Description", widget.book.bookDesc.toString()),
+                  buildTableRow("Price", "RM${widget.book.bookPrice}"),
+                  buildTableRow(
+                    "Quantity",
+                    "${widget.book.bookQty} (${widget.book.bookStatus} Book)",
+                  ),
+                ],
+              ),
+            ),
+            // Add to Cart Button
+            Center(
               child: Container(
-                padding: const EdgeInsets.all(8.0),
+                width: MediaQuery.of(context).size.width / 2.5,
+                margin: const EdgeInsets.only(top: 4), // Add margin for spacing
                 child: ElevatedButton(
                   onPressed: () {
                     insertCartDialog();
@@ -134,6 +113,36 @@ class _BookDetailsState extends State<BookDetails> {
           ],
         ),
       ),
+    );
+  }
+
+  TableRow buildTableRow(String label, String value) {
+    return TableRow(
+      children: [
+        TableCell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        TableCell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

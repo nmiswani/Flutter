@@ -115,7 +115,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             const Spacer(),
                             Container(
                               width: MediaQuery.of(context).size.width / 2.5,
-                              padding: const EdgeInsets.only(top: 3, left: 3),
+                              padding: const EdgeInsets.only(
+                                  top: 3, left: 10, right: 3),
                               child: ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState?.validate() ??
@@ -190,7 +191,7 @@ class _RegisterPageState extends State<RegisterPage> {
       return 'Username cannot contain symbols';
     }
     if (value.contains(RegExp(r'\s'))) {
-      return 'Username cannot contain white space';
+      return 'Username cannot contain space';
     }
     return null;
   }
@@ -201,7 +202,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
         .hasMatch(value)) {
-      return 'Enter a valid email address (e.g. sofia@gmail.com)';
+      return 'Enter a valid email address (e.g. john@gmail.com)';
     }
     return null;
   }
