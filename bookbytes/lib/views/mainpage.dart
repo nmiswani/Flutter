@@ -23,6 +23,7 @@ class _MainPageState extends State<MainPage> {
   int numofpage = 1;
   int curpage = 1;
   int numofresult = 0;
+  int axiscount = 2;
   var color;
   String title = "";
 
@@ -32,13 +33,11 @@ class _MainPageState extends State<MainPage> {
     loadBooks(title);
   }
 
-  int axiscount = 2;
-
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 600) {
+    if (screenWidth > 500) {
       axiscount = 3;
     } else {
       axiscount = 2;
@@ -70,6 +69,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
         elevation: 0.0,
+        backgroundColor: Colors.deepOrange,
       ),
       drawer: MyDrawer(
         page: "books",
@@ -86,13 +86,12 @@ class _MainPageState extends State<MainPage> {
                   Expanded(
                     child: GridView.count(
                       crossAxisCount: axiscount,
-                      childAspectRatio: 0.79,
+                      childAspectRatio: 0.8,
                       mainAxisSpacing: 5,
                       crossAxisSpacing: 5,
                       padding: const EdgeInsets.all(10),
                       children: List.generate(bookList.length, (index) {
                         return Card(
-                          color: const Color.fromARGB(255, 255, 234, 217),
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
@@ -142,7 +141,6 @@ class _MainPageState extends State<MainPage> {
                                             fontSize: 14,
                                           ),
                                         ),
-                                        const SizedBox(height: 5),
                                         Text(
                                           "RM${bookList[index].bookPrice}",
                                           style: const TextStyle(
@@ -150,7 +148,6 @@ class _MainPageState extends State<MainPage> {
                                             color: Colors.black,
                                           ),
                                         ),
-                                        const SizedBox(height: 5),
                                         Text(
                                           "${bookList[index].bookQty} available",
                                           style: const TextStyle(
@@ -170,7 +167,7 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                   SizedBox(
-                    height: 35,
+                    height: 40,
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: numofpage,

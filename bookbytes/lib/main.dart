@@ -1,4 +1,3 @@
-import 'package:bookbytes/views/splashpage.dart';
 import 'package:bookbytes/views/welcomepage.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BookByte',
+      title: 'BookBytes',
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),

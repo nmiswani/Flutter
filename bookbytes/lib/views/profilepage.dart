@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.deepOrange),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "My Profile",
           style: TextStyle(
@@ -37,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         elevation: 0,
+        backgroundColor: Colors.deepOrange,
         flexibleSpace: Container(),
       ),
       drawer: MyDrawer(
@@ -51,16 +52,25 @@ class _ProfilePageState extends State<ProfilePage> {
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 78,
-                    backgroundColor: Colors.white,
-                    backgroundImage: NetworkImage(
-                      "${MyServerConfig.server}/bookbytes/assets/profileimages/${widget.userdata.userid}.jpg",
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 2.5, // Adjust the border width as needed
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 78,
+                      backgroundColor: Colors.white,
+                      backgroundImage: NetworkImage(
+                        "${MyServerConfig.server}/bookbytes/assets/profileimages/${widget.userdata.userid}.jpg",
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
               Card(
                 color: const Color.fromARGB(255, 255, 234, 217),
                 margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 4),
@@ -79,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Name",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 128, 128, 128),
+                      color: Color.fromARGB(255, 106, 106, 106),
                     ),
                   ),
                   subtitle: Text(
@@ -115,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Email",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 128, 128, 128),
+                      color: Color.fromARGB(255, 106, 106, 106),
                     ),
                   ),
                   subtitle: Text(
@@ -151,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Phone Number",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 128, 128, 128),
+                      color: Color.fromARGB(255, 106, 106, 106),
                     ),
                   ),
                   subtitle: Text(
@@ -172,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Card(
                 color: const Color.fromARGB(255, 255, 234, 217),
                 margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 4),
-                elevation: 2,
+                elevation: 1.5,
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   leading: Container(
@@ -187,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Password",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 128, 128, 128),
+                      color: Color.fromARGB(255, 106, 106, 106),
                     ),
                   ),
                   subtitle: const Text(
@@ -205,7 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
               Center(
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3,
@@ -258,6 +268,7 @@ class _ProfilePageState extends State<ProfilePage> {
             "Update $infoType?",
             style: const TextStyle(
               fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
           content: SingleChildScrollView(

@@ -31,8 +31,19 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Book Cart"),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Row(
+          children: [
+            Text(
+              "Book Cart",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
         elevation: 0.0,
+        backgroundColor: Colors.deepOrange,
       ),
       body: cartList.isEmpty
           ? const Center(child: Text("No Data"))
@@ -140,7 +151,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: const BoxDecoration(
                     color: Colors.black,
                   ),
@@ -160,10 +171,6 @@ class _CartPageState extends State<CartPage> {
                                 fontSize: 16, color: Colors.white),
                           ),
                         ],
-                      ),
-                      const Divider(
-                        height: 20,
-                        color: Colors.grey,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,10 +202,6 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ],
                       ),
-                      const Divider(
-                        height: 16,
-                        color: Colors.grey,
-                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -224,7 +227,7 @@ class _CartPageState extends State<CartPage> {
                             icon: const Icon(Icons.shopping_cart,
                                 color: Colors.white),
                             label: Text(
-                              "Check Out (${calculateTotalItems()})",
+                              "Checkout (${calculateTotalItems()})",
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -294,9 +297,7 @@ class _CartPageState extends State<CartPage> {
       builder: (context) => AlertDialog(
         title: const Text(
           "Remove book?",
-          style: TextStyle(
-            fontSize: 18,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: Text("Are you sure want to remove ${cartItem.bookTitle}?"),
         actions: [
@@ -428,9 +429,7 @@ class _CartPageState extends State<CartPage> {
       builder: (context) => AlertDialog(
         title: const Text(
           "Delivery charge info",
-          style: TextStyle(
-            fontSize: 18,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: const Text("Charge price for each seller is RM10"),
         actions: [

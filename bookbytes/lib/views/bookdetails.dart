@@ -35,16 +35,21 @@ class _BookDetailsState extends State<BookDetails> {
       appBar: AppBar(
         title: Text(
           widget.book.bookTitle.toString(),
+          style: const TextStyle(
+            color: Colors.white,
+          ),
         ),
         elevation: 0.0,
+        backgroundColor: Colors.deepOrange,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Book Image
             SizedBox(
-              height: screenHeight * 0.4,
+              height: screenHeight * 0.38,
               width: screenWidth,
               child: ClipRRect(
                 child: Image.network(
@@ -55,10 +60,10 @@ class _BookDetailsState extends State<BookDetails> {
             ),
             // Book Details Table
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(screenWidth * 0.03), // Adjusted padding
               child: Table(
                 border: TableBorder.all(
-                  color: Colors.grey,
+                  color: Colors.black,
                   width: 1.0,
                 ),
                 columnWidths: const {
@@ -81,7 +86,7 @@ class _BookDetailsState extends State<BookDetails> {
             Center(
               child: Container(
                 width: MediaQuery.of(context).size.width / 2.5,
-                margin: const EdgeInsets.only(top: 4), // Add margin for spacing
+                margin: const EdgeInsets.only(top: 8), // Add margin for spacing
                 child: ElevatedButton(
                   onPressed: () {
                     insertCartDialog();
@@ -93,15 +98,19 @@ class _BookDetailsState extends State<BookDetails> {
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.shopping_cart, size: 20),
-                      SizedBox(width: 8),
+                      Icon(
+                        Icons.shopping_cart,
+                        size: screenWidth * 0.05, // Adjusted icon size
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: screenWidth * 0.02), // Adjusted spacing
                       Text(
                         "Add to Cart",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: screenWidth * 0.04, // Adjusted font size
                           color: Colors.white,
                         ),
                       ),
@@ -121,11 +130,11 @@ class _BookDetailsState extends State<BookDetails> {
       children: [
         TableCell(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -133,11 +142,11 @@ class _BookDetailsState extends State<BookDetails> {
         ),
         TableCell(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
             child: Text(
               value,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 15,
               ),
             ),
           ),
@@ -155,6 +164,7 @@ class _BookDetailsState extends State<BookDetails> {
             "Insert to cart?",
             style: TextStyle(
               fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
           content: const Text("Are you sure?"),

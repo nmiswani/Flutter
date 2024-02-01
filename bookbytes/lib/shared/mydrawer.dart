@@ -36,6 +36,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 "${MyServerConfig.server}/bookbytes/assets/profileimages/${widget.userdata.userid}.jpg",
               ),
               backgroundColor: Colors.white,
+              radius: 50.0,
             ),
             accountName: Text(widget.userdata.username.toString()),
             accountEmail: Padding(
