@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                       padding: const EdgeInsets.all(10),
                       children: List.generate(bookList.length, (index) {
                         return Card(
-                          color: Color.fromARGB(255, 221, 246, 255),
+                          color: const Color.fromARGB(255, 255, 234, 217),
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
@@ -252,7 +252,8 @@ class _MainPageState extends State<MainPage> {
           title: const Text(
             "Search title",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
           content: Column(
@@ -274,7 +275,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -287,7 +288,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                   child: Text(
                     "Search",
                     style: TextStyle(

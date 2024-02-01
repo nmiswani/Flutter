@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         SizedBox(
-                          height: 10,
+                          height: 15,
                         ),
                       ],
                     ),
@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 25,
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2.5,
@@ -228,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 25,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

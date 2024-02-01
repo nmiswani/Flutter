@@ -31,7 +31,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 38),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
                   Text(
                     " Explore, learn and immerse yourself in the world of knowledge through books.",
@@ -47,6 +47,9 @@ class _WelcomePageState extends State<WelcomePage> {
                     image: AssetImage('assets/images/welcomepage.png'),
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 10,
               ),
               Column(
                 children: <Widget>[

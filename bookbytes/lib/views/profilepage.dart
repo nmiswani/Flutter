@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.deepOrange),
         title: const Text(
           "My Profile",
           style: TextStyle(
@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Center(
           child: Column(
             children: [
-              const SizedBox(height: 45),
+              const SizedBox(height: 40),
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -60,21 +60,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 30),
               Card(
-                color: const Color.fromARGB(255, 251, 223, 214),
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                color: const Color.fromARGB(255, 255, 234, 217),
+                margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 4),
+                elevation: 1.5,
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  leading: Container(
+                    alignment: Alignment.center,
+                    width: 40, // Adjust the width as needed
+                    child: const Icon(
+                      Icons.account_circle,
+                      color: Colors.black,
+                    ),
+                  ),
                   title: const Text(
                     "Name",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 139, 137, 137),
+                      color: Color.fromARGB(255, 128, 128, 128),
                     ),
                   ),
                   subtitle: Text(
                     widget.userdata.username.toString(),
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 15, color: Colors.black),
                   ),
                   trailing: IconButton(
                     icon: const Icon(
@@ -88,19 +98,29 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Card(
-                color: const Color.fromARGB(255, 251, 223, 214),
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                color: const Color.fromARGB(255, 255, 234, 217),
+                margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 4),
+                elevation: 1.5,
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  leading: Container(
+                    alignment: Alignment.center,
+                    width: 40, // Adjust the width as needed
+                    child: const Icon(
+                      Icons.email,
+                      color: Colors.black,
+                    ),
+                  ),
                   title: const Text(
                     "Email",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 139, 137, 137),
+                      color: Color.fromARGB(255, 128, 128, 128),
                     ),
                   ),
                   subtitle: Text(
                     widget.userdata.useremail.toString(),
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 15, color: Colors.black),
                   ),
                   trailing: IconButton(
                     icon: const Icon(
@@ -114,19 +134,29 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Card(
-                color: const Color.fromARGB(255, 251, 223, 214),
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                color: const Color.fromARGB(255, 255, 234, 217),
+                margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 4),
+                elevation: 1.5,
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  leading: Container(
+                    alignment: Alignment.center,
+                    width: 40, // Adjust the width as needed
+                    child: const Icon(
+                      Icons.phone,
+                      color: Colors.black,
+                    ),
+                  ),
                   title: const Text(
                     "Phone Number",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 139, 137, 137),
+                      color: Color.fromARGB(255, 128, 128, 128),
                     ),
                   ),
                   subtitle: Text(
                     widget.userdata.userphone.toString(),
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 15, color: Colors.black),
                   ),
                   trailing: IconButton(
                     icon: const Icon(
@@ -140,20 +170,29 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Card(
-                color: const Color.fromARGB(255, 251, 223, 214),
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                elevation: 1,
+                color: const Color.fromARGB(255, 255, 234, 217),
+                margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 4),
+                elevation: 2,
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  leading: Container(
+                    alignment: Alignment.center,
+                    width: 40, // Adjust the width as needed
+                    child: const Icon(
+                      Icons.lock,
+                      color: Colors.black,
+                    ),
+                  ),
                   title: const Text(
                     "Password",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color.fromARGB(255, 139, 137, 137),
+                      color: Color.fromARGB(255, 128, 128, 128),
                     ),
                   ),
                   subtitle: const Text(
                     "********",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    style: TextStyle(fontSize: 15, color: Colors.black),
                   ),
                   trailing: IconButton(
                     icon: const Icon(
@@ -358,6 +397,14 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void _showSnackBar(String message, bool isSuccess) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: isSuccess ? Colors.green : Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   void _updateName(String newname) {
     http.post(
       Uri.parse("${MyServerConfig.server}/bookbytes/php/update_profile.php"),
@@ -371,8 +418,9 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           widget.userdata.username = newname;
         });
+        _showSnackBar("Name updated successfully", true);
       } else {
-        // Handle error case
+        _showSnackBar("Failed to update name", false);
       }
     });
   }
@@ -390,8 +438,9 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           widget.userdata.useremail = newemail;
         });
+        _showSnackBar("Email updated successfully", true);
       } else {
-        // Handle error case
+        _showSnackBar("Failed to update email", false);
       }
     });
   }
@@ -409,8 +458,9 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           widget.userdata.userphone = newphone;
         });
+        _showSnackBar("Phone number updated successfully", true);
       } else {
-        // Handle error case
+        _showSnackBar("Failed to update phone number", false);
       }
     });
   }
@@ -426,9 +476,9 @@ class _ProfilePageState extends State<ProfilePage> {
     ).then((response) {
       var jsondata = jsonDecode(response.body);
       if (response.statusCode == 200 && jsondata['status'] == 'success') {
-        // Handle success
+        _showSnackBar("Password updated successfully", true);
       } else {
-        // Handle error case
+        _showSnackBar("Failed to update password", false);
       }
     });
   }

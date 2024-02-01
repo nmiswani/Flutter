@@ -153,9 +153,11 @@ class _BookDetailsState extends State<BookDetails> {
         return AlertDialog(
           title: const Text(
             "Insert to cart?",
-            style: TextStyle(),
+            style: TextStyle(
+              fontSize: 18,
+            ),
           ),
-          content: const Text("Are you sure?", style: TextStyle()),
+          content: const Text("Are you sure?"),
           actions: <Widget>[
             TextButton(
               child: const Text(

@@ -1,4 +1,5 @@
 import 'package:bookbytes/shared/myserverconfig.dart';
+import 'package:bookbytes/views/communitypage.dart';
 import 'package:bookbytes/views/loginpage.dart';
 import 'package:flutter/material.dart';
 
@@ -79,6 +80,22 @@ class _MyDrawerState extends State<MyDrawer> {
                   EnterExitRoute(
                       exitPage: ProfilePage(userdata: widget.userdata),
                       enterPage: ProfilePage(userdata: widget.userdata)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.people),
+            title: const Text('Community'),
+            onTap: () {
+              Navigator.pop(context);
+              if (widget.page.toString() == "community") {
+                return;
+              }
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  EnterExitRoute(
+                      exitPage: CommunityPage(userdata: widget.userdata),
+                      enterPage: CommunityPage(userdata: widget.userdata)));
             },
           ),
           const Divider(

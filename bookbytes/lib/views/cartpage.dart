@@ -46,12 +46,12 @@ class _CartPageState extends State<CartPage> {
                       final seller = sellerCart.first.sellerId!;
 
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(16),
                             child: Text(
-                              "Book of Seller $seller",
+                              "Shop $seller",
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -59,65 +59,79 @@ class _CartPageState extends State<CartPage> {
                               textAlign: TextAlign.left,
                             ),
                           ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: sellerCart.length,
-                            itemBuilder: (context, cartIndex) {
-                              final cartItem = sellerCart[cartIndex];
-
-                              return ListTile(
-                                title: Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Text(
-                                    cartItem.bookTitle.toString(),
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                subtitle:
-                                    Text("RM${cartItem.bookPrice.toString()}"),
-                                leading: Image.network(
-                                  "${MyServerConfig.server}/bookbytes/assets/books/${cartItem.bookId}.png",
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () =>
-                                          decrementQuantity(cartItem),
-                                      icon: const Icon(
-                                        Icons.remove,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      cartItem.cartQty.toString(),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () =>
-                                          incrementQuantity(cartItem),
-                                      icon: const Icon(
-                                        Icons.add,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () =>
-                                          showRemoveItemDialog(cartItem),
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ),
+                          Column(
+                            children: sellerCart.map((cartItem) {
+                              return Container(
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.greenAccent,
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.all(16),
+                                  title: Text(
+                                    cartItem.bookTitle.toString(),
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                  subtitle: Text(
+                                    "RM ${cartItem.bookPrice.toString()}",
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                  leading: ClipRRect(
+                                    borderRadius: BorderRadius.circular(0),
+                                    child: Image.network(
+                                      "${MyServerConfig.server}/bookbytes/assets/books/${cartItem.bookId}.png",
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () =>
+                                            decrementQuantity(cartItem),
+                                        icon: const Icon(
+                                          Icons.remove,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        cartItem.cartQty.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () =>
+                                            incrementQuantity(cartItem),
+                                        icon: const Icon(
+                                          Icons.add,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () =>
+                                            showRemoveItemDialog(cartItem),
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               );
-                            },
+                            }).toList(),
                           ),
                           const Divider(),
                         ],
@@ -232,29 +246,6 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget buildCartItemCard(Cart cartItem) {
-    return Card(
-      child: ListTile(
-        title: Text(cartItem.bookTitle.toString()),
-        subtitle: Text("RM ${cartItem.bookPrice.toString()}"),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              onPressed: () => decrementQuantity(cartItem),
-              icon: const Icon(Icons.remove),
-            ),
-            Text(cartItem.cartQty.toString()),
-            IconButton(
-              onPressed: () => incrementQuantity(cartItem),
-              icon: const Icon(Icons.add),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   loadUserCart() async {
     try {
       String userid = widget.user.userid.toString();
@@ -301,7 +292,12 @@ class _CartPageState extends State<CartPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Remove book?"),
+        title: const Text(
+          "Remove book?",
+          style: TextStyle(
+            fontSize: 18,
+          ),
+        ),
         content: Text("Are you sure want to remove ${cartItem.bookTitle}?"),
         actions: [
           TextButton(
@@ -430,7 +426,12 @@ class _CartPageState extends State<CartPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Delivery charge info"),
+        title: const Text(
+          "Delivery charge info",
+          style: TextStyle(
+            fontSize: 18,
+          ),
+        ),
         content: const Text("Charge price for each seller is RM10"),
         actions: [
           TextButton(
