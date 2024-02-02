@@ -14,7 +14,7 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  final String phoneNumber = '018 541 2200'; // Replace with the phone number
+  final String phoneNumber = '0185412200'; // Replace with the phone number
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 const SizedBox(height: 20),
 
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(5),
@@ -85,7 +85,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
                 // Add an interactive button for more engagement
                 ElevatedButton(
@@ -110,7 +110,7 @@ class _CommunityPageState extends State<CommunityPage> {
                       Text(
                         "Bookbytes Contact Number",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           color: Colors.white,
                         ),
                       ),
@@ -158,7 +158,7 @@ class _CommunityPageState extends State<CommunityPage> {
                       Text(
                         "bookbytes@gmail.com",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           color: Colors.white,
                         ),
                       ),

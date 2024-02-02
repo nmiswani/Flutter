@@ -265,7 +265,7 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            "Update $infoType?",
+            "Update $infoType",
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -382,7 +382,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text("Yes"),
+              child: const Text("Confirm"),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (infoType == "name") {
@@ -397,7 +397,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             TextButton(
-              child: const Text("No"),
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

@@ -28,20 +28,19 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          // Background image
-          Image.asset(
-            'assets/images/registerpage.png', // Replace with your image asset path
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-          ),
-          SingleChildScrollView(
-            child: Container(
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/registerpage.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 30),
-              height: MediaQuery.of(context).size.height - 50,
-              width: double.infinity,
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -49,21 +48,24 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        const SizedBox(height: 90),
+                        const SizedBox(height: 50),
                         const Text(
                           "Register",
                           style: TextStyle(
-                              fontSize: 35, fontWeight: FontWeight.bold),
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(
-                          height: 15,
+                          height: 10,
                         ),
                         Text(
                           "Create an account, It's free",
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey[800]),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[800],
+                          ),
                         ),
-                        const SizedBox(height: 30),
                       ],
                     ),
                     Column(
@@ -110,8 +112,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                             GestureDetector(
-                                onTap: _showEULA,
-                                child: const Text("Agree with terms")),
+                              onTap: _showEULA,
+                              child: const Text("Agree with terms"),
+                            ),
                             const Spacer(),
                             Container(
                               width: MediaQuery.of(context).size.width / 2.5,
@@ -131,7 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  padding: EdgeInsets.symmetric(vertical: 13),
                                   child: Text(
                                     "Register",
                                     style: TextStyle(
@@ -150,7 +153,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        const SizedBox(height: 50),
                         const Text("Already have an account?"),
                         GestureDetector(
                           onTap: () {
@@ -168,9 +170,53 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget makeInput({
+    required IconData icon,
+    required String hint,
+    required TextEditingController controller,
+    bool obscureText = false,
+    bool showVisibilityToggle = false,
+    VoidCallback? onTapVisibilityToggle,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          decoration: InputDecoration(
+            labelText: hint,
+            prefixIcon: Icon(icon),
+            suffixIcon: showVisibilityToggle
+                ? IconButton(
+                    icon: Icon(
+                        obscureText ? Icons.visibility : Icons.visibility_off),
+                    onPressed: onTapVisibilityToggle,
+                  )
+                : null,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade600),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+          ),
+          validator: hint == 'Username' ? _validateUsername : validator,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
 
@@ -226,50 +272,6 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     }
     return null;
-  }
-
-  Widget makeInput({
-    required IconData icon,
-    required String hint,
-    required TextEditingController controller,
-    bool obscureText = false,
-    bool showVisibilityToggle = false,
-    VoidCallback? onTapVisibilityToggle,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            labelText: hint,
-            prefixIcon: Icon(icon),
-            suffixIcon: showVisibilityToggle
-                ? IconButton(
-                    icon: Icon(
-                        obscureText ? Icons.visibility : Icons.visibility_off),
-                    onPressed: onTapVisibilityToggle,
-                  )
-                : null,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600),
-            ),
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-          ),
-          validator: hint == 'Username' ? _validateUsername : validator,
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-      ],
-    );
   }
 
   Future<void> showConfirmationDialog(BuildContext context) async {
@@ -329,6 +331,10 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
             "EULA",
           ),
           content: SizedBox(

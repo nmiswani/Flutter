@@ -64,7 +64,7 @@ class _BookDetailsState extends State<BookDetails> {
               child: Table(
                 border: TableBorder.all(
                   color: Colors.black,
-                  width: 1.0,
+                  width: 1.5,
                 ),
                 columnWidths: const {
                   0: FlexColumnWidth(1.5),
@@ -77,7 +77,7 @@ class _BookDetailsState extends State<BookDetails> {
                   buildTableRow("Price", "RM${widget.book.bookPrice}"),
                   buildTableRow(
                     "Quantity",
-                    "${widget.book.bookQty} (${widget.book.bookStatus} Book)",
+                    "${widget.book.bookQty} (${widget.book.bookStatus})",
                   ),
                 ],
               ),

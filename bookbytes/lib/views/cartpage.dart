@@ -208,35 +208,38 @@ class _CartPageState extends State<CartPage> {
                           Text(
                             "Total RM${total.toStringAsFixed(2)}",
                             style: const TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
-                          ElevatedButton.icon(
+                          ElevatedButton(
                             onPressed: () async {
                               await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (content) => BillScreen(
-                                            user: widget.user,
-                                            totalprice: total,
-                                          )));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (content) => BillScreen(
+                                    user: widget.user,
+                                    totalprice: total,
+                                  ),
+                                ),
+                              );
                               loadUserCart();
                             },
-                            icon: const Icon(Icons.shopping_cart,
-                                color: Colors.white),
-                            label: Text(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              backgroundColor: Colors.green,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
+                            child: Text(
                               "Checkout (${calculateTotalItems()})",
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Colors.green, // Set the button color
                             ),
                           ),
                         ],
@@ -296,7 +299,7 @@ class _CartPageState extends State<CartPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(
-          "Remove book?",
+          "Remove book",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: Text("Are you sure want to remove ${cartItem.bookTitle}?"),
