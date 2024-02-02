@@ -161,7 +161,7 @@ class _BookDetailsState extends State<BookDetails> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            "Insert to cart?",
+            "Insert to cart",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

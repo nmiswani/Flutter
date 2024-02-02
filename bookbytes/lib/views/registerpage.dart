@@ -280,7 +280,10 @@ class _RegisterPageState extends State<RegisterPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Register new account?'),
+          title: const Text(
+            'Register new account',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -332,8 +335,7 @@ class _RegisterPageState extends State<RegisterPage> {
         return AlertDialog(
           title: const Text(
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
             "EULA",
           ),
@@ -360,7 +362,7 @@ class _RegisterPageState extends State<RegisterPage> {
           actions: <Widget>[
             TextButton(
               child: const Text(
-                "Close",
+                "CLOSE",
               ),
               onPressed: () {
                 Navigator.of(context).pop();

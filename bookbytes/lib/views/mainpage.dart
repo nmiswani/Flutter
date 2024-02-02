@@ -285,11 +285,11 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                   child: Text(
                     "Search",
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 16,
                       color: Colors.white,
                     ),
                   ),
