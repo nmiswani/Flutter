@@ -1,3 +1,4 @@
 class MyServerConfig {
-  static const String server = "http://192.168.1.10";
+  static const String server =
+      "https://wani.infinitebe.com"; // "http://10.143.152.28";
 }

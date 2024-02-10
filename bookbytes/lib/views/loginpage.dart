@@ -1,5 +1,3 @@
-// ignore_for_file: unused_element, use_build_context_synchronously, duplicate_ignore, unused_local_variable, no_leading_underscores_for_local_identifiers, avoid_print
-
 import 'dart:convert';
 import 'mainpage.dart';
 import 'registerpage.dart';
@@ -102,158 +100,173 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 80.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height / 3,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/loginpage.png'),
-                  //fit: BoxFit.cover,
+      backgroundColor:
+          Colors.transparent, // Set background color of Scaffold to transparent
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(255, 255, 224, 200), // Start color
+              Color.fromARGB(255, 255, 255, 255), // End color
+            ],
+          ),
+        ),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 80.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 3,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/loginpage.png'),
+                    //fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 15,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      const Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      ),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30),
+                              child: makeInput(
+                                icon: Icons.email,
+                                hint: "Email",
+                                controller: emailController,
+                                labelText: 'Email',
+                                validator: _validateEmail,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30),
+                              child: makeInput(
+                                icon: Icons.lock,
+                                hint: "Password",
+                                obscureText: !isPasswordVisible,
+                                controller: passwordController,
+                                labelText: 'Password',
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isPasswordVisible = !isPasswordVisible;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    isPasswordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                ),
+                                validator: _validatePassword,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30),
-                            child: makeInput(
-                              icon: Icons.email,
-                              hint: "Email",
-                              controller: emailController,
-                              labelText: 'Email',
-                              validator: _validateEmail,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(width: 30),
+                          Checkbox(
+                            value: _isChecked,
+                            onChanged: (bool? value) {
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
+                              saveremovepref(value!);
+                              setState(() {
+                                _isChecked = value;
+                              });
+                              //_saveCredentials();
+                            },
+                          ),
+                          const Text("Remember me"),
+                          const SizedBox(
+                            width: 74,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2.5,
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 3, left: 3),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _loginUser(); // Navigate to LoginPage
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              backgroundColor: Colors.deepOrange,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30),
-                            child: makeInput(
-                              icon: Icons.lock,
-                              hint: "Password",
-                              obscureText: !isPasswordVisible,
-                              controller: passwordController,
-                              labelText: 'Password',
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isPasswordVisible = !isPasswordVisible;
-                                  });
-                                },
-                                icon: Icon(
-                                  isPasswordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text("Don't have an account?"),
+                          GestureDetector(
+                            onTap: () {
+                              _navigateToRegistration();
+                            },
+                            child: const Text(
+                              " Create a new account",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
                               ),
-                              validator: _validatePassword,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const SizedBox(width: 30),
-                        Checkbox(
-                          value: _isChecked,
-                          onChanged: (bool? value) {
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            }
-                            saveremovepref(value!);
-                            setState(() {
-                              _isChecked = value;
-                            });
-                            //_saveCredentials();
-                          },
-                        ),
-                        const Text("Remember me"),
-                        const SizedBox(
-                          width: 74,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 3, left: 3),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _loginUser(); // Navigate to LoginPage
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 50),
-                            backgroundColor: Colors.deepOrange,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                          ),
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const Text("Don't have an account?"),
-                        GestureDetector(
-                          onTap: () {
-                            _navigateToRegistration();
-                          },
-                          child: const Text(
-                            " Create a new account",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

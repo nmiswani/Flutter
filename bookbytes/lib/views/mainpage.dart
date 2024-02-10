@@ -4,7 +4,7 @@ import 'package:bookbytes/models/book.dart';
 import 'package:bookbytes/models/user.dart';
 import 'package:bookbytes/shared/mydrawer.dart';
 import 'package:bookbytes/shared/myserverconfig.dart';
-import 'package:bookbytes/views/bookdetails.dart';
+import 'package:bookbytes/views/bookdetailspage.dart';
 import 'package:bookbytes/views/cartpage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -103,7 +103,7 @@ class _MainPageState extends State<MainPage> {
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (content) => BookDetails(
+                                  builder: (content) => BookDetailsPage(
                                     userdata: widget.userdata,
                                     book: book,
                                   ),

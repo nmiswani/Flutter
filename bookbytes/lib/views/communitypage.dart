@@ -14,7 +14,7 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  final String phoneNumber = '0185412200'; // Replace with the phone number
+  final String phoneNumber = '0198175752'; // Replace with the phone number
 
   @override
   Widget build(BuildContext context) {
@@ -54,31 +54,31 @@ class _CommunityPageState extends State<CommunityPage> {
               children: [
                 Image.asset(
                   'assets/images/icon.png',
-                  height: 90,
-                  width: 90,
+                  height: 70,
+                  width: 70,
                 ),
                 const SizedBox(height: 15),
                 Text(
                   "Welcome ${widget.userdata.username}\n to BookBytes Community!",
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
 
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                   child: const Text(
                     "Step into the vibrant world of BookBytes, where readers unite on the illustrious BookBytes Community Page. Here, the magic of words comes alive, weaving a tapestry of shared stories, diverse perspectives, and boundless imagination. Picture a cozy corner online, adorned with shelves of literary treasures and the whispers of countless tales. This is where readers from every corner of the globe converge, not just as book enthusiasts but as a vibrant community of wordsmiths.",
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 15.5,
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -95,7 +95,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                   child: const Row(
@@ -110,7 +110,7 @@ class _CommunityPageState extends State<CommunityPage> {
                       Text(
                         "Bookbytes Contact Number",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 15.5,
                           color: Colors.white,
                         ),
                       ),
@@ -128,7 +128,7 @@ class _CommunityPageState extends State<CommunityPage> {
 
                     final Uri emailLaunchUri = Uri(
                       scheme: 'mailto',
-                      path: 'bookbytes@gmail.com',
+                      path: 'bookbytesco@gmail.com',
                       query: encodeQueryParameters(<String, String>{
                         'subject': 'BookBytes Customer',
                       }),
@@ -143,7 +143,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                   child: const Row(
@@ -156,9 +156,9 @@ class _CommunityPageState extends State<CommunityPage> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        "bookbytes@gmail.com",
+                        "bookbytesco@gmail.com",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 15.5,
                           color: Colors.white,
                         ),
                       ),

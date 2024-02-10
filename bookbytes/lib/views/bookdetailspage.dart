@@ -7,17 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/book.dart';
 
-class BookDetails extends StatefulWidget {
+class BookDetailsPage extends StatefulWidget {
   final User userdata;
   final Book book;
 
-  const BookDetails({super.key, required this.userdata, required this.book});
+  const BookDetailsPage(
+      {super.key, required this.userdata, required this.book});
 
   @override
-  State<BookDetails> createState() => _BookDetailsState();
+  State<BookDetailsPage> createState() => _BookDetailsPageState();
 }
 
-class _BookDetailsState extends State<BookDetails> {
+class _BookDetailsPageState extends State<BookDetailsPage> {
   late double screenWidth, screenHeight;
   bool bookowner = false;
 
@@ -213,32 +214,23 @@ class _BookDetailsState extends State<BookDetails> {
           "seller_id": widget.book.userId.toString(),
           "book_id": widget.book.bookId.toString(),
           "book_status": widget.book.bookStatus.toString(),
+          "book_price": widget.book.bookPrice.toString(),
         }).then((response) {
       log(response.body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['status'] == "success") {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Success"),
+            content: Text("Added to cart successfully"),
             backgroundColor: Colors.green,
           ));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Failed"),
+            content: Text("Failed to add to cart"),
             backgroundColor: Colors.red,
           ));
         }
       }
     });
-  }
-
-  void showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor:
-            message.contains("Success") ? Colors.green : Colors.red,
-      ),
-    );
   }
 }

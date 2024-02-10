@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 import 'package:bookbytes/shared/mydrawer.dart';
 import 'package:bookbytes/shared/myserverconfig.dart';
 import 'package:bookbytes/views/loginpage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/user.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,6 +26,11 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _oldpasswordController = TextEditingController();
   final TextEditingController _newpasswordController = TextEditingController();
+
+  File? _image;
+  var val = 50;
+  Random random = Random();
+  bool isDisable = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +70,31 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 2.5, // Adjust the border width as needed
                       ),
                     ),
-                    child: CircleAvatar(
-                      radius: 78,
-                      backgroundColor: Colors.white,
-                      backgroundImage: NetworkImage(
-                        "${MyServerConfig.server}/bookbytes/assets/profileimages/${widget.userdata.userid}.jpg",
+                    child: Container(
+                      margin: const EdgeInsets.all(4),
+                      width: screenWidth * 0.4,
+                      child: CircleAvatar(
+                        radius: 75,
+                        backgroundColor: Colors.white,
+                        backgroundImage: CachedNetworkImageProvider(
+                          "${MyServerConfig.server}/bookbytes/assets/profileimages/${widget.userdata.userid}.jpg?v=$val",
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: isDisable ? null : _updateImageDialog,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: const Icon(Icons.camera_alt_rounded,
+                            color: Colors.white, size: 20),
                       ),
                     ),
                   ),
@@ -491,6 +521,119 @@ class _ProfilePageState extends State<ProfilePage> {
       } else {
         _showSnackBar("Failed to update password", false);
       }
+    });
+  }
+
+  _updateImageDialog() {
+    if (widget.userdata.userid == "0") {
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+            title: const Text(
+              "Select from",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton.icon(
+                    onPressed: () => {
+                          Navigator.of(context).pop(),
+                          _galleryPicker(),
+                        },
+                    icon: const Icon(Icons.browse_gallery),
+                    label: const Text("Gallery")),
+                TextButton.icon(
+                    onPressed: () =>
+                        {Navigator.of(context).pop(), _cameraPicker()},
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text("Camera")),
+              ],
+            ));
+      },
+    );
+  }
+
+  Future<void> _galleryPicker() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 1200,
+      maxWidth: 800,
+    );
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      cropImage();
+    }
+  }
+
+  Future<void> _cameraPicker() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera,
+      maxHeight: 1200,
+      maxWidth: 800,
+    );
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      cropImage();
+    }
+  }
+
+  Future<void> cropImage() async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: _image!.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+      ],
+    );
+    if (croppedFile != null) {
+      File imageFile = File(croppedFile.path);
+      _image = imageFile;
+      _updateProfileImage();
+      setState(() {});
+    }
+  }
+
+  Future<void> _updateProfileImage() async {
+    if (_image == null) {
+      return;
+    }
+    File imageFile = File(_image!.path);
+    print(imageFile);
+    String base64Image = base64Encode(imageFile.readAsBytesSync());
+    // print(base64Image);
+    http.post(Uri.parse("${MyServerConfig()}/bookbytes/php/update_profile.php"),
+        body: {
+          "userid": widget.userdata.userid.toString(),
+          "image": base64Image.toString(),
+        }).then((response) {
+      var jsondata = jsonDecode(response.body);
+      print(jsondata);
+      if (response.statusCode == 200 && jsondata['status'] == 'success') {
+        val = random.nextInt(1000);
+        setState(() {});
+        // DefaultCacheManager manager = DefaultCacheManager();
+        // manager.emptyCache(); //clears all data in cache.
+      } else {}
     });
   }
 }

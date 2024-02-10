@@ -1,4 +1,4 @@
-import 'package:bookbytes/views/welcomepage.dart';
+import 'package:bookbytes/views/splashpage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: const WelcomePage(),
+      home: const SplashPage(),
     );
   }
 }

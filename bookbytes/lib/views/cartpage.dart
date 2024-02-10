@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:bookbytes/models/cart.dart';
 import 'package:bookbytes/models/user.dart';
-import 'package:bookbytes/views/billscreen.dart';
+import 'package:bookbytes/views/billpage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -46,7 +46,7 @@ class _CartPageState extends State<CartPage> {
         backgroundColor: Colors.deepOrange,
       ),
       body: cartList.isEmpty
-          ? const Center(child: Text("No Data"))
+          ? const Center(child: Text(""))
           : Column(
               children: [
                 Expanded(
@@ -59,23 +59,39 @@ class _CartPageState extends State<CartPage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const SizedBox(
+                            height: 5,
+                          ),
                           Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              "Shop $seller",
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.left,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 10),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.store_mall_directory_rounded,
+                                ),
+                                const SizedBox(
+                                    width:
+                                        8), // Adjust the space between the icon and text as needed
+                                Text(
+                                  "${getShopName(seller)} ",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                                const Icon(Icons.arrow_forward_ios_rounded,
+                                    size: 15),
+                              ],
                             ),
                           ),
                           Column(
                             children: sellerCart.map((cartItem) {
                               return Container(
-                                margin: const EdgeInsets.all(8),
+                                margin: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.greenAccent,
+                                  color: Colors.blue[100],
                                   borderRadius: BorderRadius.circular(5),
                                   boxShadow: [
                                     BoxShadow(
@@ -87,21 +103,23 @@ class _CartPageState extends State<CartPage> {
                                   ],
                                 ),
                                 child: ListTile(
-                                  contentPadding: const EdgeInsets.all(16),
+                                  contentPadding: const EdgeInsets.all(8),
                                   title: Text(
                                     cartItem.bookTitle.toString(),
-                                    style: const TextStyle(fontSize: 18),
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   subtitle: Text(
-                                    "RM ${cartItem.bookPrice.toString()}",
-                                    style: const TextStyle(fontSize: 16),
+                                    "RM${cartItem.bookPrice.toString()}",
+                                    style: const TextStyle(fontSize: 15),
                                   ),
                                   leading: ClipRRect(
                                     borderRadius: BorderRadius.circular(0),
                                     child: Image.network(
                                       "${MyServerConfig.server}/bookbytes/assets/books/${cartItem.bookId}.png",
-                                      width: 50,
-                                      height: 50,
+                                      width: 45,
+                                      height: 45,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -111,6 +129,8 @@ class _CartPageState extends State<CartPage> {
                                       IconButton(
                                         onPressed: () =>
                                             decrementQuantity(cartItem),
+                                        padding: EdgeInsets.zero,
+                                        iconSize: 18,
                                         icon: const Icon(
                                           Icons.remove,
                                           color: Colors.black,
@@ -119,12 +139,14 @@ class _CartPageState extends State<CartPage> {
                                       Text(
                                         cartItem.cartQty.toString(),
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                         ),
                                       ),
                                       IconButton(
                                         onPressed: () =>
                                             incrementQuantity(cartItem),
+                                        padding: EdgeInsets.zero,
+                                        iconSize: 18,
                                         icon: const Icon(
                                           Icons.add,
                                           color: Colors.black,
@@ -133,6 +155,8 @@ class _CartPageState extends State<CartPage> {
                                       IconButton(
                                         onPressed: () =>
                                             showRemoveItemDialog(cartItem),
+                                        padding: EdgeInsets.zero,
+                                        iconSize: 20,
                                         icon: const Icon(
                                           Icons.delete,
                                           color: Colors.red,
@@ -144,14 +168,13 @@ class _CartPageState extends State<CartPage> {
                               );
                             }).toList(),
                           ),
-                          const Divider(),
                         ],
                       );
                     },
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
                     color: Colors.black,
                   ),
@@ -213,32 +236,46 @@ class _CartPageState extends State<CartPage> {
                               color: Colors.white,
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (content) => BillScreen(
-                                    user: widget.user,
-                                    totalprice: total,
+                          SizedBox(
+                            width: 120, // Set the desired width here
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (content) => BillPage(
+                                      user: widget.user,
+                                      totalprice: total,
+                                    ),
                                   ),
+                                );
+                                loadUserCart();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.deepOrange,
+                                backgroundColor: Colors.transparent,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 9),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                              );
-                              loadUserCart();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 50),
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
+                                elevation: 5,
+                                shadowColor: Colors.black,
+                                textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                minimumSize: Size.zero, // Remove fixed width
+                                side: const BorderSide(
+                                  color: Colors.deepOrange,
+                                  width: 2,
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              "Checkout (${calculateTotalItems()})",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              child: const Text(
+                                "CHECK OUT",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ),
@@ -426,12 +463,30 @@ class _CartPageState extends State<CartPage> {
     _groupedCartItems = groupedMap.values.toList();
   }
 
+// Add a method to get shop name by sellerId
+  String getShopName(String sellerId) {
+    switch (sellerId) {
+      case '1':
+        return 'One-Stop Books';
+      case '2':
+        return 'Big Bad Wolf';
+      case '3':
+        return 'Books Lounge';
+      case '4':
+        return 'BookBerry';
+      case '5':
+        return 'Cybernaut Digital Library';
+      default:
+        return 'Unknown Shop';
+    }
+  }
+
   void _showDeliveryInfoDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(
-          "Delivery charge info",
+          "Delivery info",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: const Text("Charge price for each seller is RM10"),
