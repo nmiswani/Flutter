@@ -21,7 +21,7 @@ class Customer {
     customername = json['customername'];
     customerphone = json['customerphone'];
     customerpassword = json['customerpassword'];
-    resetCode = json['reset_code'];
+    resetCode = json['resetCode'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +31,7 @@ class Customer {
     data['customername'] = customername;
     data['customerphone'] = customerphone;
     data['customerpassword'] = customerpassword;
-    data['reset_code'] = resetCode;
+    data['resetCode'] = resetCode;
     return data;
   }
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/admin.dart';
 
-class OrderPage extends StatefulWidget {
-  final Customer customer;
-  const OrderPage({super.key, required this.customer});
+class OrderAdminPage extends StatefulWidget {
+  final Admin admin;
+  const OrderAdminPage({super.key, required this.admin});
 
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<OrderAdminPage> createState() => _OrderAdminPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _OrderAdminPageState extends State<OrderAdminPage> {
   late List<Widget> tabchildren;
   String maintitle = "Order";
 
@@ -21,7 +21,7 @@ class _OrderPageState extends State<OrderPage> {
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
         elevation: 0,
         title: Text(
-          "Cart",
+          "Order",
           style: GoogleFonts.poppins(fontSize: 20, color: Colors.white),
         ),
       ),

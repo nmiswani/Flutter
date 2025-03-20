@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/cartpage.dart';
-import 'package:pomm/views/customer/productdetailspage.dart';
+import 'package:pomm/views/customer/product/cartpage.dart';
+import 'package:pomm/views/customer/product/productdetailspage.dart';
 
 class ProductPage extends StatefulWidget {
   final Customer customerdata;
-  const ProductPage({Key? key, required this.customerdata}) : super(key: key);
+  const ProductPage({super.key, required this.customerdata});
 
   @override
   State<ProductPage> createState() => _ProductPageState();

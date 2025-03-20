@@ -26,8 +26,9 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
     if (value == null || value.isEmpty) {
       return 'Enter user ID';
     }
-    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-        .hasMatch(value)) {
+    if (!RegExp(
+      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
+    ).hasMatch(value)) {
       return 'Enter valid user ID';
     }
     return null;
@@ -66,28 +67,28 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
               filled: true,
               fillColor: Colors.white,
               hintText: hint,
-              prefixIcon: Icon(
-                icon,
-                color: Colors.black,
-              ),
-              suffixIcon: showVisibilityToggle
-                  ? IconButton(
-                      icon: Icon(
-                        obscureText ? Icons.visibility : Icons.visibility_off,
-                        color: Colors.black,
-                      ),
-                      onPressed: onTapVisibilityToggle,
-                    )
-                  : null,
+              prefixIcon: Icon(icon, color: Colors.black),
+              suffixIcon:
+                  showVisibilityToggle
+                      ? IconButton(
+                        icon: Icon(
+                          obscureText ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.black,
+                        ),
+                        onPressed: onTapVisibilityToggle,
+                      )
+                      : null,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
               enabledBorder: const OutlineInputBorder(
-                borderSide:
-                    BorderSide(color: Color.fromRGBO(91, 158, 113, 0.612)),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(91, 158, 113, 0.612),
+                ),
                 borderRadius: BorderRadius.zero,
               ),
               focusedBorder: const OutlineInputBorder(
-                borderSide:
-                    BorderSide(color: Color.fromRGBO(91, 158, 113, 0.9)),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(91, 158, 113, 0.9),
+                ),
                 borderRadius: BorderRadius.zero,
               ),
               errorBorder: const OutlineInputBorder(
@@ -98,9 +99,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                 borderSide: BorderSide(color: Colors.red),
                 borderRadius: BorderRadius.zero,
               ),
-              errorStyle: GoogleFonts.poppins(
-                color: Colors.white,
-              ),
+              errorStyle: GoogleFonts.poppins(color: Colors.white),
               hintStyle: GoogleFonts.poppins(
                 color: const Color.fromARGB(255, 68, 68, 68),
                 fontSize: 14,
@@ -206,60 +205,65 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
       loginUrl =
           "${MyServerConfig.server}/pomm/php/login_clerk.php"; // Clerk login URL
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Invalid User ID"),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid User ID"),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
     // Send the POST request to the selected URL
-    http.post(Uri.parse(loginUrl),
-        body: {"email": email, "password": pass}).then((response) {
-      print(response.body);
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        if (data['status'] == "success") {
-          if (email == "adminpomm@gmail.com") {
-            Admin admin = Admin.fromJson(data['data']);
+    http
+        .post(Uri.parse(loginUrl), body: {"email": email, "password": pass})
+        .then((response) {
+          print(response.body);
+          if (response.statusCode == 200) {
+            var data = jsonDecode(response.body);
+            if (data['status'] == "success") {
+              if (email == "adminpomm@gmail.com") {
+                Admin admin = Admin.fromJson(data['data']);
 
-            // Navigate to Admin Dashboard
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("You have successfully logged in"),
-              backgroundColor: Colors.green,
-            ));
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (content) => AdminDashboardPage(
-                  admindata: admin,
-                ),
-              ),
-            );
-          } else if (email == "clerkpomm@gmail.com") {
-            Clerk clerk = Clerk.fromJson(data['data']);
+                // Navigate to Admin Dashboard
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("You have successfully logged in"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (content) => AdminDashboardPage(admin: admin),
+                  ),
+                );
+              } else if (email == "clerkpomm@gmail.com") {
+                Clerk clerk = Clerk.fromJson(data['data']);
 
-            // Navigate to Clerk Dashboard
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("You have successfully logged in"),
-              backgroundColor: Colors.green,
-            ));
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (content) => ClerkDashboardPage(
-                  clerkdata: clerk,
+                // Navigate to Clerk Dashboard
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("You have successfully logged in"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (content) => ClerkDashboardPage(clerk: clerk),
+                  ),
+                );
+              }
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Login Failed. Please create a new account"),
+                  backgroundColor: Colors.red,
                 ),
-              ),
-            );
+              );
+            }
           }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Login Failed. Please create a new account"),
-            backgroundColor: Colors.red,
-          ));
-        }
-      }
-    });
+        });
   }
 }

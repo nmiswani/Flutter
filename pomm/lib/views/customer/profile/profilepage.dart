@@ -60,30 +60,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2, // Adjust the border width as needed
-                      ),
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      width: screenWidth * 0.4,
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundColor: const Color.fromARGB(
-                          255,
-                          255,
-                          255,
-                          255,
-                        ),
-                        backgroundImage: CachedNetworkImageProvider(
+                    margin: const EdgeInsets.all(4),
+                    width: screenWidth * 0.4,
+                    child: CachedNetworkImage(
+                      imageUrl:
                           "${MyServerConfig.server}/pomm/assets/profileimages/${widget.customerdata.customerid}.jpg?v=$val",
-                        ),
-                      ),
+                      placeholder:
+                          (context, url) => const LinearProgressIndicator(),
+                      errorWidget:
+                          (context, url, error) => Image.network(
+                            "${MyServerConfig.server}/pomm/assets/profileimages/default_profile.jpg",
+                            scale: 2,
+                          ),
                     ),
                   ),
+
                   Positioned(
                     bottom: 10,
                     right: 10,
@@ -434,13 +425,169 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showSnackBar(String message, bool isSuccess) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: isSuccess ? Colors.green : Colors.red,
+  _updateImageDialog() {
+    if (widget.customerdata.customerid == "0") {
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: const Text(
+            "Select from",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              TextButton.icon(
+                onPressed:
+                    () => {Navigator.of(context).pop(), _galleryPicker()},
+                icon: const Icon(Icons.browse_gallery),
+                label: const Text("Gallery"),
+              ),
+              TextButton.icon(
+                onPressed: () => {Navigator.of(context).pop(), _cameraPicker()},
+                icon: const Icon(Icons.camera_alt),
+                label: const Text("Camera"),
+              ),
+            ],
+          ),
+        );
+      },
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+
+  Future<void> _galleryPicker() async => _pickImage(ImageSource.gallery);
+  Future<void> _cameraPicker() async => _pickImage(ImageSource.camera);
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: source,
+      maxWidth: 600,
+      maxHeight: 600,
+      imageQuality: 75,
+    );
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      cropImage();
+    }
+  }
+
+  Future<void> cropImage() async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: _image!.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1), // Square crop
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Colors.deepOrange,
+          toolbarWidgetColor: Colors.white,
+          lockAspectRatio: false,
+        ),
+        IOSUiSettings(title: 'Crop Image', aspectRatioLockEnabled: false),
+      ],
+    );
+
+    if (croppedFile != null) {
+      setState(() {
+        _image = File(croppedFile.path);
+      });
+      _updateProfileImage(); // Ensure this function exists
+    }
+  }
+
+  Future<void> _updateProfileImage() async {
+    if (_image == null) {
+      return;
+    }
+    File imageFile = File(_image!.path);
+    print(imageFile);
+    String base64Image = base64Encode(imageFile.readAsBytesSync());
+    // print(base64Image);
+    http
+        .post(
+          Uri.parse("${MyServerConfig.server}/pomm/php/update_image.php"),
+          body: {
+            "customerid": widget.customerdata.customerid.toString(),
+            "image": base64Image.toString(),
+          },
+        )
+        .then((response) {
+          var jsondata = jsonDecode(response.body);
+          print(jsondata);
+          if (response.statusCode == 200 && jsondata['status'] == 'success') {
+            val = random.nextInt(1000);
+            setState(() {});
+            // DefaultCacheManager manager = DefaultCacheManager();
+            // manager.emptyCache(); //clears all data in cache.
+            _showSnackBar("Profile image updated successfully", true);
+          } else {
+            _showSnackBar("Failed to update image", false);
+          }
+        });
+  }
+
+  // Future<void> _updateProfileImage() async {
+  //   if (_image == null) return;
+  //   try {
+  //     String base64Image = base64Encode(await _image!.readAsBytes());
+
+  //     final response = await http.post(
+  //       Uri.parse("${MyServerConfig.server}/pomm/php/update_profile_image.php"),
+  //       body: {
+  //         "customerid": widget.customerdata.customerid.toString(),
+  //         "image": base64Image,
+  //       },
+  //     );
+
+  //     final jsondata = jsonDecode(response.body);
+  //     if (response.statusCode == 200 && jsondata['status'] == 'success') {
+  //       setState(() {
+  //         val = random.nextInt(1000);
+  //         widget.customerdata.profileImage =
+  //             jsondata['image_path']; // Update profile image path
+  //       });
+  //       _showSnackBar("Profile image updated successfully", true);
+  //     } else {
+  //       _showSnackBar("Failed to update image", false);
+  //     }
+  //   } catch (e) {
+  //     _showSnackBar("Error updating image", false);
+  //   }
+  // }
+
+  // void _updateProfileImage() {
+  //   String base64Image = base64Encode(_image!.readAsBytesSync());
+  //   http
+  //       .post(
+  //         Uri.parse("${MyServerConfig.server}/pomm/php/update_profile.php"),
+  //         body: {"image": base64Image},
+  //       )
+  //       .then((response) {
+  //         print(response.body);
+  //         if (response.statusCode == 200) {
+  //           var jsondata = jsonDecode(response.body);
+  //           if (jsondata['status'] == 'success') {
+  //             ScaffoldMessenger.of(
+  //               context,
+  //             ).showSnackBar(const SnackBar(content: Text("Insert Success")));
+  //           } else {
+  //             ScaffoldMessenger.of(
+  //               context,
+  //             ).showSnackBar(const SnackBar(content: Text("Insert Failed")));
+  //           }
+  //           Navigator.pop(context);
+  //         } else {
+  //           ScaffoldMessenger.of(
+  //             context,
+  //           ).showSnackBar(const SnackBar(content: Text("Insert Failed")));
+  //           Navigator.pop(context);
+  //         }
+  //       });
+  // }
 
   void _updateName(String newname) {
     http
@@ -528,117 +675,12 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  _updateImageDialog() {
-    if (widget.customerdata.customerid == "0") {
-      return;
-    }
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: const Text(
-            "Select from",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              TextButton.icon(
-                onPressed:
-                    () => {Navigator.of(context).pop(), _galleryPicker()},
-                icon: const Icon(Icons.browse_gallery),
-                label: const Text("Gallery"),
-              ),
-              TextButton.icon(
-                onPressed: () => {Navigator.of(context).pop(), _cameraPicker()},
-                icon: const Icon(Icons.camera_alt),
-                label: const Text("Camera"),
-              ),
-            ],
-          ),
-        );
-      },
+  void _showSnackBar(String message, bool isSuccess) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isSuccess ? Colors.green : Colors.red,
+      ),
     );
-  }
-
-  Future<void> _galleryPicker() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 1200,
-      maxWidth: 800,
-    );
-    if (pickedFile != null) {
-      _image = File(pickedFile.path);
-      cropImage();
-    }
-  }
-
-  Future<void> _cameraPicker() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 1200,
-      maxWidth: 800,
-    );
-    if (pickedFile != null) {
-      _image = File(pickedFile.path);
-      cropImage();
-    }
-  }
-
-  Future<void> cropImage() async {
-    if (_image == null) return; // Ensure an image is selected
-
-    final croppedFile = await ImageCropper().cropImage(
-      sourcePath: _image!.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1), // Square crop
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          toolbarColor: Colors.deepOrange,
-          toolbarWidgetColor: Colors.white,
-          lockAspectRatio: false,
-        ),
-        IOSUiSettings(title: 'Crop Image', aspectRatioLockEnabled: false),
-      ],
-    );
-
-    if (croppedFile != null) {
-      setState(() {
-        _image = File(croppedFile.path);
-      });
-      _updateProfileImage(); // Ensure this function exists
-    }
-  }
-
-  Future<void> _updateProfileImage() async {
-    if (_image == null) {
-      return;
-    }
-    File imageFile = File(_image!.path);
-    print(imageFile);
-    String base64Image = base64Encode(imageFile.readAsBytesSync());
-    // print(base64Image);
-    http
-        .post(
-          Uri.parse("${MyServerConfig()}/pomm/php/update_profile.php"),
-          body: {
-            "customerid": widget.customerdata.customerid.toString(),
-            "image": base64Image.toString(),
-          },
-        )
-        .then((response) {
-          var jsondata = jsonDecode(response.body);
-          print(jsondata);
-          if (response.statusCode == 200 && jsondata['status'] == 'success') {
-            val = random.nextInt(1000);
-            setState(() {});
-            // DefaultCacheManager manager = DefaultCacheManager();
-            // manager.emptyCache();
-            // clears all data in cache.
-          } else {}
-        });
   }
 }

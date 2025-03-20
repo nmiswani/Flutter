@@ -7,14 +7,17 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/cartpage.dart';
+import 'package:pomm/views/customer/product/cartpage.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Customer customerdata;
   final Product product;
 
-  const ProductDetailsPage(
-      {super.key, required this.customerdata, required this.product});
+  const ProductDetailsPage({
+    super.key,
+    required this.customerdata,
+    required this.product,
+  });
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -31,10 +34,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       appBar: AppBar(
         title: Text(
           widget.product.productTitle.toString(),
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            color: Colors.white,
-          ),
+          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
@@ -60,10 +60,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Padding(
               padding: EdgeInsets.all(screenWidth * 0.03), // Adjusted padding
               child: Table(
-                border: TableBorder.all(
-                  color: Colors.black,
-                  width: 1.5,
-                ),
+                border: TableBorder.all(color: Colors.black, width: 1.5),
                 columnWidths: const {
                   0: FlexColumnWidth(1.5),
                   1: FlexColumnWidth(3.5),
@@ -71,12 +68,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 children: [
                   buildTableRow("Name", widget.product.productTitle.toString()),
                   buildTableRow(
-                      "Description", widget.product.productDesc.toString()),
-                  buildTableRow("Price", "RM${widget.product.productPrice}"),
-                  buildTableRow(
-                    "Quantity",
-                    "${widget.product.productQty}",
+                    "Description",
+                    widget.product.productDesc.toString(),
                   ),
+                  buildTableRow("Price", "RM${widget.product.productPrice}"),
+                  buildTableRow("Quantity", "${widget.product.productQty}"),
                 ],
               ),
             ),
@@ -84,8 +80,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Center(
               child: Container(
                 width: MediaQuery.of(context).size.width / 2,
-                margin:
-                    const EdgeInsets.only(top: 80), // Add margin for spacing
+                margin: const EdgeInsets.only(
+                  top: 80,
+                ), // Add margin for spacing
                 child: ElevatedButton(
                   onPressed: () {
                     insertCartDialog();
@@ -142,12 +139,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         TableCell(
           child: Padding(
             padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
-            child: Text(
-              value,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-              ),
-            ),
+            child: Text(value, style: GoogleFonts.poppins(fontSize: 13)),
           ),
         ),
       ],
@@ -161,18 +153,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         return AlertDialog(
           title: const Text(
             "Insert to cart",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           content: const Text("Are you sure?"),
           actions: <Widget>[
             TextButton(
-              child: const Text(
-                "Yes",
-                style: TextStyle(),
-              ),
+              child: const Text("Yes", style: TextStyle()),
               onPressed: () {
                 Navigator.of(context).pop();
 
@@ -183,19 +169,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 if (qtyInt != null && qtyInt > 0) {
                   insertCart();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text(
-                      "Product out of stock",
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Product out of stock"),
+                      backgroundColor: Colors.red,
                     ),
-                    backgroundColor: Colors.red,
-                  ));
+                  );
                 }
               },
             ),
             TextButton(
-              child: const Text(
-                "No",
-              ),
+              child: const Text("No"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -207,37 +191,41 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   void insertCart() {
-    http.post(Uri.parse("${MyServerConfig.server}/pomm/php/insert_cart.php"),
-        body: {
-          "buyer_id": widget.customerdata.customerid.toString(),
-          "product_id": widget.product.productId.toString(),
-          "product_price": widget.product.productPrice.toString(),
-        }).then((response) {
-      log(response.body);
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        if (data['status'] == "success") {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-              "Added to cart successfully",
-            ),
-            backgroundColor: Colors.green,
-          ));
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (content) => CartPage(
-                        customer: widget.customerdata,
-                      )));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-              "Failed to add to cart",
-            ),
-            backgroundColor: Colors.red,
-          ));
-        }
-      }
-    });
+    http
+        .post(
+          Uri.parse("${MyServerConfig.server}/pomm/php/insert_cart.php"),
+          body: {
+            "buyer_id": widget.customerdata.customerid.toString(),
+            "product_id": widget.product.productId.toString(),
+            "product_price": widget.product.productPrice.toString(),
+          },
+        )
+        .then((response) {
+          log(response.body);
+          if (response.statusCode == 200) {
+            var data = jsonDecode(response.body);
+            if (data['status'] == "success") {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Added to cart successfully"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (content) => CartPage(customer: widget.customerdata),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Failed to add to cart"),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        });
   }
 }

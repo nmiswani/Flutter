@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pomm/models/customer.dart';
-import 'package:pomm/views/customer/orderpage.dart';
-import 'package:pomm/views/customer/productpage.dart';
-import 'package:pomm/views/customer/profilepage.dart';
+import 'package:pomm/views/customer/order/orderpage.dart';
+import 'package:pomm/views/customer/product/productpage.dart';
+import 'package:pomm/views/customer/profile/profilepage.dart';
 
 class CustomerDashboardPage extends StatefulWidget {
   final Customer customerdata;
@@ -15,14 +15,14 @@ class CustomerDashboardPage extends StatefulWidget {
 class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
   late List<Widget> tabchildren;
   int _currentIndex = 0;
-  String maintitle = "Buyer";
+  String maintitle = "Customer";
 
   @override
   void initState() {
     super.initState();
     tabchildren = [
       ProductPage(customerdata: widget.customerdata),
-      OrderPage(customer: widget.customerdata),
+      OrderPage(),
       ProfilePage(customerdata: widget.customerdata),
     ];
   }

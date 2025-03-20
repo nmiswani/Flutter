@@ -7,12 +7,12 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/billpage.dart';
+import 'package:pomm/views/customer/order/paymentpage.dart';
 
 class CheckoutPage extends StatefulWidget {
   final Customer customerdata;
 
-  const CheckoutPage({Key? key, required this.customerdata}) : super(key: key);
+  const CheckoutPage({super.key, required this.customerdata});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -34,7 +34,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    double total = calculateSubtotal() +
+    double total =
+        calculateSubtotal() +
         (selectedShippingOption == 'Delivery' ? deliveryCharge : 0);
 
     return Scaffold(
@@ -48,29 +49,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
         elevation: 0.0,
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
       ),
-      body: cartList.isEmpty
-          ? Center(
-              child: Text(
-                "Loading...",
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-            )
-          : Column(
-              children: [
-                // Cart Items Section
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: cartList.length,
-                    itemBuilder: (context, index) {
-                      final cartItem = cartList[index];
-                      return _buildCartItemCard(cartItem);
-                    },
-                  ),
+      body:
+          cartList.isEmpty
+              ? Center(
+                child: Text(
+                  "Loading...",
+                  style: GoogleFonts.poppins(fontSize: 16),
                 ),
-                // Summary Section
-                _buildSummarySection(total),
-              ],
-            ),
+              )
+              : Column(
+                children: [
+                  // Cart Items Section
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: cartList.length,
+                      itemBuilder: (context, index) {
+                        final cartItem = cartList[index];
+                        return _buildCartItemCard(cartItem);
+                      },
+                    ),
+                  ),
+                  // Summary Section
+                  _buildSummarySection(total),
+                ],
+              ),
     );
   }
 
@@ -83,15 +85,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
           color: const Color.fromARGB(248, 214, 227, 216),
           margin: const EdgeInsets.all(16),
           elevation: 3,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           child: ListTile(
             contentPadding: const EdgeInsets.all(10),
             title: Text(
               cartItem.productTitle.toString(),
               style: GoogleFonts.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w600),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               "RM${cartItem.productPrice.toString()}",
@@ -115,14 +117,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         // Remove or reduce SizedBox
         const SizedBox(height: 10), // Adjust the height as needed
-
         // Shipping Option Card
         Card(
           elevation: 3,
           margin: const EdgeInsets.all(16),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           color: const Color.fromARGB(248, 214, 227, 216),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -140,15 +139,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 DropdownButton<String>(
                   value: selectedShippingOption,
                   isExpanded: true,
-                  items: ['Delivery', 'In-store Pickup']
-                      .map((option) => DropdownMenuItem<String>(
-                            value: option,
-                            child: Text(
-                              option,
-                              style: GoogleFonts.poppins(fontSize: 13),
+                  items:
+                      ['Delivery', 'In-store Pickup']
+                          .map(
+                            (option) => DropdownMenuItem<String>(
+                              value: option,
+                              child: Text(
+                                option,
+                                style: GoogleFonts.poppins(fontSize: 13),
+                              ),
                             ),
-                          ))
-                      .toList(),
+                          )
+                          .toList(),
                   onChanged: (value) {
                     setState(() {
                       selectedShippingOption = value!;
@@ -190,8 +192,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 children: [
                   Text(
                     "Delivery Charge",
-                    style:
-                        GoogleFonts.poppins(fontSize: 14, color: Colors.white),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -199,10 +203,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.info_outline,
-                        color: Colors.white,
-                      ),
+                      child: Icon(Icons.info_outline, color: Colors.white),
                     ),
                   ),
                 ],
@@ -230,10 +231,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 width: 150,
                 child: ElevatedButton(
                   onPressed: () async {
-                    await Navigator.push(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (content) => const BillPage(),
+                        builder:
+                            (content) =>
+                                PaymentPage(customerdata: widget.customerdata),
                       ),
                     );
                     loadUserCart();
@@ -247,8 +250,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   child: Text(
                     "Place Order",
-                    style:
-                        GoogleFonts.poppins(fontSize: 15, color: Colors.white),
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -264,7 +269,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
       String customerid = widget.customerdata.customerid.toString();
       final response = await http.get(
         Uri.parse(
-            "${MyServerConfig.server}/pomm/php/load_cart.php?customerid=$customerid"),
+          "${MyServerConfig.server}/pomm/php/load_cart.php?customerid=$customerid",
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -292,10 +298,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     try {
       await http.post(
         Uri.parse("${MyServerConfig.server}/pomm/php/load_cart.php"),
-        body: {
-          "cart_id": cartId,
-          "cart_qty": newQuantity,
-        },
+        body: {"cart_id": cartId, "cart_qty": newQuantity},
       );
     } catch (error) {
       print("Error updating cart quantity: $error");
@@ -338,19 +341,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void _showDeliveryInfoDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          "Delivery info",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: const Text("Charge for delivery is RM5"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text(
+              "Delivery info",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            content: const Text("Charge for delivery is RM5"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

@@ -5,12 +5,13 @@ class Product {
   String? productPrice;
   String? productQty;
 
-  Product(
-      {this.productId,
-      this.productTitle,
-      this.productDesc,
-      this.productPrice,
-      this.productQty});
+  Product({
+    this.productId,
+    this.productTitle,
+    this.productDesc,
+    this.productPrice,
+    this.productQty,
+  });
 
   Product.fromJson(Map<String, dynamic> json) {
     productId = json['product_id'];

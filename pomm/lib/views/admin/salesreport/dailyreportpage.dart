@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:pomm/views/admin/reportdetailspage.dart'; // For date formatting
+import 'package:pomm/views/admin/salesreport/reportdetailspage.dart'; // For date formatting
 
 class DailyReportPage extends StatefulWidget {
-  const DailyReportPage({Key? key}) : super(key: key);
+  const DailyReportPage({super.key});
 
   @override
   State<DailyReportPage> createState() => _DailyReportPageState();
@@ -70,8 +70,10 @@ class _DailyReportPageState extends State<DailyReportPage> {
                 ),
                 IconButton(
                   onPressed: () => _selectDate(context),
-                  icon: const Icon(Icons.calendar_today,
-                      color: Color.fromARGB(255, 55, 97, 70)),
+                  icon: const Icon(
+                    Icons.calendar_today,
+                    color: Color.fromARGB(255, 55, 97, 70),
+                  ),
                   tooltip: 'Pick a Date',
                 ),
               ],
@@ -100,21 +102,27 @@ class _DailyReportPageState extends State<DailyReportPage> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: isYesterday()
-                            ? () {
-                                // Navigate to view details page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ReportDetailsPage(),
-                                  ),
-                                );
-                              }
-                            : null, // Disable button if not yesterday
+                        onPressed:
+                            isYesterday()
+                                ? () {
+                                  // Navigate to view details page
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              const ReportDetailsPage(),
+                                    ),
+                                  );
+                                }
+                                : null, // Disable button if not yesterday
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 55, 97, 70),
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            55,
+                            97,
+                            70,
+                          ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.zero,
                           ),

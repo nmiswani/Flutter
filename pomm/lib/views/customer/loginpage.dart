@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/customer/customerdashboard.dart';
-import 'package:pomm/views/customer/forgotpasswordpage.dart';
+import 'package:pomm/views/customer/forgotpassword/forgotpasswordpage.dart';
 import 'package:pomm/views/customer/registerpage.dart';
 
 import 'dart:convert';
