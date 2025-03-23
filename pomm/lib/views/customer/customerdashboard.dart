@@ -22,7 +22,7 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
     super.initState();
     tabchildren = [
       ProductPage(customerdata: widget.customerdata),
-      OrderPage(),
+      OrderPage(customerdata: widget.customerdata),
       ProfilePage(customerdata: widget.customerdata),
     ];
   }

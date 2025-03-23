@@ -1,23 +1,26 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/admin.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/admin/order/adminorderdetailspage.dart';
 
-class OrderPage extends StatefulWidget {
-  final Customer customerdata;
-  const OrderPage({super.key, required this.customerdata});
+class AdminOrderPage extends StatefulWidget {
+  final Admin admin;
+  const AdminOrderPage({super.key, required this.admin});
 
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<AdminOrderPage> createState() => _AdminOrderPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _AdminOrderPageState extends State<AdminOrderPage> {
   List<Order> orderList = <Order>[];
+  List<Order> newOrders = [];
   List<Order> currentOrders = [];
   List<Order> completedOrders = [];
   List<Order> canceledOrders = [];
@@ -61,9 +64,10 @@ class _OrderPageState extends State<OrderPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _tabButton("Current", 0),
-              _tabButton("Completed", 1),
-              _tabButton("Canceled", 2),
+              _tabButton("New", 0),
+              _tabButton("Current", 1),
+              _tabButton("Completed", 2),
+              _tabButton("Canceled", 3),
             ],
           ),
           Expanded(
@@ -90,8 +94,21 @@ class _OrderPageState extends State<OrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
+                                Order myorder = Order.fromJson(
+                                  orderList[index].toJson(),
+                                );
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => AdminOrderDetailsPage(
+                                          order: myorder,
+                                        ),
+                                  ),
+                                );
                                 loadOrders(id);
                               },
+
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -179,10 +196,20 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
+  // List<Order> getFilteredOrders() {
+  //   return _selectedIndex == 0
+  //       ? currentOrders
+  //       : _selectedIndex == 1
+  //       ? completedOrders
+  //       : canceledOrders;
+  // }
+
   List<Order> getFilteredOrders() {
     return _selectedIndex == 0
-        ? currentOrders
+        ? newOrders
         : _selectedIndex == 1
+        ? currentOrders
+        : _selectedIndex == 2
         ? completedOrders
         : canceledOrders;
   }
@@ -206,6 +233,7 @@ class _OrderPageState extends State<OrderPage> {
                 orderList =
                     ordersJson.map((json) => Order.fromJson(json)).toList();
 
+                newOrders.clear();
                 currentOrders.clear();
                 completedOrders.clear();
                 canceledOrders.clear();
@@ -213,8 +241,13 @@ class _OrderPageState extends State<OrderPage> {
                 for (var order in orderList) {
                   if (order.orderStatus == "New" ||
                       order.orderStatus == "Order Placed") {
+                    newOrders.add(order);
+                  } else if (order.orderStatus == "In Process" ||
+                      order.orderStatus == "Delivery" ||
+                      order.orderStatus == "Ready for Pickup") {
                     currentOrders.add(order);
-                  } else if (order.orderStatus == "Completed") {
+                  } else if (order.orderStatus == "Received" ||
+                      order.orderStatus == "Delivered") {
                     completedOrders.add(order);
                   } else if (order.orderStatus == "Canceled") {
                     canceledOrders.add(order);

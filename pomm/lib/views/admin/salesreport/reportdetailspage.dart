@@ -1,12 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class ReportDetailsPage extends StatelessWidget {
-  const ReportDetailsPage({super.key});
+  final DateTime selectedDate;
+  final double totalSales;
+  final int totalOrders;
+
+  const ReportDetailsPage({
+    super.key,
+    required this.selectedDate,
+    required this.totalSales,
+    required this.totalOrders,
+  });
+
+  String generateSummary() {
+    // Determine correct date format based on report type
+    String formattedDate;
+    if (selectedDate.day == 1 && selectedDate.month == 1) {
+      // Yearly Report (Only Year)
+      formattedDate = DateFormat('yyyy').format(selectedDate);
+    } else if (selectedDate.day == 1) {
+      // Monthly Report (Only Month & Year)
+      formattedDate = DateFormat('MMMM yyyy').format(selectedDate);
+    } else {
+      // Daily Report (Full Date)
+      formattedDate = DateFormat('dd MMMM yyyy').format(selectedDate);
+    }
+
+    // Generate summary based on total sales and total orders
+    if (totalSales > 300 && totalOrders > 10) {
+      return "A strong performance in $formattedDate, with RM$totalSales in sales and $totalOrders orders. Sales are picking up well, indicating good customer interest.";
+    } else if (totalSales > 200 && totalOrders > 7) {
+      return "A steady day in $formattedDate, reaching RM$totalSales with $totalOrders orders. A slight boost in promotions could improve sales further.";
+    } else if (totalOrders > 5 && totalSales < 150) {
+      return "Although $totalOrders orders were placed in $formattedDate, total sales only reached RM$totalSales. Customers may be opting for lower-priced items or smaller purchases.";
+    } else if (totalSales > 250 && totalOrders < 5) {
+      return "Sales in $formattedDate totaled RM$totalSales with only $totalOrders orders. This suggests fewer but higher-value purchases. Expanding customer reach could help increase order volume.";
+    } else if (totalOrders < 3 && totalSales < 100) {
+      return "Sales on $formattedDate were RM$totalSales with only $totalOrders orders. This was a slow period, and additional marketing efforts may be needed to attract customers.";
+    } else {
+      return "Sales on $formattedDate totaled RM$totalSales with $totalOrders orders. There is potential for improvement through promotions or customer engagement strategies.";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Format selectedDate for display
+    String formattedDate;
+    if (selectedDate.day == 1 && selectedDate.month == 1) {
+      formattedDate = DateFormat('yyyy').format(selectedDate);
+    } else if (selectedDate.day == 1) {
+      formattedDate = DateFormat('MMMM yyyy').format(selectedDate);
+    } else {
+      formattedDate = DateFormat('dd MMMM yyyy').format(selectedDate);
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
@@ -23,41 +73,62 @@ class ReportDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 16),
-            // Title for bar chart visualization
+
+            // Date Display
             Text(
-              "Sales",
+              "Report for: $formattedDate",
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 10),
+
+            // Bar chart visualization
             Text(
-              "Shown in the bar chart below:",
-              style: GoogleFonts.poppins(fontSize: 13),
+              "Sales & Orders Overview",
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
 
-            // Bar chart visualization (dummy data)
             AspectRatio(
-              aspectRatio: 1.5, // Adjust chart size
+              aspectRatio: 1.5,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: 100,
+                  maxY: totalSales + 10,
                   barTouchData: BarTouchData(enabled: false),
-                  titlesData: FlTitlesData(show: true),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          switch (value.toInt()) {
+                            case 0:
+                              return const Text("Sales");
+                            case 1:
+                              return const Text("Orders");
+                            default:
+                              return const Text("");
+                          }
+                        },
+                      ),
+                    ),
+                  ),
                   borderData: FlBorderData(show: true),
                   gridData: FlGridData(show: true),
-                  groupsSpace: 4,
                   barGroups: [
                     BarChartGroupData(
                       x: 0,
                       barRods: [
                         BarChartRodData(
-                          toY: 50, // Use 'toY' instead of 'y'
-                          color: Colors.blue, // Use 'color' instead of 'colors'
+                          toY: totalSales,
+                          color: Colors.blue,
                           width: 20,
                         ),
                       ],
@@ -66,38 +137,8 @@ class ReportDetailsPage extends StatelessWidget {
                       x: 1,
                       barRods: [
                         BarChartRodData(
-                          toY: 70, // Use 'toY' instead of 'y'
-                          color: Colors.blue, // Use 'color' instead of 'colors'
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(
-                          toY: 40, // Use 'toY' instead of 'y'
-                          color: Colors.blue, // Use 'color' instead of 'colors'
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 3,
-                      barRods: [
-                        BarChartRodData(
-                          toY: 20, // Use 'toY' instead of 'y'
-                          color: Colors.blue, // Use 'color' instead of 'colors'
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 4,
-                      barRods: [
-                        BarChartRodData(
-                          toY: 40, // Use 'toY' instead of 'y'
-                          color: Colors.blue, // Use 'color' instead of 'colors'
+                          toY: totalOrders.toDouble(),
+                          color: Colors.green,
                           width: 20,
                         ),
                       ],
@@ -108,7 +149,7 @@ class ReportDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 40),
 
-            // Summary section in a card
+            // Summary Section
             Card(
               color: const Color.fromARGB(248, 214, 227, 216),
               elevation: 2,
@@ -129,9 +170,7 @@ class ReportDetailsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "The sales have been steady with some fluctuations. "
-                      "The highest sales were recorded with a total of RM2000. "
-                      "Overall, there has been pattern of sales growth.",
+                      generateSummary(),
                       style: GoogleFonts.poppins(fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
@@ -149,12 +188,9 @@ class ReportDetailsPage extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 6),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Dummy print action (replace with actual functionality)
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Printing Report...")),
                     );
-                    // Simulate a print action (use a package for real printing functionality)
-                    // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),

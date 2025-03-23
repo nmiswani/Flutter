@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:google_fonts/google_fonts.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/order/paymentpage.dart';
+import 'package:pomm/views/customer/order/billpage.dart';
 
 class CheckoutPage extends StatefulWidget {
   final Customer customerdata;
@@ -21,10 +20,8 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   List<Cart> cartList = [];
   double total = 0.0;
-  // List<List<Cart>> _groupedCartItems = [];
-
-  String selectedShippingOption = 'Delivery';
   double deliveryCharge = 5.00;
+  String selectedShippingOption = 'Delivery';
 
   @override
   void initState() {
@@ -32,141 +29,118 @@ class _CheckoutPageState extends State<CheckoutPage> {
     loadUserCart();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double total =
-        calculateSubtotal() +
+  Future<void> loadUserCart() async {
+    try {
+      String customerid = widget.customerdata.customerid.toString();
+      final response = await http.get(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_checkout.php?customerid=$customerid",
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == "success") {
+          setState(() {
+            cartList.clear();
+            total = (data['data']['total_price'] as num).toDouble();
+            data['data']['carts'].forEach((v) {
+              cartList.add(Cart.fromJson(v));
+            });
+          });
+        } else {
+          Navigator.of(context).pop(); // Go back if cart is empty
+        }
+      }
+    } catch (error) {
+      print("Error loading customer cart: $error");
+    }
+  }
+
+  double calculateSubtotal() {
+    double subtotal = 0.0;
+    for (var item in cartList) {
+      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
+    }
+    return subtotal;
+  }
+
+  double calculateTotal() {
+    return calculateSubtotal() +
         (selectedShippingOption == 'Delivery' ? deliveryCharge : 0);
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          "Checkout",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+  void _showDeliveryInfoDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delivery Info"),
+            content: const Text("Standard Delivery: RM5"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildShippingCard() {
+    return Card(
+      color: Colors.green.shade100,
+      margin: const EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Shipping Information",
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            ),
+            DropdownButton<String>(
+              value: selectedShippingOption,
+              isExpanded: true,
+              items:
+                  ['Delivery', 'In-store Pickup'].map((option) {
+                    return DropdownMenuItem(value: option, child: Text(option));
+                  }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedShippingOption = value!;
+                });
+              },
+            ),
+          ],
         ),
-        centerTitle: true,
-        elevation: 0.0,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
       ),
-      body:
-          cartList.isEmpty
-              ? Center(
-                child: Text(
-                  "Loading...",
-                  style: GoogleFonts.poppins(fontSize: 16),
-                ),
-              )
-              : Column(
-                children: [
-                  // Cart Items Section
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: cartList.length,
-                      itemBuilder: (context, index) {
-                        final cartItem = cartList[index];
-                        return _buildCartItemCard(cartItem);
-                      },
-                    ),
-                  ),
-                  // Summary Section
-                  _buildSummarySection(total),
-                ],
-              ),
     );
   }
 
-  // Widget for Cart Item Card
-  Widget _buildCartItemCard(cartItem) {
-    return Column(
-      children: [
-        // Cart Item Card
-        Card(
-          color: const Color.fromARGB(248, 214, 227, 216),
-          margin: const EdgeInsets.all(16),
-          elevation: 3,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(10),
-            title: Text(
-              cartItem.productTitle.toString(),
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              "RM${cartItem.productPrice.toString()}",
-              style: GoogleFonts.poppins(fontSize: 13),
-            ),
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(0),
-              child: Image.network(
-                "${MyServerConfig.server}/pomm/assets/products/${cartItem.productId}.jpg",
-                width: 45,
-                height: 45,
-                fit: BoxFit.cover,
-              ),
-            ),
-            trailing: Text(
-              "Qty: ${cartItem.cartQty}",
-              style: GoogleFonts.poppins(fontSize: 13, color: Colors.black),
-            ),
-          ),
+  Widget _buildCartItem(Cart item) {
+    return Card(
+      child: ListTile(
+        leading: Image.network(
+          "${MyServerConfig.server}/pomm/assets/products/${item.productId}.jpg",
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
         ),
-
-        // Remove or reduce SizedBox
-        const SizedBox(height: 10), // Adjust the height as needed
-        // Shipping Option Card
-        Card(
-          elevation: 3,
-          margin: const EdgeInsets.all(16),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          color: const Color.fromARGB(248, 214, 227, 216),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Shipping Information",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                DropdownButton<String>(
-                  value: selectedShippingOption,
-                  isExpanded: true,
-                  items:
-                      ['Delivery', 'In-store Pickup']
-                          .map(
-                            (option) => DropdownMenuItem<String>(
-                              value: option,
-                              child: Text(
-                                option,
-                                style: GoogleFonts.poppins(fontSize: 13),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedShippingOption = value!;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
+        title: Text(
+          item.productTitle!,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
         ),
-      ],
+        subtitle: Text(
+          "RM${double.parse(item.productPrice!).toStringAsFixed(2)}",
+        ),
+        trailing: Text("Qty: ${item.cartQty}"),
+      ),
     );
   }
 
-  // Widget for Summary Section
-  Widget _buildSummarySection(double total) {
+  Widget _buildOrderSummary() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(color: Colors.black),
@@ -175,13 +149,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Subtotal",
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-              ),
+              Text("Subtotal", style: GoogleFonts.poppins(color: Colors.white)),
               Text(
                 "RM${calculateSubtotal().toStringAsFixed(2)}",
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
+                style: GoogleFonts.poppins(color: Colors.white),
               ),
             ],
           ),
@@ -192,15 +163,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 children: [
                   Text(
                     "Delivery Charge",
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      _showDeliveryInfoDialog();
-                    },
+                    onTap: _showDeliveryInfoDialog,
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Icon(Icons.info_outline, color: Colors.white),
@@ -212,149 +178,83 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 selectedShippingOption == 'Delivery'
                     ? "RM${deliveryCharge.toStringAsFixed(2)}"
                     : "RM0.00",
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
+                style: GoogleFonts.poppins(color: Colors.white),
               ),
             ],
           ),
+          Divider(color: Colors.white),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Total RM${total.toStringAsFixed(2)}",
+                "Total",
                 style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(
-                width: 150,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (content) =>
-                                PaymentPage(customerdata: widget.customerdata),
-                      ),
-                    );
-                    loadUserCart();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    ),
-                  ),
-                  child: Text(
-                    "Place Order",
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: Colors.white,
-                    ),
-                  ),
+              Text(
+                "RM${calculateTotal().toStringAsFixed(2)}",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () async {
+              await loadUserCart(); // Reload cart before navigating
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (content) => BillPage(
+                        customer: widget.customerdata,
+                        totalprice: total,
+                      ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+            ),
+            child: Text(
+              "Place Order",
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void loadUserCart() async {
-    try {
-      String customerid = widget.customerdata.customerid.toString();
-      final response = await http.get(
-        Uri.parse(
-          "${MyServerConfig.server}/pomm/php/load_cart.php?customerid=$customerid",
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Checkout",
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
         ),
-      );
-
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        if (data['status'] == "success") {
-          cartList.clear();
-          total = 0.0;
-          data['data']['carts'].forEach((v) {
-            cartList.add(Cart.fromJson(v));
-            total +=
-                double.parse(v['product_price']) * int.parse(v['cart_qty']);
-          });
-          total = calculateTotal();
-          setState(() {});
-        } else {
-          Navigator.of(context).pop();
-        }
-      }
-    } catch (error) {
-      print("Error loading customer cart: $error");
-    }
-  }
-
-  CartQuantity(String cartId, String newQuantity) async {
-    try {
-      await http.post(
-        Uri.parse("${MyServerConfig.server}/pomm/php/load_cart.php"),
-        body: {"cart_id": cartId, "cart_qty": newQuantity},
-      );
-    } catch (error) {
-      print("Error updating cart quantity: $error");
-    }
-  }
-
-  double calculateSubtotal() {
-    double subtotal = 0.0;
-
-    cartList.forEach((item) {
-      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
-    });
-
-    return subtotal;
-  }
-
-  double calculateTotal() {
-    double newTotal = 0.0;
-
-    // Calculate the total directly from cartList
-    cartList.forEach((item) {
-      newTotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
-    });
-
-    // Add any fixed charges like shipping (if applicable)
-    newTotal += 5.0; // Assuming a fixed charge of 10.0
-    return newTotal;
-  }
-
-  int calculateTotalItems() {
-    int totalItems = 0;
-
-    cartList.forEach((item) {
-      totalItems += int.parse(item.cartQty!);
-    });
-
-    return totalItems;
-  }
-
-  void _showDeliveryInfoDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text(
-              "Delivery info",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(10),
+              children: [
+                ...cartList.map((item) => _buildCartItem(item)).toList(),
+                _buildShippingCard(),
+              ],
             ),
-            content: const Text("Charge for delivery is RM5"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"),
-              ),
-            ],
           ),
+          _buildOrderSummary(),
+        ],
+      ),
     );
   }
 }

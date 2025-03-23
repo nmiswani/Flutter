@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pomm/models/admin.dart';
-import 'package:pomm/views/admin/order/orderadminpage.dart';
+import 'package:pomm/views/admin/order/adminorderpage.dart';
 import 'package:pomm/views/admin/product/productadminpage.dart';
 import 'package:pomm/views/admin/salesreport/mainreportpage.dart';
 
@@ -22,8 +22,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     super.initState();
     tabchildren = [
       ProductAdminPage(admin: widget.admin),
-      OrderAdminPage(admin: widget.admin),
-      MainReportPage(admin: widget.admin),
+      AdminOrderPage(admin: widget.admin),
+      MainReportPage(),
     ];
   }
 

@@ -2,28 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'dart:convert';
 
 import 'package:pomm/models/salesreport.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'reportdetailspage.dart';
 
-class DailyReportPage extends StatefulWidget {
-  const DailyReportPage({super.key});
+class MonthlyReportPage extends StatefulWidget {
+  const MonthlyReportPage({super.key});
 
   @override
-  State<DailyReportPage> createState() => _DailyReportPageState();
+  State<MonthlyReportPage> createState() => _MonthlyReportPageState();
 }
 
-class _DailyReportPageState extends State<DailyReportPage> {
-  String? _selectedDate;
+class _MonthlyReportPageState extends State<MonthlyReportPage> {
+  String? _selectedMonth;
   SalesReport? _salesReport;
 
   Future<void> _fetchSalesReport() async {
-    if (_selectedDate == null) return;
+    if (_selectedMonth == null) return;
 
     final url = Uri.parse(
-      "${MyServerConfig.server}/pomm/php/sales_daily.php?date=$_selectedDate",
+      "${MyServerConfig.server}/pomm/php/sales_monthly.php?month=$_selectedMonth",
     );
     try {
       final response = await http.get(url);
@@ -42,8 +43,8 @@ class _DailyReportPageState extends State<DailyReportPage> {
     }
   }
 
-  void _selectDate() async {
-    DateTime? pickedDate = await showDatePicker(
+  void _selectMonth() async {
+    DateTime? pickedDate = await showMonthPicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
@@ -52,7 +53,7 @@ class _DailyReportPageState extends State<DailyReportPage> {
 
     if (pickedDate != null) {
       setState(() {
-        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+        _selectedMonth = DateFormat('yyyy-MM').format(pickedDate);
       });
       _fetchSalesReport();
     }
@@ -67,7 +68,7 @@ class _DailyReportPageState extends State<DailyReportPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Daily Report",
+          "Monthly Report",
           style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
         ),
       ),
@@ -76,19 +77,19 @@ class _DailyReportPageState extends State<DailyReportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Date Picker Field
+            // Month Picker Field
             TextField(
               readOnly: true,
               decoration: InputDecoration(
-                labelText: "Select date",
+                labelText: "Select Month",
                 suffixIcon: IconButton(
                   icon: Icon(Icons.calendar_today),
-                  onPressed: _selectDate,
+                  onPressed: _selectMonth,
                 ),
                 border: OutlineInputBorder(),
               ),
               controller: TextEditingController(
-                text: _selectedDate ?? "Select date",
+                text: _selectedMonth ?? "Select month",
               ),
             ),
             const SizedBox(height: 20),
@@ -133,7 +134,6 @@ class _DailyReportPageState extends State<DailyReportPage> {
                               : Colors.red,
                     ),
                   ),
-
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
@@ -146,8 +146,10 @@ class _DailyReportPageState extends State<DailyReportPage> {
                                     builder:
                                         (context) => ReportDetailsPage(
                                           selectedDate: DateFormat(
-                                            'yyyy-MM-dd',
-                                          ).parse(_selectedDate!),
+                                            'yyyy-MM',
+                                          ).parse(
+                                            _selectedMonth!,
+                                          ), // Converts "2024-03" to DateTime
                                           totalSales: _salesReport!.totalSales,
                                           totalOrders:
                                               _salesReport!.totalOrders,

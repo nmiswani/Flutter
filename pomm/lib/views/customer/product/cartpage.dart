@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:google_fonts/google_fonts.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -12,7 +11,7 @@ import 'package:pomm/views/customer/order/checkoutpage.dart';
 class CartPage extends StatefulWidget {
   final Customer customer;
 
-  const CartPage({Key? key, required this.customer}) : super(key: key);
+  const CartPage({super.key, required this.customer});
 
   @override
   State<CartPage> createState() => _CartPageState();
@@ -21,7 +20,6 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   List<Cart> cartList = [];
   double total = 0.0;
-  // List<List<Cart>> _groupedCartItems = [];
 
   @override
   void initState() {
@@ -291,7 +289,7 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  RemoveCartItem(Cart cartItem) async {
+  void RemoveCartItem(Cart cartItem) async {
     try {
       final response = await http.post(
         Uri.parse("${MyServerConfig.server}/pomm/php/delete_cart.php"),

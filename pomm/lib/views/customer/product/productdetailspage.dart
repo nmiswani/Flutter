@@ -195,7 +195,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         .post(
           Uri.parse("${MyServerConfig.server}/pomm/php/insert_cart.php"),
           body: {
-            "buyer_id": widget.customerdata.customerid.toString(),
+            "customer_id": widget.customerdata.customerid.toString(),
             "product_id": widget.product.productId.toString(),
             "product_price": widget.product.productPrice.toString(),
           },

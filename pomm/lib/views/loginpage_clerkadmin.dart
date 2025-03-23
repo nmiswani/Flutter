@@ -4,7 +4,7 @@ import 'package:pomm/models/admin.dart';
 import 'package:pomm/models/clerk.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/admin/admindashboard.dart';
-import 'package:pomm/views/clerk/clerkdashboard.dart';
+import 'package:pomm/views/clerk/order/orderclerkpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -251,7 +251,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (content) => ClerkDashboardPage(clerk: clerk),
+                    builder: (content) => OrderClerkPage(clerk: clerk),
                   ),
                 );
               }

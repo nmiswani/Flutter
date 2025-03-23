@@ -37,8 +37,9 @@ class StartPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const LoginCustomerPage(), // Change to your actual RegisterPage class
+                          builder:
+                              (context) =>
+                                  const LoginCustomerPage(), // Change to your actual RegisterPage class
                         ),
                       );
                     },
@@ -72,8 +73,9 @@ class StartPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const RegisterPage(), // Change to your actual LoginPage class
+                          builder:
+                              (context) =>
+                                  const RegisterPage(), // Change to your actual LoginPage class
                         ),
                       );
                     },
@@ -105,7 +107,9 @@ class StartPage extends StatelessWidget {
                     Text(
                       "Clerk or Admin?",
                       style: GoogleFonts.poppins(
-                          fontSize: 13, color: Colors.white),
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -113,17 +117,19 @@ class StartPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const LoginClerkAdminPage(), // Change to your actual LoginPage class
+                            builder:
+                                (context) =>
+                                    const LoginClerkAdminPage(), // Change to your actual LoginPage class
                           ),
                         );
                       },
                       child: Text(
                         " Login",
                         style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: Colors.white),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],

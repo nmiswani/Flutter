@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'dart:convert';
-
 import 'package:pomm/models/salesreport.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'dart:convert';
 import 'reportdetailspage.dart';
 
-class DailyReportPage extends StatefulWidget {
-  const DailyReportPage({super.key});
+class YearlyReportPage extends StatefulWidget {
+  const YearlyReportPage({super.key});
 
   @override
-  State<DailyReportPage> createState() => _DailyReportPageState();
+  State<YearlyReportPage> createState() => _YearlyReportPageState();
 }
 
-class _DailyReportPageState extends State<DailyReportPage> {
-  String? _selectedDate;
+class _YearlyReportPageState extends State<YearlyReportPage> {
+  String? _selectedYear;
   SalesReport? _salesReport;
 
   Future<void> _fetchSalesReport() async {
-    if (_selectedDate == null) return;
+    if (_selectedYear == null) return;
 
     final url = Uri.parse(
-      "${MyServerConfig.server}/pomm/php/sales_daily.php?date=$_selectedDate",
+      "${MyServerConfig.server}/pomm/php/sales_yearly.php?year=$_selectedYear",
     );
+
     try {
       final response = await http.get(url);
+      print("API Response: ${response.body}"); // ✅ Debugging Line
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
@@ -42,20 +43,36 @@ class _DailyReportPageState extends State<DailyReportPage> {
     }
   }
 
-  void _selectDate() async {
-    DateTime? pickedDate = await showDatePicker(
+  void _selectYear() {
+    showDialog(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Select Year"),
+            content: SizedBox(
+              width: double.maxFinite, // ✅ Ensures the dialog expands properly
+              child: SingleChildScrollView(
+                // ✅ Allows content to be scrollable
+                child: ListBody(
+                  // ✅ Prevents viewport error
+                  children: List.generate(25, (index) {
+                    int year = DateTime.now().year - index;
+                    return ListTile(
+                      title: Text(year.toString()),
+                      onTap: () {
+                        setState(() {
+                          _selectedYear = year.toString();
+                        });
+                        Navigator.pop(context); // Close dialog first
+                        _fetchSalesReport(); // Fetch data after selection
+                      },
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
     );
-
-    if (pickedDate != null) {
-      setState(() {
-        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-      });
-      _fetchSalesReport();
-    }
   }
 
   @override
@@ -67,7 +84,7 @@ class _DailyReportPageState extends State<DailyReportPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Daily Report",
+          "Yearly Report",
           style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
         ),
       ),
@@ -76,19 +93,19 @@ class _DailyReportPageState extends State<DailyReportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Date Picker Field
+            // Year Picker Field
             TextField(
               readOnly: true,
               decoration: InputDecoration(
-                labelText: "Select date",
+                labelText: "Select Year",
                 suffixIcon: IconButton(
                   icon: Icon(Icons.calendar_today),
-                  onPressed: _selectDate,
+                  onPressed: _selectYear,
                 ),
                 border: OutlineInputBorder(),
               ),
               controller: TextEditingController(
-                text: _selectedDate ?? "Select date",
+                text: _selectedYear ?? "Select year",
               ),
             ),
             const SizedBox(height: 20),
@@ -133,7 +150,6 @@ class _DailyReportPageState extends State<DailyReportPage> {
                               : Colors.red,
                     ),
                   ),
-
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
@@ -145,9 +161,9 @@ class _DailyReportPageState extends State<DailyReportPage> {
                                   MaterialPageRoute(
                                     builder:
                                         (context) => ReportDetailsPage(
-                                          selectedDate: DateFormat(
-                                            'yyyy-MM-dd',
-                                          ).parse(_selectedDate!),
+                                          selectedDate: DateTime(
+                                            int.parse(_selectedYear!),
+                                          ), // Converts year string to DateTime
                                           totalSales: _salesReport!.totalSales,
                                           totalOrders:
                                               _salesReport!.totalOrders,

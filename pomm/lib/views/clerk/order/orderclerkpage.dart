@@ -4,19 +4,20 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/clerk/order/pendingorderpage.dart';
 
-class OrderPage extends StatefulWidget {
-  final Customer customerdata;
-  const OrderPage({super.key, required this.customerdata});
+class OrderClerkPage extends StatefulWidget {
+  final Clerk clerk;
+  const OrderClerkPage({super.key, required this.clerk});
 
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<OrderClerkPage> createState() => _OrderClerkPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _OrderClerkPageState extends State<OrderClerkPage> {
   List<Order> orderList = <Order>[];
   List<Order> currentOrders = [];
   List<Order> completedOrders = [];
@@ -90,8 +91,20 @@ class _OrderPageState extends State<OrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => PendingOrderPage(
+                                          clerk: widget.clerk,
+                                          order:
+                                              getFilteredOrders()[index], // ✅ Pass the correct order object
+                                        ),
+                                  ),
+                                );
                                 loadOrders(id);
                               },
+
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
