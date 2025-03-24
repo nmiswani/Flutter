@@ -7,7 +7,6 @@ class Cart {
   String? productTitle;
   String? productPrice;
   String? productQty;
-  String? cartPrice;
 
   Cart({
     this.cartId,
@@ -18,7 +17,6 @@ class Cart {
     this.productTitle,
     this.productPrice,
     this.productQty,
-    this.cartPrice,
   });
 
   Cart.fromJson(Map<String, dynamic> json) {
@@ -30,7 +28,6 @@ class Cart {
     productTitle = json['product_title'];
     productPrice = json['product_price'];
     productQty = json['product_qty'];
-    cartPrice = json['cart_price'];
   }
 
   Map<String, dynamic> toJson() {
@@ -43,7 +40,6 @@ class Cart {
     data['product_title'] = productTitle;
     data['product_price'] = productPrice;
     data['product_qty'] = productQty;
-    data['cart_price'] = cartPrice;
     return data;
   }
 }

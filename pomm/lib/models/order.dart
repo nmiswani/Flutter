@@ -15,6 +15,8 @@ class Order {
   String? customerId;
   String? orderTracking;
   String? shippingAddress;
+  String? deliveryCharge;
+  String? orderSubtotal;
 
   Order({
     this.orderId,
@@ -33,6 +35,8 @@ class Order {
     this.customerId,
     this.orderTracking,
     this.shippingAddress,
+    this.deliveryCharge,
+    this.orderSubtotal,
   });
 
   Order.fromJson(Map<String, dynamic> json) {
@@ -52,6 +56,8 @@ class Order {
     customerId = json['customer_id'];
     orderTracking = json['order_tracking'];
     shippingAddress = json['shipping_address'];
+    deliveryCharge = json['delivery_charge'];
+    orderSubtotal = json['order_subtotal'];
   }
 
   Map<String, dynamic> toJson() {
@@ -72,6 +78,8 @@ class Order {
     data['customer_id'] = customerId;
     data['order_tracking'] = orderTracking;
     data['shipping_address'] = shippingAddress;
+    data['delivery_charge'] = deliveryCharge;
+    data['order_subtotal'] = orderSubtotal;
 
     return data;
   }

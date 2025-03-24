@@ -4,7 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class BillPage extends StatefulWidget {
   final Customer customer;
-  final double totalprice;
+  final double totalprice, orderSubtotal, deliveryCharge;
   final String shippingAddress;
 
   const BillPage({
@@ -12,6 +12,8 @@ class BillPage extends StatefulWidget {
     required this.customer,
     required this.totalprice,
     required this.shippingAddress,
+    required this.orderSubtotal,
+    required this.deliveryCharge,
   });
 
   @override
@@ -46,7 +48,7 @@ class _BillPageState extends State<BillPage> {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..loadRequest(
             Uri.parse(
-              'https://wani.infinitebe.com/pomm/php/payment.php?&customerid=${widget.customer.customerid}&email=${widget.customer.customeremail}&phone=${widget.customer.customerphone}&name=${widget.customer.customername}&amount=${widget.totalprice}&shipping_address=${widget.shippingAddress}',
+              'https://wani.infinitebe.com/pomm/php/payment.php?&customerid=${widget.customer.customerid}&email=${widget.customer.customeremail}&phone=${widget.customer.customerphone}&name=${widget.customer.customername}&amount=${widget.totalprice}&shipping=${widget.shippingAddress}&subtotal=${widget.orderSubtotal}&deliverycharge=${widget.deliveryCharge}',
             ),
           );
   }

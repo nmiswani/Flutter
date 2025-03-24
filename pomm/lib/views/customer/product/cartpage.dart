@@ -268,27 +268,6 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  updateQuantity(Cart cartItem, int newQuantity) async {
-    setState(() {
-      cartItem.cartQty = newQuantity.toString();
-    });
-
-    await updateCartQuantity(cartItem.cartId!, cartItem.cartQty!);
-  }
-
-  updateCartQuantity(String cartId, String newQuantity) async {
-    try {
-      await http.post(
-        Uri.parse("${MyServerConfig.server}/pomm/php/update_cart.php"),
-        body: {"cart_id": cartId, "cart_qty": newQuantity},
-      );
-
-      loadUserCart();
-    } catch (error) {
-      print("Error updating cart quantity: $error");
-    }
-  }
-
   void RemoveCartItem(Cart cartItem) async {
     try {
       final response = await http.post(
@@ -320,13 +299,54 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  void updateQuantity(Cart cartItem, int newQuantity) async {
+    setState(() {
+      cartItem.cartQty = newQuantity.toString();
+    });
+    await updateCartQuantity(
+      cartItem.cartId!,
+      cartItem.cartQty!,
+      cartItem.productPrice!,
+    );
+  }
+
+  Future<void> updateCartQuantity(
+    String cartId,
+    String newQuantity,
+    String productPrice,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${MyServerConfig.server}/pomm/php/update_cart.php"),
+        body: {
+          "cart_id": cartId,
+          "cart_qty": newQuantity,
+          "product_price": productPrice,
+        },
+      );
+
+      var data = jsonDecode(response.body);
+      print("Server Response: $data");
+
+      if (response.statusCode == 200 && data['status'] == "success") {
+        print("Cart quantity & product price updated successfully.");
+        setState(() {
+          loadUserCart();
+        });
+      } else {
+        print("Failed to update cart: ${data['data']}");
+      }
+    } catch (error) {
+      print("Error updating cart quantity: $error");
+    }
+  }
+
   double calculateSubtotal() {
     double subtotal = 0.0;
 
     cartList.forEach((item) {
       subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
     });
-
     return subtotal;
   }
 
@@ -336,7 +356,6 @@ class _CartPageState extends State<CartPage> {
     cartList.forEach((item) {
       totalItems += int.parse(item.cartQty!);
     });
-
     return totalItems;
   }
 }

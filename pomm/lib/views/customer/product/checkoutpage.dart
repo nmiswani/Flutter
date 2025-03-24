@@ -19,7 +19,7 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   List<Cart> cartList = [];
   double total = 0.0;
-  double deliveryCharge = 5.00;
+  double deliveryCharge = 0.00; // ✅ Initially 0, updated dynamically
 
   // ✅ Shipping Option List
   List<String> shippingOptions = ["Delivery", "In-store Pickup"];
@@ -132,12 +132,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 setState(() {
                   selectedShippingOption = value!;
                   selectedDeliveryAddress = null; // Reset address selection
+                  deliveryCharge =
+                      (selectedShippingOption == "Delivery")
+                          ? 5.00
+                          : 0.00; // ✅ Update charge
                 });
               },
             ),
             const SizedBox(height: 10),
 
-            // ✅ Show Delivery Address Dropdown ONLY IF "Delivery" is selected
             if (selectedShippingOption == "Delivery") ...[
               Text(
                 "Select Delivery Address",
@@ -212,9 +215,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 style: GoogleFonts.poppins(color: Colors.white),
               ),
               Text(
-                selectedShippingOption == "Delivery"
-                    ? "RM${deliveryCharge.toStringAsFixed(2)}"
-                    : "RM0.00",
+                "RM${deliveryCharge.toStringAsFixed(2)}", // ✅ Now updates dynamically
                 style: GoogleFonts.poppins(color: Colors.white),
               ),
             ],
@@ -252,20 +253,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 );
                 return;
               }
+
+              setState(() {
+                deliveryCharge =
+                    (selectedShippingOption == "Delivery") ? 5.00 : 0.00;
+              });
+
               String shippingAddress =
-                  selectedShippingOption == "Delivery"
+                  (selectedShippingOption == "Delivery")
                       ? selectedDeliveryAddress!
                       : "In-store Pickup";
 
-              await loadUserCart(); // Reload cart before navigating
+              await loadUserCart();
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder:
                       (content) => BillPage(
                         customer: widget.customerdata,
-                        totalprice: total,
+                        totalprice: calculateTotal(),
                         shippingAddress: shippingAddress,
+                        orderSubtotal: calculateSubtotal(),
+                        deliveryCharge: deliveryCharge,
                       ),
                 ),
               );
@@ -284,15 +293,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   double calculateSubtotal() {
-    double subtotal = 0.0;
-    for (var item in cartList) {
-      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
-    }
-    return subtotal;
+    return cartList.fold(
+      0.0,
+      (sum, item) =>
+          sum + double.parse(item.productPrice!) * int.parse(item.cartQty!),
+    );
   }
 
   double calculateTotal() {
-    return calculateSubtotal() +
-        (selectedShippingOption == "Delivery" ? deliveryCharge : 0);
+    return calculateSubtotal() + deliveryCharge;
   }
 }
