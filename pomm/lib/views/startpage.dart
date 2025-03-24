@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/views/loginpage_clerkadmin.dart';
-import 'package:pomm/views/customer/loginpage.dart';
-import 'package:pomm/views/customer/registerpage.dart';
+import 'package:pomm/views/loginclerkadminpage.dart';
+import 'package:pomm/views/customer/logincustomerpage.dart';
+import 'package:pomm/views/customer/registercustomerpage.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
@@ -75,7 +75,7 @@ class StartPage extends StatelessWidget {
                         MaterialPageRoute(
                           builder:
                               (context) =>
-                                  const RegisterPage(), // Change to your actual LoginPage class
+                                  const RegisterCustomerPage(), // Change to your actual LoginPage class
                         ),
                       );
                     },

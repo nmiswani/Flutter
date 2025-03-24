@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pomm/models/cart.dart';
@@ -21,12 +20,53 @@ class _CheckoutPageState extends State<CheckoutPage> {
   List<Cart> cartList = [];
   double total = 0.0;
   double deliveryCharge = 5.00;
-  String selectedShippingOption = 'Delivery';
+
+  // ✅ Shipping Option List
+  List<String> shippingOptions = ["Delivery", "In-store Pickup"];
+  String selectedShippingOption = "In-store Pickup"; // Default selection
+
+  // ✅ Delivery Address List
+  List<String> deliveryaddresslist = [
+    "Laluan A",
+    "Laluan B",
+    "Laluan C",
+    "Laluan D",
+    "Luar Kampus",
+  ];
+  String? selectedDeliveryAddress; // Selected delivery address
 
   @override
   void initState() {
     super.initState();
     loadUserCart();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Checkout",
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(10),
+              children: [
+                ...cartList.map((item) => _buildCartItem(item)).toList(),
+                _buildShippingCard(), // ✅ Updated Shipping Card
+              ],
+            ),
+          ),
+          _buildOrderSummary(),
+        ],
+      ),
+    );
   }
 
   Future<void> loadUserCart() async {
@@ -44,47 +84,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
           setState(() {
             cartList.clear();
             total = (data['data']['total_price'] as num).toDouble();
-            data['data']['carts'].forEach((v) {
+            for (var v in data['data']['carts']) {
               cartList.add(Cart.fromJson(v));
-            });
+            }
           });
         } else {
-          Navigator.of(context).pop(); // Go back if cart is empty
+          setState(() {
+            cartList.clear();
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Cart is empty"),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Future.delayed(const Duration(seconds: 3), () {
+            Navigator.of(context).pop(); // Go back if cart is empty
+          });
         }
       }
     } catch (error) {
       print("Error loading customer cart: $error");
     }
-  }
-
-  double calculateSubtotal() {
-    double subtotal = 0.0;
-    for (var item in cartList) {
-      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
-    }
-    return subtotal;
-  }
-
-  double calculateTotal() {
-    return calculateSubtotal() +
-        (selectedShippingOption == 'Delivery' ? deliveryCharge : 0);
-  }
-
-  void _showDeliveryInfoDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("Delivery Info"),
-            content: const Text("Standard Delivery: RM5"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-    );
   }
 
   Widget _buildShippingCard() {
@@ -97,22 +118,49 @@ class _CheckoutPageState extends State<CheckoutPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Shipping Information",
+              "Select Shipping Option",
               style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
             DropdownButton<String>(
               value: selectedShippingOption,
               isExpanded: true,
               items:
-                  ['Delivery', 'In-store Pickup'].map((option) {
+                  shippingOptions.map((option) {
                     return DropdownMenuItem(value: option, child: Text(option));
                   }).toList(),
               onChanged: (value) {
                 setState(() {
                   selectedShippingOption = value!;
+                  selectedDeliveryAddress = null; // Reset address selection
                 });
               },
             ),
+            const SizedBox(height: 10),
+
+            // ✅ Show Delivery Address Dropdown ONLY IF "Delivery" is selected
+            if (selectedShippingOption == "Delivery") ...[
+              Text(
+                "Select Delivery Address",
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              ),
+              DropdownButton<String>(
+                value: selectedDeliveryAddress,
+                isExpanded: true,
+                hint: const Text("Choose your delivery address"),
+                items:
+                    deliveryaddresslist.map((address) {
+                      return DropdownMenuItem(
+                        value: address,
+                        child: Text(address),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedDeliveryAddress = value!;
+                  });
+                },
+              ),
+            ],
           ],
         ),
       ),
@@ -159,23 +207,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    "Delivery Charge",
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                  GestureDetector(
-                    onTap: _showDeliveryInfoDialog,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.info_outline, color: Colors.white),
-                    ),
-                  ),
-                ],
+              Text(
+                "Delivery Charge",
+                style: GoogleFonts.poppins(color: Colors.white),
               ),
               Text(
-                selectedShippingOption == 'Delivery'
+                selectedShippingOption == "Delivery"
                     ? "RM${deliveryCharge.toStringAsFixed(2)}"
                     : "RM0.00",
                 style: GoogleFonts.poppins(color: Colors.white),
@@ -205,6 +242,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () async {
+              if (selectedShippingOption == "Delivery" &&
+                  selectedDeliveryAddress == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Please select a delivery address"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              String shippingAddress =
+                  selectedShippingOption == "Delivery"
+                      ? selectedDeliveryAddress!
+                      : "In-store Pickup";
+
               await loadUserCart(); // Reload cart before navigating
               Navigator.push(
                 context,
@@ -213,6 +265,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       (content) => BillPage(
                         customer: widget.customerdata,
                         totalprice: total,
+                        shippingAddress: shippingAddress,
                       ),
                 ),
               );
@@ -230,31 +283,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Checkout",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(10),
-              children: [
-                ...cartList.map((item) => _buildCartItem(item)).toList(),
-                _buildShippingCard(),
-              ],
-            ),
-          ),
-          _buildOrderSummary(),
-        ],
-      ),
-    );
+  double calculateSubtotal() {
+    double subtotal = 0.0;
+    for (var item in cartList) {
+      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
+    }
+    return subtotal;
+  }
+
+  double calculateTotal() {
+    return calculateSubtotal() +
+        (selectedShippingOption == "Delivery" ? deliveryCharge : 0);
   }
 }

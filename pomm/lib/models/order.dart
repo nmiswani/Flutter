@@ -13,6 +13,8 @@ class Order {
   String? orderBill;
   String? adminId;
   String? customerId;
+  String? orderTracking;
+  String? shippingAddress;
 
   Order({
     this.orderId,
@@ -29,6 +31,8 @@ class Order {
     this.orderBill,
     this.adminId,
     this.customerId,
+    this.orderTracking,
+    this.shippingAddress,
   });
 
   Order.fromJson(Map<String, dynamic> json) {
@@ -46,6 +50,8 @@ class Order {
     orderBill = json['order_bill'];
     adminId = json['admin_id'];
     customerId = json['customer_id'];
+    orderTracking = json['order_tracking'];
+    shippingAddress = json['shipping_address'];
   }
 
   Map<String, dynamic> toJson() {
@@ -64,6 +70,9 @@ class Order {
     data['order_bill'] = orderBill;
     data['admin_id'] = adminId;
     data['customer_id'] = customerId;
+    data['order_tracking'] = orderTracking;
+    data['shipping_address'] = shippingAddress;
+
     return data;
   }
 }

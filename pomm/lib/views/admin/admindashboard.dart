@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pomm/models/admin.dart';
 import 'package:pomm/views/admin/order/adminorderpage.dart';
 import 'package:pomm/views/admin/product/productadminpage.dart';
-import 'package:pomm/views/admin/salesreport/mainreportpage.dart';
+import 'package:pomm/views/admin/salesreport/reportpage.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   final Admin admin;
@@ -23,7 +23,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     tabchildren = [
       ProductAdminPage(admin: widget.admin),
       AdminOrderPage(admin: widget.admin),
-      MainReportPage(),
+      ReportPage(),
     ];
   }
 

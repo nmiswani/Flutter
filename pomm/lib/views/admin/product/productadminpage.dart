@@ -8,6 +8,7 @@ import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/admin/product/addproductpage.dart';
 import 'package:pomm/views/admin/product/productdetailadminpage.dart';
+import 'package:pomm/views/loginclerkadminpage.dart';
 
 class ProductAdminPage extends StatefulWidget {
   final Admin admin;
@@ -60,13 +61,8 @@ class _ProductPageState extends State<ProductAdminPage> {
             icon: const Icon(Icons.search, color: Colors.white),
           ),
           IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (content) => AddProductPage()),
-              );
-            },
-            icon: const Icon(Icons.add_circle, color: Colors.white),
+            icon: const Icon(Icons.logout, color: Colors.white), // White icon
+            onPressed: _logout,
           ),
         ],
         elevation: 0.0,
@@ -195,6 +191,25 @@ class _ProductPageState extends State<ProductAdminPage> {
                   ],
                 ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (content) => AddProductPage()),
+          );
+        },
+        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        shape: const CircleBorder(), // Ensures it's a circle
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void _logout() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginClerkAdminPage()),
+      (route) => false, // Removes all previous pages from the stack
     );
   }
 

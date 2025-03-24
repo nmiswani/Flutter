@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/customer/order/orderdetailpage.dart';
 
 class OrderPage extends StatefulWidget {
   final Customer customerdata;
@@ -24,7 +25,7 @@ class _OrderPageState extends State<OrderPage> {
   int _selectedIndex = 0;
   late double screenWidth, screenHeight;
   int axiscount = 2;
-  String id = "";
+  String customerid = "";
   late List<Widget> tabchildren;
   String maintitle = "Order";
 
@@ -33,7 +34,7 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    loadOrders(id);
+    loadOrders(customerid);
   }
 
   @override
@@ -69,7 +70,7 @@ class _OrderPageState extends State<OrderPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                loadOrders(id);
+                loadOrders(customerid);
               },
               child:
                   getFilteredOrders().isEmpty
@@ -90,7 +91,20 @@ class _OrderPageState extends State<OrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
-                                loadOrders(id);
+                                Order order = Order.fromJson(
+                                  orderList[index].toJson(),
+                                );
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (content) => OrderDetailPage(
+                                          customerdata: widget.customerdata,
+                                          order: order,
+                                        ),
+                                  ),
+                                );
+                                loadOrders(customerid);
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,9 +119,7 @@ class _OrderPageState extends State<OrderPage> {
                                         children: [
                                           const SizedBox(height: 5),
                                           Text(
-                                            truncateString(
-                                              "Order ID : ${getFilteredOrders()[index].orderId?.toString() ?? "No ID"}",
-                                            ),
+                                            "Order Tracking : ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
                                             style: GoogleFonts.poppins(
                                               fontSize: 12,
                                               color: Colors.black,
@@ -144,15 +156,6 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  String truncateString(String str) {
-    if (str.length > 20) {
-      str = str.substring(0, 20);
-      return "$str...";
-    } else {
-      return str;
-    }
-  }
-
   // Function to format date
   String formatDate(String? dateString) {
     if (dateString == null || dateString.isEmpty) return "No Date";
@@ -187,10 +190,13 @@ class _OrderPageState extends State<OrderPage> {
         : canceledOrders;
   }
 
-  void loadOrders(String id) {
+  void loadOrders(String customerid) {
+    String customerid = widget.customerdata.customerid.toString();
     http
         .get(
-          Uri.parse("${MyServerConfig.server}/pomm/php/load_orders.php?id=$id"),
+          Uri.parse(
+            "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
+          ),
         )
         .then((response) {
           log(response.body);
@@ -211,10 +217,13 @@ class _OrderPageState extends State<OrderPage> {
                 canceledOrders.clear();
 
                 for (var order in orderList) {
-                  if (order.orderStatus == "New" ||
-                      order.orderStatus == "Order Placed") {
+                  if (order.orderStatus == "Order placed" ||
+                      order.orderStatus == "In process" ||
+                      order.orderStatus == "Out for delivery" ||
+                      order.orderStatus == "Ready for pickup") {
                     currentOrders.add(order);
-                  } else if (order.orderStatus == "Completed") {
+                  } else if (order.orderStatus == "Received" ||
+                      order.orderStatus == "Delivered") {
                     completedOrders.add(order);
                   } else if (order.orderStatus == "Canceled") {
                     canceledOrders.add(order);

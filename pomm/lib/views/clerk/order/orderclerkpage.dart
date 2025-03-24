@@ -8,6 +8,7 @@ import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/clerk/order/pendingorderpage.dart';
+import 'package:pomm/views/loginclerkadminpage.dart';
 
 class OrderClerkPage extends StatefulWidget {
   final Clerk clerk;
@@ -56,6 +57,12 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
         elevation: 0.0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white), // White icon
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -154,6 +161,14 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _logout() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginClerkAdminPage()),
+      (route) => false, // Removes all previous pages from the stack
     );
   }
 

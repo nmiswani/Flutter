@@ -6,7 +6,7 @@ import 'package:pomm/models/customer.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/loginpage.dart';
+import 'package:pomm/views/customer/logincustomerpage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/order/checkoutpage.dart';
+import 'package:pomm/views/customer/product/checkoutpage.dart';
 
 class CartPage extends StatefulWidget {
   final Customer customer;

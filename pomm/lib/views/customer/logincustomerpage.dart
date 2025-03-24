@@ -1,45 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/models/admin.dart';
-import 'package:pomm/models/clerk.dart';
+import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/admin/admindashboard.dart';
-import 'package:pomm/views/clerk/order/orderclerkpage.dart';
+import 'package:pomm/views/customer/customerdashboard.dart';
+import 'package:pomm/views/customer/forgotpassword/forgotpasswordpage.dart';
+import 'package:pomm/views/customer/registercustomerpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class LoginClerkAdminPage extends StatefulWidget {
-  const LoginClerkAdminPage({super.key});
+class LoginCustomerPage extends StatefulWidget {
+  const LoginCustomerPage({super.key});
 
   @override
-  State<LoginClerkAdminPage> createState() => _LoginPageState();
+  State<LoginCustomerPage> createState() => _LoginCustomerPageState();
 }
 
-class _LoginPageState extends State<LoginClerkAdminPage> {
-  TextEditingController userIDController = TextEditingController();
+class _LoginCustomerPageState extends State<LoginCustomerPage> {
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  // bool _isChecked = false;
   bool isPasswordVisible = false;
 
-  String? _validateUserID(String? value) {
+  void _navigateToResetPassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+    );
+  }
+
+  void _navigateToRegisterPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) =>
+                const RegisterCustomerPage(), // Replace with actual register page
+      ),
+    );
+  }
+
+  String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Enter user ID';
+      // Displaying a SnackBar
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("These field are required"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      });
+      return 'Enter email';
     }
     if (!RegExp(
       r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
     ).hasMatch(value)) {
-      return 'Enter valid user ID';
+      return 'Enter valid email (e.g., example@gmail.com)';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Enter password';
+      return 'Enter registered password';
     } else {
       if (value.length < 6) {
-        return 'Enter valid password';
+        // EDIT
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Invalid password"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        });
+        return 'Enter registered password';
       }
     }
     return null;
@@ -127,18 +164,17 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 120),
-                  // Replace "Welcome back!" text with an image
                   Image.asset(
-                    'assets/images/loginicon_ca.png', // Change to the correct image path
-                    height: 200, // Adjust the height as needed
-                    width: 200, // Adjust the width if needed
+                    'assets/images/loginicon.png',
+                    height: 200,
+                    width: 200,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 30),
                   makeInput(
-                    icon: Icons.person,
-                    hint: "User ID",
-                    controller: userIDController,
-                    validator: _validateUserID,
+                    icon: Icons.email,
+                    hint: "Email",
+                    controller: emailController,
+                    validator: _validateEmail,
                   ),
                   makeInput(
                     icon: Icons.lock,
@@ -153,7 +189,23 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                     },
                     validator: _validatePassword,
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: _navigateToResetPassword,
+                        child: Text(
+                          "Forgot password?",
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 75),
                   Center(
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width / 2.5,
@@ -180,6 +232,30 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 50),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Don't have an account?",
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: _navigateToRegisterPage,
+                        child: Text(
+                          "Create a new account",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -193,68 +269,34 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
-    String email = userIDController.text;
+    String email = emailController.text;
     String pass = passwordController.text;
-    String loginUrl;
 
-    // Determine the URL based on user role (admin or clerk)
-    if (email == "adminpomm@gmail.com") {
-      loginUrl = "${MyServerConfig.server}/pomm/php/login_admin.php";
-    } else if (email == "clerkpomm@gmail.com") {
-      loginUrl =
-          "${MyServerConfig.server}/pomm/php/login_clerk.php"; // Clerk login URL
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid User ID"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    // Send the POST request to the selected URL
     http
-        .post(Uri.parse(loginUrl), body: {"email": email, "password": pass})
+        .post(
+          Uri.parse("${MyServerConfig.server}/pomm/php/login_customer.php"),
+          body: {"email": email, "password": pass},
+        )
         .then((response) {
           print(response.body);
           if (response.statusCode == 200) {
             var data = jsonDecode(response.body);
             if (data['status'] == "success") {
-              if (email == "adminpomm@gmail.com") {
-                Admin admin = Admin.fromJson(data['data']);
-
-                // Navigate to Admin Dashboard
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("You have successfully logged in"),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (content) => AdminDashboardPage(admin: admin),
-                  ),
-                );
-              } else if (email == "clerkpomm@gmail.com") {
-                Clerk clerk = Clerk.fromJson(data['data']);
-
-                // Navigate to Clerk Dashboard
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("You have successfully logged in"),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (content) => OrderClerkPage(clerk: clerk),
-                  ),
-                );
-              }
+              Customer customer = Customer.fromJson(data['data']);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("You have successfully logged in"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (content) =>
+                          CustomerDashboardPage(customerdata: customer),
+                ),
+              );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

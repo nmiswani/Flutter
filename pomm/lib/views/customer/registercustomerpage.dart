@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/views/customer/loginpage.dart';
+import 'package:pomm/views/customer/logincustomerpage.dart';
 import 'dart:convert';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class RegisterCustomerPage extends StatefulWidget {
+  const RegisterCustomerPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<RegisterCustomerPage> createState() => _RegisterCustomerPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -25,7 +25,11 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: const Color.fromRGBO(
-          91, 158, 113, 0.612), // Set background color to green
+        91,
+        158,
+        113,
+        0.612,
+      ), // Set background color to green
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -114,23 +118,26 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         "Already have an account?",
                         style: GoogleFonts.poppins(
-                            fontSize: 13, color: Colors.white),
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
                       ),
                       GestureDetector(
                         onTap: _navigateToLogin,
                         child: Text(
                           " Login",
                           style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                              color: Colors.white),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -162,7 +169,8 @@ class _RegisterPageState extends State<RegisterPage> {
             controller: controller,
             obscureText: obscureText,
             style: GoogleFonts.poppins(
-                color: Colors.black), // Text color inside TextBox
+              color: Colors.black,
+            ), // Text color inside TextBox
             decoration: InputDecoration(
               filled: true, // Enables background color for TextBox
               fillColor: Colors.white, // Background color
@@ -171,24 +179,27 @@ class _RegisterPageState extends State<RegisterPage> {
                 icon,
                 color: Colors.black, // Icon color set to black
               ),
-              suffixIcon: showVisibilityToggle
-                  ? IconButton(
-                      icon: Icon(
+              suffixIcon:
+                  showVisibilityToggle
+                      ? IconButton(
+                        icon: Icon(
                           obscureText ? Icons.visibility : Icons.visibility_off,
-                          color: Colors
-                              .black), // Visibility icon color set to black
-                      onPressed: onTapVisibilityToggle,
-                    )
-                  : null,
+                          color: Colors.black,
+                        ), // Visibility icon color set to black
+                        onPressed: onTapVisibilityToggle,
+                      )
+                      : null,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
               enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 158, 113, 0.612)), // Border color
+                  color: Color.fromRGBO(91, 158, 113, 0.612),
+                ), // Border color
                 borderRadius: BorderRadius.zero, // Removed rounded borders
               ),
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 158, 113, 0.9)), // Focused border
+                  color: Color.fromRGBO(91, 158, 113, 0.9),
+                ), // Focused border
                 borderRadius: BorderRadius.zero, // Removed rounded borders
               ),
               errorBorder: const OutlineInputBorder(
@@ -217,9 +228,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void _navigateToLogin() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const LoginCustomerPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const LoginCustomerPage()),
     );
   }
 
@@ -240,8 +249,9 @@ class _RegisterPageState extends State<RegisterPage> {
     if (value == null || value.isEmpty) {
       return 'Enter email';
     }
-    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-        .hasMatch(value)) {
+    if (!RegExp(
+      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
+    ).hasMatch(value)) {
       // EDIT
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -297,11 +307,7 @@ class _RegisterPageState extends State<RegisterPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Are you sure?'),
-              ],
-            ),
+            child: ListBody(children: <Widget>[Text('Are you sure?')]),
           ),
           actions: <Widget>[
             TextButton(
@@ -315,10 +321,12 @@ class _RegisterPageState extends State<RegisterPage> {
               child: const Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Registration Canceled"),
-                  backgroundColor: Colors.red,
-                ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Registration Canceled"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
               },
             ),
           ],
@@ -333,33 +341,42 @@ class _RegisterPageState extends State<RegisterPage> {
     String _phone = phoneNumberController.text;
     String _pass = passwordController.text;
 
-    http.post(
-        Uri.parse("${MyServerConfig.server}/pomm/php/register_customer.php"),
-        body: {
-          "name": _name,
-          "email": _email,
-          "phone": _phone,
-          "password": _pass
-        }).then((response) {
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        print(data);
-        if (data['status'] == "success") {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("You have successfully registered"),
-            backgroundColor: Colors.green,
-          ));
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (content) => const LoginCustomerPage()));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Registration Failed"),
-            backgroundColor: Colors.red,
-          ));
-        }
-      }
-    });
+    http
+        .post(
+          Uri.parse("${MyServerConfig.server}/pomm/php/register_customer.php"),
+          body: {
+            "name": _name,
+            "email": _email,
+            "phone": _phone,
+            "password": _pass,
+          },
+        )
+        .then((response) {
+          if (response.statusCode == 200) {
+            var data = jsonDecode(response.body);
+            print(data);
+            if (data['status'] == "success") {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("You have successfully registered"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (content) => const LoginCustomerPage(),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Registration Failed"),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        });
   }
 }

@@ -1,82 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/admin.dart';
+import 'package:pomm/models/clerk.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/customerdashboard.dart';
-import 'package:pomm/views/customer/forgotpassword/forgotpasswordpage.dart';
-import 'package:pomm/views/customer/registerpage.dart';
+import 'package:pomm/views/admin/admindashboard.dart';
+import 'package:pomm/views/clerk/order/orderclerkpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pomm/views/customer/logincustomerpage.dart';
 
-class LoginCustomerPage extends StatefulWidget {
-  const LoginCustomerPage({super.key});
+class LoginClerkAdminPage extends StatefulWidget {
+  const LoginClerkAdminPage({super.key});
 
   @override
-  State<LoginCustomerPage> createState() => _LoginPageState();
+  State<LoginClerkAdminPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginCustomerPage> {
-  TextEditingController emailController = TextEditingController();
+class _LoginPageState extends State<LoginClerkAdminPage> {
+  TextEditingController userIDController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  // bool _isChecked = false;
   bool isPasswordVisible = false;
 
-  void _navigateToResetPassword() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-    );
-  }
-
-  void _navigateToRegisterPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                const RegisterPage(), // Replace with actual register page
-      ),
-    );
-  }
-
-  String? _validateEmail(String? value) {
+  String? _validateUserID(String? value) {
     if (value == null || value.isEmpty) {
-      // Displaying a SnackBar
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("These field are required"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      });
-      return 'Enter email';
+      return 'Enter user ID';
     }
     if (!RegExp(
       r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
     ).hasMatch(value)) {
-      return 'Enter valid email (e.g., example@gmail.com)';
+      return 'Enter valid user ID';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Enter registered password';
+      return 'Enter password';
     } else {
       if (value.length < 6) {
-        // EDIT
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Invalid password"),
-              backgroundColor: Colors.red,
-            ),
-          );
-        });
-        return 'Enter registered password';
+        return 'Enter valid password';
       }
     }
     return null;
@@ -164,17 +128,18 @@ class _LoginPageState extends State<LoginCustomerPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 120),
+                  // Replace "Welcome back!" text with an image
                   Image.asset(
-                    'assets/images/loginicon.png',
-                    height: 200,
-                    width: 200,
+                    'assets/images/loginicon_ca.png', // Change to the correct image path
+                    height: 200, // Adjust the height as needed
+                    width: 200, // Adjust the width if needed
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 50),
                   makeInput(
-                    icon: Icons.email,
-                    hint: "Email",
-                    controller: emailController,
-                    validator: _validateEmail,
+                    icon: Icons.person,
+                    hint: "User ID",
+                    controller: userIDController,
+                    validator: _validateUserID,
                   ),
                   makeInput(
                     icon: Icons.lock,
@@ -189,23 +154,7 @@ class _LoginPageState extends State<LoginCustomerPage> {
                     },
                     validator: _validatePassword,
                   ),
-                  const SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: _navigateToResetPassword,
-                        child: Text(
-                          "Forgot password?",
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 75),
+                  const SizedBox(height: 70),
                   Center(
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width / 2.5,
@@ -232,21 +181,21 @@ class _LoginPageState extends State<LoginCustomerPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Column(
+                  const SizedBox(height: 50),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Don't have an account?",
+                        "Login as Customer?",
                         style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: Colors.white,
                         ),
                       ),
                       GestureDetector(
-                        onTap: _navigateToRegisterPage,
+                        onTap: _navigateToLoginPage,
                         child: Text(
-                          "Create a new account",
+                          " Login",
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
@@ -265,38 +214,83 @@ class _LoginPageState extends State<LoginCustomerPage> {
     );
   }
 
+  void _navigateToLoginPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) =>
+                const LoginCustomerPage(), // Replace with actual register page
+      ),
+    );
+  }
+
   void _loginUser() {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    String email = emailController.text;
-    String pass = passwordController.text;
 
+    String email = userIDController.text;
+    String pass = passwordController.text;
+    String loginUrl;
+
+    // Determine the URL based on user role (admin or clerk)
+    if (email == "adminpomm@gmail.com") {
+      loginUrl = "${MyServerConfig.server}/pomm/php/login_admin.php";
+    } else if (email == "clerkpomm@gmail.com") {
+      loginUrl =
+          "${MyServerConfig.server}/pomm/php/login_clerk.php"; // Clerk login URL
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid User ID"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Send the POST request to the selected URL
     http
-        .post(
-          Uri.parse("${MyServerConfig.server}/pomm/php/login_customer.php"),
-          body: {"email": email, "password": pass},
-        )
+        .post(Uri.parse(loginUrl), body: {"email": email, "password": pass})
         .then((response) {
           print(response.body);
           if (response.statusCode == 200) {
             var data = jsonDecode(response.body);
             if (data['status'] == "success") {
-              Customer customer = Customer.fromJson(data['data']);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("You have successfully logged in"),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (content) =>
-                          CustomerDashboardPage(customerdata: customer),
-                ),
-              );
+              if (email == "adminpomm@gmail.com") {
+                Admin admin = Admin.fromJson(data['data']);
+
+                // Navigate to Admin Dashboard
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("You have successfully logged in"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (content) => AdminDashboardPage(admin: admin),
+                  ),
+                );
+              } else if (email == "clerkpomm@gmail.com") {
+                Clerk clerk = Clerk.fromJson(data['data']);
+
+                // Navigate to Clerk Dashboard
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("You have successfully logged in"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (content) => OrderClerkPage(clerk: clerk),
+                  ),
+                );
+              }
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

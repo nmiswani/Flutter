@@ -9,6 +9,7 @@ import 'package:pomm/models/admin.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/admin/order/adminorderdetailspage.dart';
+import 'package:pomm/views/loginclerkadminpage.dart';
 
 class AdminOrderPage extends StatefulWidget {
   final Admin admin;
@@ -58,6 +59,12 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
         elevation: 0.0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white), // White icon
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -94,21 +101,19 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
-                                Order myorder = Order.fromJson(
+                                Order order = Order.fromJson(
                                   orderList[index].toJson(),
                                 );
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (context) => AdminOrderDetailsPage(
-                                          order: myorder,
-                                        ),
+                                        (context) =>
+                                            AdminOrderDetailsPage(order: order),
                                   ),
                                 );
                                 loadOrders(id);
                               },
-
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -123,7 +128,7 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                                           const SizedBox(height: 5),
                                           Text(
                                             truncateString(
-                                              "Order ID : ${getFilteredOrders()[index].orderId?.toString() ?? "No ID"}",
+                                              "Order Tracking : ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
                                             ),
                                             style: GoogleFonts.poppins(
                                               fontSize: 12,
@@ -158,6 +163,14 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _logout() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginClerkAdminPage()),
+      (route) => false, // Removes all previous pages from the stack
     );
   }
 
@@ -196,14 +209,6 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
     );
   }
 
-  // List<Order> getFilteredOrders() {
-  //   return _selectedIndex == 0
-  //       ? currentOrders
-  //       : _selectedIndex == 1
-  //       ? completedOrders
-  //       : canceledOrders;
-  // }
-
   List<Order> getFilteredOrders() {
     return _selectedIndex == 0
         ? newOrders
@@ -217,7 +222,9 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
   void loadOrders(String id) {
     http
         .get(
-          Uri.parse("${MyServerConfig.server}/pomm/php/load_orders.php?id=$id"),
+          Uri.parse(
+            "${MyServerConfig.server}/pomm/php/load_order_clerkadmin.php?id=$id",
+          ),
         )
         .then((response) {
           log(response.body);
@@ -239,11 +246,10 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                 canceledOrders.clear();
 
                 for (var order in orderList) {
-                  if (order.orderStatus == "New" ||
-                      order.orderStatus == "Order Placed") {
+                  if (order.orderStatus == "Order Placed") {
                     newOrders.add(order);
                   } else if (order.orderStatus == "In Process" ||
-                      order.orderStatus == "Delivery" ||
+                      order.orderStatus == "Out for delivery" ||
                       order.orderStatus == "Ready for Pickup") {
                     currentOrders.add(order);
                   } else if (order.orderStatus == "Received" ||

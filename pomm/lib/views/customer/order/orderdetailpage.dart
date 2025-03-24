@@ -1,177 +1,170 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/order.dart';
+import 'package:pomm/views/clerk/order/orderstatuspage.dart';
 
-class OrderDetailPage extends StatefulWidget {
-  final Map<String, dynamic> orderDetails;
+class OrderDetailPage extends StatelessWidget {
+  final Customer customerdata;
+  final Order order;
 
-  const OrderDetailPage({super.key, required this.orderDetails});
+  const OrderDetailPage({
+    super.key,
+    required this.order,
+    required this.customerdata,
+  });
 
-  @override
-  _OrderDetailPageState createState() => _OrderDetailPageState();
-}
-
-class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Order Details"),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        title: Text(
+          "Order Details",
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Shipping Information Section
-            Card(
-              elevation: 2,
-              child: ListTile(
-                title: const Text("Shipping Information"),
-                subtitle: Text(
-                  "Tracking number: ${widget.orderDetails['trackingNumber']}",
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => TrackingPage(
-                            trackingNumber:
-                                widget.orderDetails['trackingNumber'],
-                          ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Order Details Section
-            const Text(
-              "Order Details",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            Card(
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Product Image
-                    Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black26),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child:
-                          widget.orderDetails['imageUrl'] != null
-                              ? Image.network(
-                                widget.orderDetails['imageUrl'],
-                                fit: BoxFit.cover,
-                              )
-                              : const Icon(
-                                Icons.image,
-                                size: 40,
-                                color: Colors.grey,
-                              ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    // Product Details
-                    Expanded(
-                      child: Column(
+            // Shipping Information (Navigates to OrderStatusPage)
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (content) =>
+                            OrderStatusPage(customerdata: customerdata),
+                  ),
+                );
+              },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.orderDetails['productName'],
-                            style: const TextStyle(
-                              fontSize: 16,
+                            "Shipping Information",
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            widget.orderDetails['description'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          Text(
-                            "Quantity: ${widget.orderDetails['quantity']}",
-                            style: const TextStyle(fontSize: 14),
+                            order.orderTracking ?? "No Tracking",
+                            style: GoogleFonts.poppins(fontSize: 12),
                           ),
                         ],
                       ),
+                      const Icon(Icons.arrow_forward_ios, size: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Customer Information
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Customer Information",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Name: ${order.customerName}",
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                    Text(
+                      "Phone: ${order.customerPhone}",
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+
+                    Text(
+                      "Shipping Address: ${order.shippingAddress}",
+                      style: GoogleFonts.poppins(fontSize: 12),
                     ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            // Order Summary
-            _buildOrderSummary("Order ID", widget.orderDetails['orderId']),
-            _buildOrderSummary(
-              "Subtotal",
-              "RM ${widget.orderDetails['subtotal']}",
-            ),
-            _buildOrderSummary(
-              "Delivery Charge",
-              "RM ${widget.orderDetails['deliveryCharge']}",
-            ),
-            _buildOrderSummary(
-              "Total",
-              "RM ${widget.orderDetails['total']}",
-              isBold: true,
+            // Order Details
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Order Details",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              order.productTitle ?? "Product Name",
+                              style: GoogleFonts.poppins(fontSize: 12),
+                            ),
+                            Text(
+                              order.productDesc ?? "Description",
+                              style: GoogleFonts.poppins(fontSize: 10),
+                            ),
+                            Text(
+                              "Quantity: ${order.productQty}",
+                              style: GoogleFonts.poppins(fontSize: 10),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Order ID: ${order.orderId}",
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                    Text(
+                      "Subtotal: RM zz",
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                    Text(
+                      "Delivery Charge: RM ",
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                    Text(
+                      "Total: RM ${order.orderTotal}",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrderSummary(String title, String value, {bool isBold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 16)),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TrackingPage extends StatelessWidget {
-  final String trackingNumber;
-
-  const TrackingPage({super.key, required this.trackingNumber});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Tracking Information")),
-      body: Center(
-        child: Text(
-          "Tracking Number: $trackingNumber",
-          style: const TextStyle(fontSize: 18),
         ),
       ),
     );
