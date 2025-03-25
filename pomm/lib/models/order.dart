@@ -9,6 +9,7 @@ class Order {
   String? productTitle;
   String? productDesc;
   String? productQty;
+  String? productId;
 
   String? orderBill;
   String? adminId;
@@ -29,6 +30,7 @@ class Order {
     this.productTitle,
     this.productDesc,
     this.productQty,
+    this.productId,
 
     this.orderBill,
     this.adminId,
@@ -50,6 +52,7 @@ class Order {
     productTitle = json['product_title'];
     productDesc = json['product_desc'];
     productQty = json['product_qty'];
+    productId = json['product_id'];
 
     orderBill = json['order_bill'];
     adminId = json['admin_id'];
@@ -72,6 +75,7 @@ class Order {
     data['product_title'] = productTitle;
     data['product_desc'] = productDesc;
     data['product_qty'] = productQty;
+    data['product_id'] = productId;
 
     data['order_bill'] = orderBill;
     data['admin_id'] = adminId;

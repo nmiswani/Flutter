@@ -198,6 +198,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             "customer_id": widget.customerdata.customerid.toString(),
             "product_id": widget.product.productId.toString(),
             "product_price": widget.product.productPrice.toString(),
+            "product_title": widget.product.productTitle.toString(),
           },
         )
         .then((response) {

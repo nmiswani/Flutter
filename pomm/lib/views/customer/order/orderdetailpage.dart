@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
+import 'package:pomm/models/product.dart';
 import 'package:pomm/views/clerk/order/orderstatuspage.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final Customer customerdata;
   final Order order;
+  final Product product;
 
   const OrderDetailPage({
     super.key,
     required this.order,
     required this.customerdata,
+    required this.product,
   });
 
   @override
@@ -94,7 +97,6 @@ class OrderDetailPage extends StatelessWidget {
                       "Phone: ${order.customerPhone}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
-
                     Text(
                       "Shipping Address: ${order.shippingAddress}",
                       style: GoogleFonts.poppins(fontSize: 12),
@@ -120,21 +122,20 @@ class OrderDetailPage extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              order.productTitle ?? "Product Name",
+                              "Product Name: ${order.productTitle}",
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
                             Text(
-                              order.productDesc ?? "Description",
-                              style: GoogleFonts.poppins(fontSize: 10),
+                              "Description: ${order.productDesc}",
+                              style: GoogleFonts.poppins(fontSize: 12),
                             ),
                             Text(
                               "Quantity: ${order.productQty}",
-                              style: GoogleFonts.poppins(fontSize: 10),
+                              style: GoogleFonts.poppins(fontSize: 12),
                             ),
                           ],
                         ),
@@ -146,11 +147,11 @@ class OrderDetailPage extends StatelessWidget {
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Subtotal: RM zz",
+                      "Subtotal: RM${order.orderSubtotal}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Delivery Charge: RM ",
+                      "Delivery Charge: RM${order.deliveryCharge}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(

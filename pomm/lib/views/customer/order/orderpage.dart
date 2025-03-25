@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
+import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/customer/order/orderdetailpage.dart';
 
@@ -94,6 +95,9 @@ class _OrderPageState extends State<OrderPage> {
                                 Order order = Order.fromJson(
                                   orderList[index].toJson(),
                                 );
+                                Product product = Product.fromJson(
+                                  orderList[index].toJson(),
+                                );
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -101,6 +105,7 @@ class _OrderPageState extends State<OrderPage> {
                                         (content) => OrderDetailPage(
                                           customerdata: widget.customerdata,
                                           order: order,
+                                          product: product,
                                         ),
                                   ),
                                 );
@@ -190,53 +195,49 @@ class _OrderPageState extends State<OrderPage> {
         : canceledOrders;
   }
 
-  void loadOrders(String customerid) {
-    String customerid = widget.customerdata.customerid.toString();
-    http
-        .get(
-          Uri.parse(
-            "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
-          ),
-        )
-        .then((response) {
-          log(response.body);
+  void loadOrders(String customerid) async {
+    try {
+      String customerid = widget.customerdata.customerid.toString();
+      final response = await http.get(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
+        ),
+      );
 
-          if (response.statusCode == 200) {
-            var data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
 
-            if (data['status'] == "success" && data['data'] != null) {
-              List<dynamic> ordersJson = data['data']['orders'];
+        if (data['status'] == "success" && data['data'] != null) {
+          List<dynamic> ordersJson = data['data']['orders'];
 
-              if (ordersJson.isNotEmpty) {
-                orderList.clear();
-                orderList =
-                    ordersJson.map((json) => Order.fromJson(json)).toList();
+          if (ordersJson.isNotEmpty) {
+            orderList.clear();
+            orderList = ordersJson.map((json) => Order.fromJson(json)).toList();
 
-                currentOrders.clear();
-                completedOrders.clear();
-                canceledOrders.clear();
+            currentOrders.clear();
+            completedOrders.clear();
+            canceledOrders.clear();
 
-                for (var order in orderList) {
-                  if (order.orderStatus == "Order placed" ||
-                      order.orderStatus == "In process" ||
-                      order.orderStatus == "Out for delivery" ||
-                      order.orderStatus == "Ready for pickup") {
-                    currentOrders.add(order);
-                  } else if (order.orderStatus == "Received" ||
-                      order.orderStatus == "Delivered") {
-                    completedOrders.add(order);
-                  } else if (order.orderStatus == "Canceled") {
-                    canceledOrders.add(order);
-                  }
-                }
+            for (var order in orderList) {
+              if (order.orderStatus == "Order placed" ||
+                  order.orderStatus == "In process" ||
+                  order.orderStatus == "Out for delivery" ||
+                  order.orderStatus == "Ready for pickup") {
+                currentOrders.add(order);
+              } else if (order.orderStatus == "Received" ||
+                  order.orderStatus == "Delivered") {
+                completedOrders.add(order);
+              } else if (order.orderStatus == "Canceled") {
+                canceledOrders.add(order);
               }
             }
           }
-          log("Loaded ${orderList.length} orders");
-          setState(() {});
-        })
-        .catchError((error) {
-          print("Error loading orders: $error");
-        });
+        }
+      }
+      log("Loaded ${orderList.length} orders");
+      setState(() {});
+    } catch (error) {
+      print("Error loading orders: $error");
+    }
   }
 }
