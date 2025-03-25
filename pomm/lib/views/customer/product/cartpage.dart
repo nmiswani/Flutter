@@ -10,7 +10,6 @@ import 'package:pomm/views/customer/product/checkoutpage.dart';
 
 class CartPage extends StatefulWidget {
   final Customer customer;
-
   const CartPage({super.key, required this.customer});
 
   @override
@@ -207,18 +206,17 @@ class _CartPageState extends State<CartPage> {
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        if (data['status'] == "success") {
+        print("API Response: $data"); // ✅ Debug API response
+
+        if (data['status'] == "success" && data['data'] != null) {
           cartList.clear();
-          total = 0.0;
           data['data']['carts'].forEach((v) {
-            cartList.add(Cart.fromJson(v));
-            total +=
-                double.parse(v['product_price']) * int.parse(v['cart_qty']);
+            Cart cartItem = Cart.fromJson(v);
+            print("Cart Product ID: ${cartItem.productId}"); // ✅ Debug here
+            cartList.add(cartItem);
           });
 
           setState(() {});
-        } else {
-          Navigator.of(context).pop();
         }
       }
     } catch (error) {

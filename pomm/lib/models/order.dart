@@ -6,9 +6,10 @@ class Order {
 
   String? customerName;
   String? customerPhone;
+  String? customerEmail;
   String? productTitle;
   String? productDesc;
-  String? productQty;
+  String? cartQty;
   String? productId;
 
   String? orderBill;
@@ -19,6 +20,8 @@ class Order {
   String? deliveryCharge;
   String? orderSubtotal;
 
+  String? cartId;
+
   Order({
     this.orderId,
     this.orderDate,
@@ -27,9 +30,10 @@ class Order {
 
     this.customerName,
     this.customerPhone,
+    this.customerEmail,
     this.productTitle,
     this.productDesc,
-    this.productQty,
+    this.cartQty,
     this.productId,
 
     this.orderBill,
@@ -39,6 +43,7 @@ class Order {
     this.shippingAddress,
     this.deliveryCharge,
     this.orderSubtotal,
+    this.cartId,
   });
 
   Order.fromJson(Map<String, dynamic> json) {
@@ -49,9 +54,10 @@ class Order {
 
     customerName = json['customer_name'];
     customerPhone = json['customer_phone'];
+    customerEmail = json['customer_email'];
     productTitle = json['product_title'];
     productDesc = json['product_desc'];
-    productQty = json['product_qty'];
+    cartQty = json['cart_qty'];
     productId = json['product_id'];
 
     orderBill = json['order_bill'];
@@ -61,6 +67,8 @@ class Order {
     shippingAddress = json['shipping_address'];
     deliveryCharge = json['delivery_charge'];
     orderSubtotal = json['order_subtotal'];
+
+    cartId = json['cart_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -72,9 +80,10 @@ class Order {
 
     data['customer_name'] = customerName;
     data['customer_phone'] = customerPhone;
+    data['customer_email'] = customerEmail;
     data['product_title'] = productTitle;
     data['product_desc'] = productDesc;
-    data['product_qty'] = productQty;
+    data['cart_qty'] = cartQty;
     data['product_id'] = productId;
 
     data['order_bill'] = orderBill;
@@ -84,6 +93,8 @@ class Order {
     data['shipping_address'] = shippingAddress;
     data['delivery_charge'] = deliveryCharge;
     data['order_subtotal'] = orderSubtotal;
+
+    data['cart_id'] = cartId;
 
     return data;
   }

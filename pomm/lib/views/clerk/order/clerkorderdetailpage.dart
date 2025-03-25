@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/models/cart.dart';
-import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
-import 'package:pomm/views/customer/order/orderstatuspage.dart';
+import 'package:pomm/views/clerk/order/orderstatusclerkpage.dart';
 
-class OrderDetailPage extends StatelessWidget {
-  final Customer customerdata;
+class ClerkOrderDetailPage extends StatefulWidget {
+  final Clerk clerk;
   final Order order;
   final Cart cart;
 
-  const OrderDetailPage({
+  const ClerkOrderDetailPage({
     super.key,
     required this.order,
-    required this.customerdata,
     required this.cart,
+    required this.clerk,
   });
 
+  @override
+  State<ClerkOrderDetailPage> createState() => _ClerkOrderDetailPageState();
+}
+
+class _ClerkOrderDetailPageState extends State<ClerkOrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,9 +45,9 @@ class OrderDetailPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (content) => OrderStatusPage(
-                          customerdata: customerdata,
-                          order: order,
+                        (content) => OrderStatusClerkPage(
+                          clerk: widget.clerk,
+                          order: widget.order,
                         ),
                   ),
                 );
@@ -64,7 +69,7 @@ class OrderDetailPage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "Tracking number: ${order.orderTracking}",
+                            "Tracking number: ${widget.order.orderTracking}",
                             style: GoogleFonts.poppins(fontSize: 12),
                           ),
                         ],
@@ -92,15 +97,15 @@ class OrderDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      "Name: ${order.customerName}",
+                      "Name: ${widget.order.customerName}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Phone: ${order.customerPhone}",
+                      "Phone: ${widget.order.customerPhone}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Email: ${order.customerEmail}",
+                      "Email: ${widget.order.customerEmail}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                   ],
@@ -124,15 +129,24 @@ class OrderDetailPage extends StatelessWidget {
                     ),
                     Row(
                       children: [
+                        Container(
+                          width: 60,
+                          height: 60,
+                          color: Colors.grey[300], // Placeholder for image
+                          child: const Center(
+                            child: Icon(Icons.image, size: 30),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Product Name: ${order.productTitle}", // ✅ Product title from tbl_carts
+                              "Product Name: ${widget.order.productTitle}",
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
                             Text(
-                              "Quantity: ${order.cartQty}", // ✅ Cart quantity from tbl_carts
+                              "Quantity: ${widget.order.cartQty}",
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
                           ],
@@ -141,23 +155,23 @@ class OrderDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "Order ID: ${order.orderId}",
+                      "Order ID: ${widget.order.orderId}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     // Text(
-                    //   "Cart ID: ${order.cartId}", // ✅ Display Cart ID
+                    //   "Cart ID: ${widget.order.cartId}",
                     //   style: GoogleFonts.poppins(fontSize: 12),
                     // ),
                     Text(
-                      "Subtotal: RM${order.orderSubtotal}",
+                      "Subtotal: RM${widget.order.orderSubtotal}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Delivery Charge: RM${order.deliveryCharge}",
+                      "Delivery Charge: RM${widget.order.deliveryCharge}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Total: RM ${order.orderTotal}",
+                      "Total: RM ${widget.order.orderTotal}",
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

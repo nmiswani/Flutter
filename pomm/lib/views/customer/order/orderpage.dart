@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
-import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/customer/order/orderdetailpage.dart';
 
@@ -95,7 +95,7 @@ class _OrderPageState extends State<OrderPage> {
                                 Order order = Order.fromJson(
                                   orderList[index].toJson(),
                                 );
-                                Product product = Product.fromJson(
+                                Cart cart = Cart.fromJson(
                                   orderList[index].toJson(),
                                 );
                                 await Navigator.push(
@@ -105,7 +105,7 @@ class _OrderPageState extends State<OrderPage> {
                                         (content) => OrderDetailPage(
                                           customerdata: widget.customerdata,
                                           order: order,
-                                          product: product,
+                                          cart: cart,
                                         ),
                                   ),
                                 );

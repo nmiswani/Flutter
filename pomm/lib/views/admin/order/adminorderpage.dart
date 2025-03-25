@@ -1,14 +1,14 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pomm/models/admin.dart';
+import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/admin/order/adminorderdetailspage.dart';
+import 'package:pomm/views/admin/order/adminorderdetailpage.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
 
 class AdminOrderPage extends StatefulWidget {
@@ -101,15 +101,32 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
+                                // Order order = Order.fromJson(
+                                //   orderList[index].toJson(),
+                                // );
+                                // await Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder:
+                                //         (context) =>
+                                //             AdminOrderDetailsPage(order: order),
+                                //   ),
+                                // );
                                 Order order = Order.fromJson(
+                                  orderList[index].toJson(),
+                                );
+                                Cart cart = Cart.fromJson(
                                   orderList[index].toJson(),
                                 );
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (context) =>
-                                            AdminOrderDetailsPage(order: order),
+                                        (content) => AdminOrderDetailPage(
+                                          order: order,
+                                          cart: cart,
+                                          admin: widget.admin,
+                                        ),
                                   ),
                                 );
                                 loadOrders(id);
@@ -246,11 +263,11 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                 canceledOrders.clear();
 
                 for (var order in orderList) {
-                  if (order.orderStatus == "Order Placed") {
+                  if (order.orderStatus == "Order placed") {
                     newOrders.add(order);
-                  } else if (order.orderStatus == "In Process" ||
+                  } else if (order.orderStatus == "In process" ||
                       order.orderStatus == "Out for delivery" ||
-                      order.orderStatus == "Ready for Pickup") {
+                      order.orderStatus == "Ready for pickup") {
                     currentOrders.add(order);
                   } else if (order.orderStatus == "Received" ||
                       order.orderStatus == "Delivered") {

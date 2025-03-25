@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:pomm/models/customer.dart';
+import 'package:pomm/models/order.dart';
 
 class OrderStatusPage extends StatefulWidget {
   final Customer customerdata;
-  const OrderStatusPage({super.key, required this.customerdata});
+  final Order order;
+
+  const OrderStatusPage({
+    super.key,
+    required this.order,
+    required this.customerdata,
+  });
 
   @override
   State<OrderStatusPage> createState() => _OrderStatusPageState();
@@ -14,10 +20,9 @@ class OrderStatusPage extends StatefulWidget {
 class _OrderStatusPageState extends State<OrderStatusPage> {
   String currentStatus = "Order placed"; // Default order status
 
-  // Shipping details (can be loaded from API in the future)
-  final String trackingNumber = "MY1234567890";
-  final String shippingAddress =
-      "No. 10, Jalan Bukit Indah, 81300 Johor Bahru, Malaysia";
+  // Retrieve tracking number and shipping address from order
+  late String trackingNumber;
+  late String shippingAddress;
 
   // List of order statuses with icons
   final List<Map<String, dynamic>> statusOptions = [
@@ -28,60 +33,11 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
     {"status": "Ready for pickup", "icon": Icons.storefront},
   ];
 
-  Future<void> updateOrderStatus(String newStatus) async {
-    setState(() {
-      currentStatus = newStatus;
-    });
-
-    // Send updated status to PHP API
-    final response = await http.post(
-      Uri.parse("https://yourserver.com/update_order_status.php"),
-      body: {"order_id": "12345", "status": newStatus},
-    );
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Order status updated to: $newStatus")),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to update order status")),
-      );
-    }
-  }
-
-  void showUpdateDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Update Order Status",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children:
-                statusOptions.map((status) {
-                  return ListTile(
-                    leading: Icon(status["icon"], color: Colors.blue),
-                    title: Text(
-                      status["status"],
-                      style: GoogleFonts.poppins(fontSize: 14),
-                    ),
-                    onTap: () {
-                      updateOrderStatus(status["status"]);
-                      Navigator.pop(context);
-                    },
-                  );
-                }).toList(),
-          ),
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    trackingNumber = widget.order.orderTracking ?? "No Tracking";
+    shippingAddress = widget.order.shippingAddress ?? "No Address Provided";
   }
 
   Color getStatusColor(String status) {
@@ -108,7 +64,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 📦 Shipping Details Card (Newly Added)
+            // 📦 Shipping Details Card
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -177,24 +133,6 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // 🔄 Update Order Status Button
-            Center(
-              child: ElevatedButton(
-                onPressed: showUpdateDialog,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 20,
-                  ),
-                  backgroundColor: Colors.black,
-                ),
-                child: Text(
-                  "Update Order Status",
-                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-                ),
-              ),
-            ),
           ],
         ),
       ),

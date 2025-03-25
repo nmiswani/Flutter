@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/clerk/order/orderclerkpage.dart';
+import 'package:pomm/views/clerk/order/clerkorderpage.dart';
 
 class PendingOrderPage extends StatefulWidget {
   final Clerk clerk;
@@ -103,7 +103,7 @@ class _PendingOrderPageState extends State<PendingOrderPage> {
                             style: GoogleFonts.poppins(),
                           ),
                           Text(
-                            "Quantity: ${widget.order.productQty ?? 1}",
+                            "Quantity: ${widget.order.cartQty ?? 1}",
                             style: GoogleFonts.poppins(),
                           ),
                         ],

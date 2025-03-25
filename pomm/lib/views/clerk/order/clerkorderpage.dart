@@ -4,10 +4,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/clerk/order/pendingorderpage.dart';
+import 'package:pomm/views/clerk/order/clerkorderdetailpage.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
 
 class OrderClerkPage extends StatefulWidget {
@@ -20,9 +21,11 @@ class OrderClerkPage extends StatefulWidget {
 
 class _OrderClerkPageState extends State<OrderClerkPage> {
   List<Order> orderList = <Order>[];
+  List<Order> newOrders = [];
   List<Order> currentOrders = [];
   List<Order> completedOrders = [];
   List<Order> canceledOrders = [];
+  List<Order> cancelRequestOrders = [];
   int _selectedIndex = 0;
   late double screenWidth, screenHeight;
   int axiscount = 2;
@@ -42,11 +45,8 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 500) {
-      axiscount = 3;
-    } else {
-      axiscount = 2;
-    }
+    axiscount = screenWidth > 500 ? 3 : 2;
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Color.fromARGB(255, 55, 97, 70)),
@@ -59,21 +59,32 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
         elevation: 0.0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white), // White icon
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: _logout,
           ),
         ],
       ),
+
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _tabButton("Current", 0),
-              _tabButton("Completed", 1),
-              _tabButton("Canceled", 2),
-            ],
+          // ✅ Wrap Row in a Container to provide finite width
+          Container(
+            width: double.infinity,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _tabButton("New", 0),
+                  _tabButton("Current", 1),
+                  _tabButton("Completed", 2),
+                  _tabButton("Cancel Request", 3),
+                  _tabButton("Canceled", 4),
+                ],
+              ),
+            ),
           ),
+
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -98,20 +109,25 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
-                                Navigator.push(
+                                Order order = Order.fromJson(
+                                  orderList[index].toJson(),
+                                );
+                                Cart cart = Cart.fromJson(
+                                  orderList[index].toJson(),
+                                );
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (context) => PendingOrderPage(
+                                        (content) => ClerkOrderDetailPage(
+                                          order: order,
+                                          cart: cart,
                                           clerk: widget.clerk,
-                                          order:
-                                              getFilteredOrders()[index], // ✅ Pass the correct order object
                                         ),
                                   ),
                                 );
                                 loadOrders(id);
                               },
-
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -125,13 +141,13 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
                                         children: [
                                           const SizedBox(height: 5),
                                           Text(
-                                            truncateString(
-                                              "Order ID : ${getFilteredOrders()[index].orderId?.toString() ?? "No ID"}",
-                                            ),
+                                            "Order Tracking : ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
                                             style: GoogleFonts.poppins(
                                               fontSize: 12,
                                               color: Colors.black,
                                             ),
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
                                             "Date : ${formatDate(getFilteredOrders()[index].orderDate)}",
@@ -209,16 +225,22 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
 
   List<Order> getFilteredOrders() {
     return _selectedIndex == 0
-        ? currentOrders
+        ? newOrders
         : _selectedIndex == 1
+        ? currentOrders
+        : _selectedIndex == 2
         ? completedOrders
+        : _selectedIndex == 3
+        ? cancelRequestOrders
         : canceledOrders;
   }
 
   void loadOrders(String id) {
     http
         .get(
-          Uri.parse("${MyServerConfig.server}/pomm/php/load_orders.php?id=$id"),
+          Uri.parse(
+            "${MyServerConfig.server}/pomm/php/load_order_clerkadmin.php?id=$id",
+          ),
         )
         .then((response) {
           log(response.body);
@@ -234,16 +256,24 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
                 orderList =
                     ordersJson.map((json) => Order.fromJson(json)).toList();
 
+                newOrders.clear();
                 currentOrders.clear();
                 completedOrders.clear();
                 canceledOrders.clear();
+                cancelRequestOrders.clear();
 
                 for (var order in orderList) {
-                  if (order.orderStatus == "New" ||
-                      order.orderStatus == "Order Placed") {
+                  if (order.orderStatus == "Order placed") {
+                    newOrders.add(order);
+                  } else if (order.orderStatus == "In process" ||
+                      order.orderStatus == "Out for delivery" ||
+                      order.orderStatus == "Ready for pickup") {
                     currentOrders.add(order);
-                  } else if (order.orderStatus == "Completed") {
+                  } else if (order.orderStatus == "Received" ||
+                      order.orderStatus == "Delivered") {
                     completedOrders.add(order);
+                  } else if (order.orderStatus == "Request to cancel") {
+                    cancelRequestOrders.add(order);
                   } else if (order.orderStatus == "Canceled") {
                     canceledOrders.add(order);
                   }

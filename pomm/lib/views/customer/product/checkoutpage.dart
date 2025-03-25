@@ -19,13 +19,10 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   List<Cart> cartList = [];
   double total = 0.0;
-  double deliveryCharge = 0.00; // ✅ Initially 0, updated dynamically
+  double deliveryCharge = 0.00;
 
-  // ✅ Shipping Option List
   List<String> shippingOptions = ["Delivery", "In-store Pickup"];
-  String selectedShippingOption = "In-store Pickup"; // Default selection
-
-  // ✅ Delivery Address List
+  String selectedShippingOption = "In-store Pickup";
   List<String> deliveryaddresslist = [
     "Laluan A",
     "Laluan B",
@@ -33,7 +30,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     "Laluan D",
     "Luar Kampus",
   ];
-  String? selectedDeliveryAddress; // Selected delivery address
+  String? selectedDeliveryAddress;
 
   @override
   void initState() {
@@ -59,7 +56,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               padding: const EdgeInsets.all(10),
               children: [
                 ...cartList.map((item) => _buildCartItem(item)).toList(),
-                _buildShippingCard(), // ✅ Updated Shipping Card
+                _buildShippingCard(),
               ],
             ),
           ),
@@ -99,7 +96,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           );
           Future.delayed(const Duration(seconds: 3), () {
-            Navigator.of(context).pop(); // Go back if cart is empty
+            Navigator.of(context).pop();
           });
         }
       }
@@ -131,16 +128,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
               onChanged: (value) {
                 setState(() {
                   selectedShippingOption = value!;
-                  selectedDeliveryAddress = null; // Reset address selection
+                  selectedDeliveryAddress = null;
                   deliveryCharge =
-                      (selectedShippingOption == "Delivery")
-                          ? 5.00
-                          : 0.00; // ✅ Update charge
+                      (selectedShippingOption == "Delivery") ? 5.00 : 0.00;
                 });
               },
             ),
             const SizedBox(height: 10),
-
             if (selectedShippingOption == "Delivery") ...[
               Text(
                 "Select Delivery Address",
@@ -197,49 +191,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
       decoration: const BoxDecoration(color: Colors.black),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Subtotal", style: GoogleFonts.poppins(color: Colors.white)),
-              Text(
-                "RM${calculateSubtotal().toStringAsFixed(2)}",
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Delivery Charge",
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-              Text(
-                "RM${deliveryCharge.toStringAsFixed(2)}", // ✅ Now updates dynamically
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ],
-          ),
+          _buildSummaryRow("Subtotal", calculateSubtotal()),
+          _buildSummaryRow("Delivery Charge", deliveryCharge),
           Divider(color: Colors.white),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Total",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "RM${calculateTotal().toStringAsFixed(2)}",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+          _buildSummaryRow("Total", calculateTotal(), isBold: true),
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () async {
@@ -254,17 +209,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 return;
               }
 
-              setState(() {
-                deliveryCharge =
-                    (selectedShippingOption == "Delivery") ? 5.00 : 0.00;
-              });
-
               String shippingAddress =
                   (selectedShippingOption == "Delivery")
                       ? selectedDeliveryAddress!
                       : "In-store Pickup";
 
               await loadUserCart();
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -275,6 +226,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         shippingAddress: shippingAddress,
                         orderSubtotal: calculateSubtotal(),
                         deliveryCharge: deliveryCharge,
+                        cartList: cartList, // ✅ Pass entire cart list
                       ),
                 ),
               );
@@ -289,6 +241,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, double value, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        Text(
+          "RM${value.toStringAsFixed(2)}",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ],
     );
   }
 
