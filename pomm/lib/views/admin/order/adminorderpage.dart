@@ -9,6 +9,7 @@ import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/admin/order/adminorderdetailpage.dart';
+import 'package:pomm/views/admin/order/canceldetailadminpage.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
 
 class AdminOrderPage extends StatefulWidget {
@@ -101,34 +102,40 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
-                                // Order order = Order.fromJson(
-                                //   orderList[index].toJson(),
-                                // );
-                                // await Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder:
-                                //         (context) =>
-                                //             AdminOrderDetailsPage(order: order),
-                                //   ),
-                                // );
+                                // Get the correct order based on the filtered list
                                 Order order = Order.fromJson(
-                                  orderList[index].toJson(),
+                                  getFilteredOrders()[index].toJson(),
                                 );
                                 Cart cart = Cart.fromJson(
-                                  orderList[index].toJson(),
+                                  getFilteredOrders()[index].toJson(),
                                 );
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (content) => AdminOrderDetailPage(
-                                          order: order,
-                                          cart: cart,
-                                          admin: widget.admin,
-                                        ),
-                                  ),
-                                );
+
+                                if (order.orderStatus == "Canceled" ||
+                                    order.orderStatus == "Request to cancel") {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (content) => CancelDetailAdminPage(
+                                            order: order,
+                                            admin: widget.admin,
+                                            cart: cart,
+                                          ),
+                                    ),
+                                  );
+                                } else {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (content) => AdminOrderDetailPage(
+                                            order: order,
+                                            cart: cart,
+                                            admin: widget.admin,
+                                          ),
+                                    ),
+                                  );
+                                }
                                 loadOrders(id);
                               },
                               child: Column(
@@ -267,7 +274,8 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                     newOrders.add(order);
                   } else if (order.orderStatus == "In process" ||
                       order.orderStatus == "Out for delivery" ||
-                      order.orderStatus == "Ready for pickup") {
+                      order.orderStatus == "Ready for pickup" ||
+                      order.orderStatus == "Request to cancel") {
                     currentOrders.add(order);
                   } else if (order.orderStatus == "Received" ||
                       order.orderStatus == "Delivered") {

@@ -8,6 +8,7 @@ import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/customer/order/canceldetailcustomerpage.dart';
 import 'package:pomm/views/customer/order/orderdetailpage.dart';
 
 class OrderPage extends StatefulWidget {
@@ -92,25 +93,43 @@ class _OrderPageState extends State<OrderPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
+                                // Get the correct order based on the filtered list
                                 Order order = Order.fromJson(
-                                  orderList[index].toJson(),
+                                  getFilteredOrders()[index].toJson(),
                                 );
                                 Cart cart = Cart.fromJson(
-                                  orderList[index].toJson(),
+                                  getFilteredOrders()[index].toJson(),
                                 );
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (content) => OrderDetailPage(
-                                          customerdata: widget.customerdata,
-                                          order: order,
-                                          cart: cart,
-                                        ),
-                                  ),
-                                );
+
+                                if (order.orderStatus == "Canceled" ||
+                                    order.orderStatus == "Request to cancel") {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (content) => CancelDetailCustomerPage(
+                                            order: order,
+                                            customer: widget.customerdata,
+                                            cart: cart,
+                                          ),
+                                    ),
+                                  );
+                                } else {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (content) => OrderDetailPage(
+                                            customerdata: widget.customerdata,
+                                            order: order,
+                                            cart: cart,
+                                          ),
+                                    ),
+                                  );
+                                }
                                 loadOrders(customerid);
                               },
+
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -222,7 +241,8 @@ class _OrderPageState extends State<OrderPage> {
               if (order.orderStatus == "Order placed" ||
                   order.orderStatus == "In process" ||
                   order.orderStatus == "Out for delivery" ||
-                  order.orderStatus == "Ready for pickup") {
+                  order.orderStatus == "Ready for pickup" ||
+                  order.orderStatus == "Request to cancel") {
                 currentOrders.add(order);
               } else if (order.orderStatus == "Received" ||
                   order.orderStatus == "Delivered") {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -6,53 +7,36 @@ import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 
-class OrderStatusClerkPage extends StatefulWidget {
+class OrderStatusPickupPage extends StatefulWidget {
   final Clerk clerk;
   final Order order;
 
-  const OrderStatusClerkPage({
+  const OrderStatusPickupPage({
     super.key,
     required this.clerk,
     required this.order,
   });
 
   @override
-  State<OrderStatusClerkPage> createState() => _OrderStatusClerkPageState();
+  State<OrderStatusPickupPage> createState() => _OrderStatusClerkPageState();
 }
 
-class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
-  late String currentStatus;
+class _OrderStatusClerkPageState extends State<OrderStatusPickupPage> {
+  String currentStatus = "Order placed"; // Default order status
+
+  // Retrieve tracking number and shipping address from order
   late String trackingNumber;
   late String shippingAddress;
-  String cancelStatus = "Canceled";
 
-  // ✅ Status options with icons
+  // List of order statuses with icons
   final List<Map<String, dynamic>> statusOptions = [
     {"status": "Order placed", "icon": Icons.shopping_cart},
     {"status": "In process", "icon": Icons.autorenew},
-    {"status": "Out for delivery", "icon": Icons.local_shipping},
+    {"status": "Order dispatched", "icon": Icons.local_shipping},
     {"status": "Delivered", "icon": Icons.check_circle},
     {"status": "Ready for pickup", "icon": Icons.storefront},
   ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    // ✅ Set currentStatus correctly from the order object
-    setState(() {
-      currentStatus = widget.order.orderStatus ?? "Order placed";
-    });
-
-    trackingNumber = widget.order.orderTracking ?? "No Tracking";
-    shippingAddress = widget.order.shippingAddress ?? "No Address Provided";
-  }
-
-  Color getStatusColor(String status) {
-    return (status == currentStatus) ? Colors.blue : Colors.grey.shade400;
-  }
-
-  // ✅ Function to update order status
   Future<void> updateOrderStatus(String newStatus) async {
     setState(() {
       currentStatus = newStatus;
@@ -62,7 +46,7 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
       final response = await http.post(
         Uri.parse("${MyServerConfig.server}/pomm/php/update_order_status.php"),
         body: {
-          "order_id": widget.order.orderId, // ✅ Ensure correct order ID
+          "order_id": widget.order.orderId, // Ensure correct order ID is sent
           "status": newStatus,
         },
       );
@@ -82,7 +66,6 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
     }
   }
 
-  // ✅ Show update dialog
   void showUpdateDialog() {
     showDialog(
       context: context,
@@ -106,7 +89,7 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
                       style: GoogleFonts.poppins(fontSize: 14),
                     ),
                     onTap: () {
-                      Navigator.pop(context); // Close first dialog
+                      Navigator.pop(context); // Close the first dialog
                       showConfirmUpdateDialog(
                         status["status"],
                       ); // Show confirmation
@@ -164,6 +147,17 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    trackingNumber = widget.order.orderTracking ?? "No Tracking";
+    shippingAddress = widget.order.shippingAddress ?? "No Address Provided";
+  }
+
+  Color getStatusColor(String status) {
+    return (status == currentStatus) ? Colors.blue : Colors.grey;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -183,7 +177,7 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 📦 Shipping Details Card
+            // 📦 Shipping Details Card (Newly Added)
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -253,36 +247,20 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
             ),
             const SizedBox(height: 20),
 
-            // 🔄 Dynamic Button for Order Status Update
+            // 🔄 Update Order Status Button
             Center(
               child: ElevatedButton(
-                onPressed:
-                    (currentStatus == "Delivered")
-                        ? null // Disable button if status is "Delivered"
-                        : (currentStatus == "Request to cancel")
-                        ? approveCancellation // Approve cancellation
-                        : showUpdateDialog, // Show update status dialog
+                onPressed: showUpdateDialog,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     vertical: 12,
                     horizontal: 20,
                   ),
-                  backgroundColor:
-                      (currentStatus == "Delivered")
-                          ? Colors.grey
-                          : Colors.black, // Change color if disabled
+                  backgroundColor: Colors.black,
                 ),
                 child: Text(
-                  currentStatus == "Request to cancel"
-                      ? "Approve Cancellation" // Change button text
-                      : "Update Order Status",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color:
-                        (currentStatus == "Delivered")
-                            ? Colors.white60
-                            : Colors.white, // Light text if disabled
-                  ),
+                  "Update Order Status",
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                 ),
               ),
             ),
@@ -290,31 +268,5 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
         ),
       ),
     );
-  }
-
-  Future<void> approveCancellation() async {
-    try {
-      final response = await http.post(
-        Uri.parse("${MyServerConfig.server}/pomm/php/update_order_status.php"),
-        body: {"order_id": widget.order.orderId, "status": cancelStatus},
-      );
-
-      var data = jsonDecode(response.body);
-      if (data['status'] == "success") {
-        setState(() {
-          currentStatus = "Cancelled"; // Change status after approval
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Order cancellation approved")),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Failed: ${data['message']}")));
-      }
-    } catch (error) {
-      print("Error approving cancellation: $error");
-    }
   }
 }

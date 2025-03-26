@@ -5,7 +5,7 @@ import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/views/customer/order/orderstatuspage.dart';
 
-class OrderDetailPage extends StatelessWidget {
+class OrderDetailPage extends StatefulWidget {
   final Customer customerdata;
   final Order order;
   final Cart cart;
@@ -17,6 +17,11 @@ class OrderDetailPage extends StatelessWidget {
     required this.cart,
   });
 
+  @override
+  State<OrderDetailPage> createState() => _OrderDetailPageState();
+}
+
+class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,8 +46,8 @@ class OrderDetailPage extends StatelessWidget {
                   MaterialPageRoute(
                     builder:
                         (content) => OrderStatusPage(
-                          customerdata: customerdata,
-                          order: order,
+                          customerdata: widget.customerdata,
+                          order: widget.order,
                         ),
                   ),
                 );
@@ -64,7 +69,7 @@ class OrderDetailPage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "Tracking number: ${order.orderTracking}",
+                            "Tracking number: ${widget.order.orderTracking}",
                             style: GoogleFonts.poppins(fontSize: 12),
                           ),
                         ],
@@ -76,37 +81,37 @@ class OrderDetailPage extends StatelessWidget {
               ),
             ),
 
-            // Customer Information
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Customer Information",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      "Name: ${order.customerName}",
-                      style: GoogleFonts.poppins(fontSize: 12),
-                    ),
-                    Text(
-                      "Phone: ${order.customerPhone}",
-                      style: GoogleFonts.poppins(fontSize: 12),
-                    ),
-                    Text(
-                      "Email: ${order.customerEmail}",
-                      style: GoogleFonts.poppins(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // // Customer Information
+            // Card(
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(12.0),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Text(
+            //           "Customer Information",
+            //           style: GoogleFonts.poppins(
+            //             fontSize: 14,
+            //             fontWeight: FontWeight.bold,
+            //           ),
+            //         ),
+            //         const SizedBox(height: 5),
+            //         Text(
+            //           "Name: ${order.customerName}",
+            //           style: GoogleFonts.poppins(fontSize: 12),
+            //         ),
+            //         Text(
+            //           "Phone: ${order.customerPhone}",
+            //           style: GoogleFonts.poppins(fontSize: 12),
+            //         ),
+            //         Text(
+            //           "Email: ${order.customerEmail}",
+            //           style: GoogleFonts.poppins(fontSize: 12),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
 
             // Order Details
             Card(
@@ -128,11 +133,11 @@ class OrderDetailPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Product Name: ${order.productTitle}", // ✅ Product title from tbl_carts
+                              "Product Name: ${widget.order.productTitle}", // ✅ Product title from tbl_carts
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
                             Text(
-                              "Quantity: ${order.cartQty}", // ✅ Cart quantity from tbl_carts
+                              "Quantity: ${widget.order.cartQty}", // ✅ Cart quantity from tbl_carts
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
                           ],
@@ -141,7 +146,7 @@ class OrderDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "Order ID: ${order.orderId}",
+                      "Order ID: ${widget.order.orderId}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     // Text(
@@ -149,15 +154,15 @@ class OrderDetailPage extends StatelessWidget {
                     //   style: GoogleFonts.poppins(fontSize: 12),
                     // ),
                     Text(
-                      "Subtotal: RM${order.orderSubtotal}",
+                      "Subtotal: RM${widget.order.orderSubtotal}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Delivery Charge: RM${order.deliveryCharge}",
+                      "Delivery Charge: RM${widget.order.deliveryCharge}",
                       style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     Text(
-                      "Total: RM ${order.orderTotal}",
+                      "Total: RM ${widget.order.orderTotal}",
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

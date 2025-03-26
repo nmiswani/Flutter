@@ -8,6 +8,7 @@ import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/clerk/order/canceldetailpage.dart';
 import 'package:pomm/views/clerk/order/clerkorderdetailpage.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
 
@@ -67,23 +68,29 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
 
       body: Column(
         children: [
-          // ✅ Wrap Row in a Container to provide finite width
-          Container(
-            width: double.infinity,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _tabButton("New", 0),
-                  _tabButton("Current", 1),
-                  _tabButton("Completed", 2),
-                  _tabButton("Cancel Request", 3),
-                  _tabButton("Canceled", 4),
-                ],
-              ),
-            ),
+          // ✅ First Row: New, Current, Completed
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _tabButton("New", 0),
+              _tabButton("Current", 1),
+              _tabButton("Completed", 2),
+            ],
           ),
+          const SizedBox(height: 10),
+          // ✅ Second Row: Cancel Request, Canceled
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _tabButton("Cancel Request", 3),
+              _tabButton("Canceled", 4),
+            ],
+          ),
+          const SizedBox(height: 10),
 
           Expanded(
             child: RefreshIndicator(
@@ -109,25 +116,42 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
                             color: const Color.fromARGB(248, 214, 227, 216),
                             child: InkWell(
                               onTap: () async {
+                                // Get the correct order based on the filtered list
                                 Order order = Order.fromJson(
-                                  orderList[index].toJson(),
+                                  getFilteredOrders()[index].toJson(),
                                 );
                                 Cart cart = Cart.fromJson(
-                                  orderList[index].toJson(),
+                                  getFilteredOrders()[index].toJson(),
                                 );
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (content) => ClerkOrderDetailPage(
-                                          order: order,
-                                          cart: cart,
-                                          clerk: widget.clerk,
-                                        ),
-                                  ),
-                                );
+
+                                if (order.orderStatus == "Canceled") {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (content) => CancelDetailPage(
+                                            order: order,
+                                            clerk: widget.clerk,
+                                            cart: cart,
+                                          ),
+                                    ),
+                                  );
+                                } else {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (content) => ClerkOrderDetailPage(
+                                            order: order,
+                                            cart: cart,
+                                            clerk: widget.clerk,
+                                          ),
+                                    ),
+                                  );
+                                }
                                 loadOrders(id);
                               },
+
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [

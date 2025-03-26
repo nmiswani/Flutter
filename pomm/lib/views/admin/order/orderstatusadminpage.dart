@@ -18,7 +18,7 @@ class OrderStatusAdminPage extends StatefulWidget {
 }
 
 class _OrderStatusAdminPageState extends State<OrderStatusAdminPage> {
-  String currentStatus = "Order placed"; // Default order status
+  late String currentStatus;
 
   // Retrieve tracking number and shipping address from order
   late String trackingNumber;
@@ -36,12 +36,18 @@ class _OrderStatusAdminPageState extends State<OrderStatusAdminPage> {
   @override
   void initState() {
     super.initState();
+
+    // ✅ Set currentStatus correctly from the order object
+    setState(() {
+      currentStatus = widget.order.orderStatus ?? "Order placed";
+    });
+
     trackingNumber = widget.order.orderTracking ?? "No Tracking";
     shippingAddress = widget.order.shippingAddress ?? "No Address Provided";
   }
 
   Color getStatusColor(String status) {
-    return (status == currentStatus) ? Colors.blue : Colors.grey;
+    return (status == currentStatus) ? Colors.blue : Colors.grey.shade400;
   }
 
   @override
