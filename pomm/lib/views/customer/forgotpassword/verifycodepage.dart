@@ -7,67 +7,102 @@ import 'package:pomm/models/customer.dart';
 
 class VerifyCodePage extends StatefulWidget {
   final Customer customer;
-  const VerifyCodePage({Key? key, required this.customer}) : super(key: key);
+  const VerifyCodePage({super.key, required this.customer});
 
   @override
-  _VerifyCodePageState createState() => _VerifyCodePageState();
+  State<VerifyCodePage> createState() => _VerifyCodePageState();
 }
 
 class _VerifyCodePageState extends State<VerifyCodePage> {
-  final TextEditingController _codeController = TextEditingController();
+  TextEditingController codeController = TextEditingController();
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    debugPrint(
+      "DEBUG: Customer Email in VerifyCodePage = ${widget.customer.customeremail}",
+    );
+  }
+
+  @override
   void dispose() {
-    _codeController.dispose(); // Dispose controller to prevent memory leaks
+    codeController.dispose();
     super.dispose();
   }
 
-  void verifyCode() async {
-    String code = _codeController.text.trim();
+  void verifyCode() {
+    String? email = widget.customer.customeremail?.trim();
+    String codes = codeController.text.trim();
 
-    // Validate if the code is entered
-    if (code.isEmpty) {
+    if (email == null || email.isEmpty) {
+      showSnackBar("Error: Email is missing.");
+      return;
+    }
+
+    if (codes.isEmpty) {
       showSnackBar("Please enter the verification code.");
       return;
     }
+
+    debugPrint("DEBUG: Sending Email = $email, Code = $codes");
 
     setState(() {
       isLoading = true;
     });
 
-    try {
-      var response = await http.post(
-        Uri.parse("${MyServerConfig.server}/pomm/php/verify_code.php"),
-        body: {"email": widget.customer.customeremail, "code": code},
-      );
+    http
+        .post(
+          Uri.parse("${MyServerConfig.server}/pomm/php/verify_code.php"),
+          body: {"email": email, "codes": codes},
+        )
+        .then((response) {
+          debugPrint("DEBUG: API Response: ${response.body}");
 
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status'] == "success") {
-        if (!mounted) return; // Prevent navigation errors
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ResetPasswordPage(customer: widget.customer),
-          ),
-        );
-      } else {
-        showSnackBar("Invalid code! Please try again.");
-      }
-    } catch (e) {
-      showSnackBar("An error occurred. Please try again.");
-    }
+          setState(() {
+            isLoading = false;
+          });
 
-    setState(() {
-      isLoading = false;
-    });
+          if (response.statusCode == 200) {
+            var data = jsonDecode(response.body);
+
+            if (data['status'] == "success" && data['data'] != null) {
+              // Customer customer = Customer.fromJson(data['data']);
+
+              if (mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ResetPasswordPage(
+                          customerdata: Customer(
+                            customeremail: email, // ✅ Ensure email is set
+                          ),
+                        ),
+                  ),
+                );
+              }
+            } else {
+              showSnackBar("Invalid verification code.");
+            }
+          } else {
+            showSnackBar("Server error. Please try again.");
+          }
+        })
+        .catchError((error) {
+          setState(() {
+            isLoading = false;
+          });
+          showSnackBar("Error: ${error.toString()}");
+        });
   }
 
-  // Function to show SnackBar messages
   void showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   @override
@@ -85,7 +120,7 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _codeController,
+              controller: codeController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: "Enter code",

@@ -4,7 +4,7 @@ class Customer {
   String? customername;
   String? customerphone;
   String? customerpassword;
-  String? resetCode;
+  String? codes;
 
   Customer({
     this.customerid,
@@ -12,7 +12,7 @@ class Customer {
     this.customername,
     this.customerphone,
     this.customerpassword,
-    this.resetCode,
+    this.codes,
   });
 
   Customer.fromJson(Map<String, dynamic> json) {
@@ -21,7 +21,7 @@ class Customer {
     customername = json['customername'];
     customerphone = json['customerphone'];
     customerpassword = json['customerpassword'];
-    resetCode = json['resetCode'];
+    codes = json['codes'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +31,7 @@ class Customer {
     data['customername'] = customername;
     data['customerphone'] = customerphone;
     data['customerpassword'] = customerpassword;
-    data['resetCode'] = resetCode;
+    data['codes'] = codes;
     return data;
   }
 }

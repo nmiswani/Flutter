@@ -4,7 +4,7 @@ import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/customer/customerdashboard.dart';
 import 'package:pomm/views/customer/forgotpassword/forgotpasswordpage.dart';
-import 'package:pomm/views/customer/registercustomerpage.dart';
+import 'package:pomm/views/customer/loginregister/registercustomerpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;

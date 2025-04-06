@@ -6,25 +6,27 @@ import 'verifycodepage.dart';
 import 'package:pomm/models/customer.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
-  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   bool isLoading = false;
-  Customer? customer; // Store customer data
 
-  void sendVerificationCode() async {
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> sendVerificationCode() async {
     String email = _emailController.text.trim();
 
-    // Validate email before sending request
     if (email.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please enter your email.")));
+      showSnackBar("Please enter your email.");
       return;
     }
 
@@ -34,37 +36,51 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     try {
       var response = await http.post(
-        Uri.parse("${MyServerConfig.server}/pomm/php/forgot_password_test.php"),
+        Uri.parse("${MyServerConfig.server}/pomm/php/forgotpwd.php"),
         body: {"email": email},
       );
 
-      print("Response Status: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       var jsonResponse = jsonDecode(response.body);
+
       if (jsonResponse['status'] == "success") {
-        customer = Customer.fromJson(jsonResponse['customer']);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerifyCodePage(customer: customer!),
-          ),
-        );
+        if (jsonResponse.containsKey('customer')) {
+          // Customer customer = Customer.fromJson(jsonResponse['customer']);
+
+          if (!mounted) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (content) => VerifyCodePage(
+                    customer: Customer(
+                      customeremail: email, // ✅ Ensure email is set
+                    ),
+                  ),
+            ),
+          );
+        } else {
+          showSnackBar("Error: Customer data missing.");
+        }
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Email not registered.")));
+        showSnackBar(jsonResponse['message'] ?? "Email not registered.");
       }
     } catch (e) {
-      print("Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("An error occurred: $e")));
+      showSnackBar("An error occurred. Please try again.");
     }
 
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void showSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   @override

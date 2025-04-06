@@ -6,7 +6,7 @@ import 'package:pomm/models/customer.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/customer/logincustomerpage.dart';
+import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
@@ -529,65 +529,6 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         });
   }
-
-  // Future<void> _updateProfileImage() async {
-  //   if (_image == null) return;
-  //   try {
-  //     String base64Image = base64Encode(await _image!.readAsBytes());
-
-  //     final response = await http.post(
-  //       Uri.parse("${MyServerConfig.server}/pomm/php/update_profile_image.php"),
-  //       body: {
-  //         "customerid": widget.customerdata.customerid.toString(),
-  //         "image": base64Image,
-  //       },
-  //     );
-
-  //     final jsondata = jsonDecode(response.body);
-  //     if (response.statusCode == 200 && jsondata['status'] == 'success') {
-  //       setState(() {
-  //         val = random.nextInt(1000);
-  //         widget.customerdata.profileImage =
-  //             jsondata['image_path']; // Update profile image path
-  //       });
-  //       _showSnackBar("Profile image updated successfully", true);
-  //     } else {
-  //       _showSnackBar("Failed to update image", false);
-  //     }
-  //   } catch (e) {
-  //     _showSnackBar("Error updating image", false);
-  //   }
-  // }
-
-  // void _updateProfileImage() {
-  //   String base64Image = base64Encode(_image!.readAsBytesSync());
-  //   http
-  //       .post(
-  //         Uri.parse("${MyServerConfig.server}/pomm/php/update_profile.php"),
-  //         body: {"image": base64Image},
-  //       )
-  //       .then((response) {
-  //         print(response.body);
-  //         if (response.statusCode == 200) {
-  //           var jsondata = jsonDecode(response.body);
-  //           if (jsondata['status'] == 'success') {
-  //             ScaffoldMessenger.of(
-  //               context,
-  //             ).showSnackBar(const SnackBar(content: Text("Insert Success")));
-  //           } else {
-  //             ScaffoldMessenger.of(
-  //               context,
-  //             ).showSnackBar(const SnackBar(content: Text("Insert Failed")));
-  //           }
-  //           Navigator.pop(context);
-  //         } else {
-  //           ScaffoldMessenger.of(
-  //             context,
-  //           ).showSnackBar(const SnackBar(content: Text("Insert Failed")));
-  //           Navigator.pop(context);
-  //         }
-  //       });
-  // }
 
   void _updateName(String newname) {
     http

@@ -8,7 +8,7 @@ import 'package:pomm/views/clerk/order/clerkorderpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:pomm/views/customer/logincustomerpage.dart';
+import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 
 class LoginClerkAdminPage extends StatefulWidget {
   const LoginClerkAdminPage({super.key});

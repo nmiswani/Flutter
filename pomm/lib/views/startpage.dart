@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
-import 'package:pomm/views/customer/logincustomerpage.dart';
-import 'package:pomm/views/customer/registercustomerpage.dart';
+import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
+import 'package:pomm/views/customer/loginregister/registercustomerpage.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});

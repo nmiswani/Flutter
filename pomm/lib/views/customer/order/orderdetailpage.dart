@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
+import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/customer/order/orderstatuspage.dart';
 
 class OrderDetailPage extends StatefulWidget {
@@ -22,6 +27,51 @@ class OrderDetailPage extends StatefulWidget {
 }
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
+  String? imageUrl;
+  bool isLoading = true;
+  bool hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProductImage();
+  }
+
+  Future<void> fetchProductImage() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_image_order.php?order_id=${widget.order.orderId}",
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == "success" && data['image_url'] != null) {
+          setState(() {
+            imageUrl = data['image_url'];
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            hasError = true;
+            isLoading = false;
+          });
+        }
+      } else {
+        setState(() {
+          hasError = true;
+          isLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,6 +179,37 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                     Row(
                       children: [
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300], // Placeholder color
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child:
+                              isLoading
+                                  ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  ) // ✅ Show loading indicator
+                                  : hasError || imageUrl == null
+                                  ? Image.asset(
+                                    "assets/images/default_product.jpg", // ✅ Default image for errors
+                                    fit: BoxFit.cover,
+                                  )
+                                  : CachedNetworkImage(
+                                    imageUrl: imageUrl!,
+                                    fit: BoxFit.cover,
+                                    placeholder:
+                                        (context, url) => const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                    errorWidget:
+                                        (context, url, error) => Image.asset(
+                                          "assets/images/default_product.jpg",
+                                        ),
+                                  ),
+                        ),
+                        const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

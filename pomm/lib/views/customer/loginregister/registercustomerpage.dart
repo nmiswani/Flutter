@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/views/customer/logincustomerpage.dart';
+import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'dart:convert';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:http/http.dart' as http;
