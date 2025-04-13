@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,144 +37,173 @@ class _AddProductPageState extends State<AddProductPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Product"),
+        title: Text(
+          "Add Product",
+          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: _updateImageDialog,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                child: Card(
-                  elevation: 3,
-                  child: Container(
-                    height: screenHeight / 3,
-                    width: screenWidth * 0.9,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      image: DecorationImage(
-                        image:
-                            _image != null
-                                ? FileImage(_image!) as ImageProvider
-                                : AssetImage(pathAsset),
-                        fit: BoxFit.cover,
+      resizeToAvoidBottomInset:
+          false, // prevents layout shift when keyboard opens
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 80), // space for button
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: _updateImageDialog,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
+                    child: Card(
+                      elevation: 3,
+                      child: Container(
+                        height: screenHeight / 3,
+                        width: screenWidth * 0.9,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          image: DecorationImage(
+                            image:
+                                _image != null
+                                    ? FileImage(_image!) as ImageProvider
+                                    : AssetImage(pathAsset),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child:
+                            _image == null
+                                ? const Center(child: Text(""))
+                                : null,
                       ),
                     ),
-                    child:
-                        _image == null ? const Center(child: Text("")) : null,
                   ),
                 ),
-              ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
+                        // keep this for form overflow
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              textInputAction: TextInputAction.next,
+                              style: GoogleFonts.poppins(), // Apply font style
+                              validator:
+                                  (val) =>
+                                      val == null || val.length < 3
+                                          ? "Product name must be at least 3 characters"
+                                          : null,
+                              controller: _nameController,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                labelText: 'Product Name',
+                                icon: Icon(Icons.abc),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              textInputAction: TextInputAction.next,
+                              style: GoogleFonts.poppins(),
+                              validator:
+                                  (val) =>
+                                      val == null || val.length < 10
+                                          ? "Product description must be at least 10 characters"
+                                          : null,
+                              maxLines: 3,
+                              controller: _descriptionController,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                labelText: 'Product Description',
+                                icon: Icon(Icons.description),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    textInputAction: TextInputAction.next,
+                                    style: GoogleFonts.poppins(),
+                                    validator:
+                                        (val) =>
+                                            val == null || val.isEmpty
+                                                ? "Enter a valid price"
+                                                : null,
+                                    controller: _priceController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Product Price',
+                                      icon: Icon(Icons.money),
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextFormField(
+                                    textInputAction: TextInputAction.next,
+                                    style: GoogleFonts.poppins(),
+                                    validator:
+                                        (val) =>
+                                            val == null ||
+                                                    val.isEmpty ||
+                                                    int.tryParse(val) == null ||
+                                                    int.parse(val) <= 0
+                                                ? "Greater than 0"
+                                                : null,
+                                    controller: _quantityController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Quantity',
+                                      icon: Icon(Icons.numbers),
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      textInputAction: TextInputAction.next,
-                      validator:
-                          (val) =>
-                              val == null || val.length < 3
-                                  ? "Product name must be at least 3 characters"
-                                  : null,
-                      controller: _nameController,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        labelText: 'Product Name',
-                        icon: Icon(Icons.abc),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      textInputAction: TextInputAction.next,
-                      validator:
-                          (val) =>
-                              val == null || val.length < 10
-                                  ? "Product description must be at least 10 characters"
-                                  : null,
-                      maxLines: 3,
-                      controller: _descriptionController,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        labelText: 'Product Description',
-                        icon: Icon(Icons.description),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            textInputAction: TextInputAction.next,
-                            validator:
-                                (val) =>
-                                    val == null || val.isEmpty
-                                        ? "Enter a valid price"
-                                        : null,
-                            controller: _priceController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Product Price',
-                              icon: Icon(Icons.money),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            textInputAction: TextInputAction.next,
-                            validator:
-                                (val) =>
-                                    val == null ||
-                                            val.isEmpty ||
-                                            int.tryParse(val) == null ||
-                                            int.parse(val) <= 0
-                                        ? "Greater than 0"
-                                        : null,
-                            controller: _quantityController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Quantity',
-                              icon: Icon(Icons.numbers),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: screenWidth * 0.8,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: addDialog,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            55,
-                            97,
-                            70,
-                          ),
-                        ),
-                        child: const Text(
-                          "Add Product",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ],
+          ),
+
+          // Fixed button at bottom
+          Positioned(
+            bottom: 20,
+            left: 20,
+            right: 20,
+            child: SizedBox(
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  addDialog();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  "Add Product",
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -184,9 +214,12 @@ class _AddProductPageState extends State<AddProductPage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: const Text(
+          title: Text(
             "Select from",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -195,12 +228,12 @@ class _AddProductPageState extends State<AddProductPage> {
                 onPressed:
                     () => {Navigator.of(context).pop(), _galleryPicker()},
                 icon: const Icon(Icons.browse_gallery),
-                label: const Text("Gallery"),
+                label: Text("Gallery", style: GoogleFonts.poppins()),
               ),
               TextButton.icon(
                 onPressed: () => {Navigator.of(context).pop(), _cameraPicker()},
                 icon: const Icon(Icons.camera_alt),
-                label: const Text("Camera"),
+                label: Text("Camera", style: GoogleFonts.poppins()),
               ),
             ],
           ),
@@ -225,9 +258,12 @@ class _AddProductPageState extends State<AddProductPage> {
       cropImage();
     }
     if (pickedFile == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("No image selected")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("No image selected", style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -235,7 +271,13 @@ class _AddProductPageState extends State<AddProductPage> {
 
     if (!await imageFile.exists()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Image file does not exist")),
+        SnackBar(
+          content: Text(
+            "Image file does not exist",
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -252,8 +294,9 @@ class _AddProductPageState extends State<AddProductPage> {
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Image',
-          toolbarColor: Colors.deepOrange,
+          toolbarColor: const Color.fromARGB(255, 55, 97, 70),
           toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false,
         ),
         IOSUiSettings(title: 'Crop Image', aspectRatioLockEnabled: false),
@@ -270,15 +313,21 @@ class _AddProductPageState extends State<AddProductPage> {
 
   void addDialog() {
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Check your input")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Check your input", style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
     if (_image == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please take picture")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please take picture", style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
     showDialog(
@@ -288,19 +337,24 @@ class _AddProductPageState extends State<AddProductPage> {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-          title: const Text("Add new product?", style: TextStyle()),
-          content: const Text("Are you sure?", style: TextStyle()),
+          title: Text(
+            "Add new product?",
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text("Are you sure?", style: GoogleFonts.poppins()),
           actions: <Widget>[
             TextButton(
-              child: const Text("Yes", style: TextStyle()),
+              child: Text("Yes", style: GoogleFonts.poppins()),
               onPressed: () {
                 Navigator.of(context).pop();
                 addProduct();
-                //registerUser();
               },
             ),
             TextButton(
-              child: const Text("No", style: TextStyle()),
+              child: Text("No", style: GoogleFonts.poppins()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -335,18 +389,36 @@ class _AddProductPageState extends State<AddProductPage> {
             var jsondata = jsonDecode(response.body);
             if (jsondata['status'] == 'success') {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Add Product Successful")),
+                SnackBar(
+                  content: Text(
+                    "Add product successful",
+                    style: GoogleFonts.poppins(),
+                  ),
+                  backgroundColor: Colors.green,
+                ),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Add Product Failed")),
+                SnackBar(
+                  content: Text(
+                    "Add product failed",
+                    style: GoogleFonts.poppins(),
+                  ),
+                  backgroundColor: Colors.red,
+                ),
               );
             }
             Navigator.pop(context);
           } else {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text("Add Product Failed")));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Add product failed",
+                  style: GoogleFonts.poppins(),
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
             Navigator.pop(context);
           }
         });

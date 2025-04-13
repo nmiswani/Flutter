@@ -34,6 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   var val = 50;
   Random random = Random();
   bool isDisable = false;
+  int randomValue = Random().nextInt(100000);
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: screenWidth * 0.4,
                     child: CachedNetworkImage(
                       imageUrl:
-                          "${MyServerConfig.server}/pomm/assets/profileimages/${widget.customerdata.customerid}.jpg?v=$val",
+                          "${MyServerConfig.server}/pomm/assets/profileimages/${widget.customerdata.customerid}.jpg?v=$randomValue",
                       placeholder:
                           (context, url) => const LinearProgressIndicator(),
                       errorWidget:
@@ -509,7 +510,9 @@ class _ProfilePageState extends State<ProfilePage> {
     // print(base64Image);
     http
         .post(
-          Uri.parse("${MyServerConfig.server}/pomm/php/update_image.php"),
+          Uri.parse(
+            "${MyServerConfig.server}/pomm/php/update_profile_image.php",
+          ),
           body: {
             "customerid": widget.customerdata.customerid.toString(),
             "image": base64Image.toString(),
@@ -520,7 +523,9 @@ class _ProfilePageState extends State<ProfilePage> {
           print(jsondata);
           if (response.statusCode == 200 && jsondata['status'] == 'success') {
             val = random.nextInt(1000);
-            setState(() {});
+            setState(() {
+              randomValue = Random().nextInt(100000);
+            });
             // DefaultCacheManager manager = DefaultCacheManager();
             // manager.emptyCache(); //clears all data in cache.
             _showSnackBar("Profile image updated successfully", true);

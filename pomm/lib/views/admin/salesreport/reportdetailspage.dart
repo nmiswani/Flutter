@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class ReportDetailsPage extends StatelessWidget {
+class ReportDetailsPage extends StatefulWidget {
   final DateTime selectedDate;
   final double totalSales;
   final int totalOrders;
@@ -15,46 +15,47 @@ class ReportDetailsPage extends StatelessWidget {
     required this.totalOrders,
   });
 
+  @override
+  State<ReportDetailsPage> createState() => _ReportDetailsPageState();
+}
+
+class _ReportDetailsPageState extends State<ReportDetailsPage> {
   String generateSummary() {
-    // Determine correct date format based on report type
     String formattedDate;
-    if (selectedDate.day == 1 && selectedDate.month == 1) {
-      // Yearly Report (Only Year)
-      formattedDate = DateFormat('yyyy').format(selectedDate);
-    } else if (selectedDate.day == 1) {
-      // Monthly Report (Only Month & Year)
-      formattedDate = DateFormat('MMMM yyyy').format(selectedDate);
+    if (widget.selectedDate.day == 1 && widget.selectedDate.month == 1) {
+      formattedDate = DateFormat('yyyy').format(widget.selectedDate);
+    } else if (widget.selectedDate.day == 1) {
+      formattedDate = DateFormat('MMMM yyyy').format(widget.selectedDate);
     } else {
-      // Daily Report (Full Date)
-      formattedDate = DateFormat('dd MMMM yyyy').format(selectedDate);
+      formattedDate = DateFormat('dd MMMM yyyy').format(widget.selectedDate);
     }
 
-    // Generate summary based on total sales and total orders
-    if (totalSales > 300 && totalOrders > 10) {
-      return "A strong performance in $formattedDate, with RM$totalSales in sales and $totalOrders orders. Sales are picking up well, indicating good customer interest.";
-    } else if (totalSales > 200 && totalOrders > 7) {
-      return "A steady day in $formattedDate, reaching RM$totalSales with $totalOrders orders. A slight boost in promotions could improve sales further.";
-    } else if (totalOrders > 5 && totalSales < 150) {
-      return "Although $totalOrders orders were placed in $formattedDate, total sales only reached RM$totalSales. Customers may be opting for lower-priced items or smaller purchases.";
-    } else if (totalSales > 250 && totalOrders < 5) {
-      return "Sales in $formattedDate totaled RM$totalSales with only $totalOrders orders. This suggests fewer but higher-value purchases. Expanding customer reach could help increase order volume.";
-    } else if (totalOrders < 3 && totalSales < 100) {
-      return "Sales on $formattedDate were RM$totalSales with only $totalOrders orders. This was a slow period, and additional marketing efforts may be needed to attract customers.";
+    String salesFormatted = widget.totalSales.toStringAsFixed(2);
+
+    if (widget.totalSales > 300 && widget.totalOrders > 10) {
+      return "A strong performance in $formattedDate, with RM$salesFormatted in sales and ${widget.totalOrders} orders. Sales are picking up well, indicating good customer interest.";
+    } else if (widget.totalSales > 200 && widget.totalOrders > 7) {
+      return "A steady day in $formattedDate, reaching RM$salesFormatted with ${widget.totalOrders} orders. A slight boost in promotions could improve sales further.";
+    } else if (widget.totalOrders > 5 && widget.totalSales < 150) {
+      return "Although ${widget.totalOrders} orders were placed in $formattedDate, total sales only reached RM$salesFormatted. Customers may be opting for lower-priced items or smaller purchases.";
+    } else if (widget.totalSales > 250 && widget.totalOrders < 5) {
+      return "Sales in $formattedDate totaled RM$salesFormatted with only ${widget.totalOrders} orders. This suggests fewer but higher-value purchases. Expanding customer reach could help increase order volume.";
+    } else if (widget.totalOrders < 3 && widget.totalSales < 100) {
+      return "Sales on $formattedDate were RM$salesFormatted with only ${widget.totalOrders} orders. This was a slow period, and additional marketing efforts may be needed to attract customers.";
     } else {
-      return "Sales on $formattedDate totaled RM$totalSales with $totalOrders orders. There is potential for improvement through promotions or customer engagement strategies.";
+      return "Sales on $formattedDate totaled RM$salesFormatted with ${widget.totalOrders} orders. There is potential for improvement through promotions or customer engagement strategies.";
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Format selectedDate for display
     String formattedDate;
-    if (selectedDate.day == 1 && selectedDate.month == 1) {
-      formattedDate = DateFormat('yyyy').format(selectedDate);
-    } else if (selectedDate.day == 1) {
-      formattedDate = DateFormat('MMMM yyyy').format(selectedDate);
+    if (widget.selectedDate.day == 1 && widget.selectedDate.month == 1) {
+      formattedDate = DateFormat('yyyy').format(widget.selectedDate);
+    } else if (widget.selectedDate.day == 1) {
+      formattedDate = DateFormat('MMMM yyyy').format(widget.selectedDate);
     } else {
-      formattedDate = DateFormat('dd MMMM yyyy').format(selectedDate);
+      formattedDate = DateFormat('dd MMMM yyyy').format(widget.selectedDate);
     }
 
     return Scaffold(
@@ -73,8 +74,6 @@ class ReportDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 16),
-
-            // Date Display
             Text(
               "Report for: $formattedDate",
               style: GoogleFonts.poppins(
@@ -84,8 +83,6 @@ class ReportDetailsPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-
-            // Bar chart visualization
             Text(
               "Sales & Orders Overview",
               style: GoogleFonts.poppins(
@@ -95,13 +92,12 @@ class ReportDetailsPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-
             AspectRatio(
               aspectRatio: 1.5,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: totalSales + 10,
+                  maxY: widget.totalSales + 10,
                   barTouchData: BarTouchData(enabled: false),
                   titlesData: FlTitlesData(
                     bottomTitles: AxisTitles(
@@ -127,7 +123,7 @@ class ReportDetailsPage extends StatelessWidget {
                       x: 0,
                       barRods: [
                         BarChartRodData(
-                          toY: totalSales,
+                          toY: widget.totalSales,
                           color: Colors.blue,
                           width: 20,
                         ),
@@ -137,7 +133,7 @@ class ReportDetailsPage extends StatelessWidget {
                       x: 1,
                       barRods: [
                         BarChartRodData(
-                          toY: totalOrders.toDouble(),
+                          toY: widget.totalOrders.toDouble(),
                           color: Colors.green,
                           width: 20,
                         ),
@@ -148,8 +144,6 @@ class ReportDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-
-            // Summary Section
             Card(
               color: const Color.fromARGB(248, 214, 227, 216),
               elevation: 2,
@@ -178,10 +172,7 @@ class ReportDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 40),
-
-            // Print Button
             Center(
               child: Container(
                 width: MediaQuery.of(context).size.width / 3,

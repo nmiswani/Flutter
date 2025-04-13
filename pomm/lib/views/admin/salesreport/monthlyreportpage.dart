@@ -20,11 +20,11 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
   String? _selectedMonth;
   SalesReport? _salesReport;
 
-  Future<void> _fetchSalesReport() async {
-    if (_selectedMonth == null) return;
+  Future<void> _fetchSalesReport(sqlFormattedDate) async {
+    if (sqlFormattedDate.isEmpty) return;
 
     final url = Uri.parse(
-      "${MyServerConfig.server}/pomm/php/sales_monthly.php?month=$_selectedMonth",
+      "${MyServerConfig.server}/pomm/php/sales_monthly.php?month=$sqlFormattedDate",
     );
     try {
       final response = await http.get(url);
@@ -53,9 +53,15 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
 
     if (pickedDate != null) {
       setState(() {
-        _selectedMonth = DateFormat('yyyy-MM').format(pickedDate);
+        // Format for display (MMMM yyyy format)
+        _selectedMonth = DateFormat('MMMM yyyy').format(pickedDate);
+
+        // Format for SQL (yyyy-MM format)
+        String sqlFormattedDate = DateFormat('yyyy-MM').format(pickedDate);
+
+        // Pass formatted date to the SQL query
+        _fetchSalesReport(sqlFormattedDate);
       });
-      _fetchSalesReport();
     }
   }
 
@@ -71,27 +77,43 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
           "Monthly Report",
           style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
         ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 15),
             // Month Picker Field
-            TextField(
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: "Select Month",
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: _selectMonth,
+            Material(
+              elevation: 1,
+              shadowColor: Colors.black,
+              borderRadius: BorderRadius.circular(0),
+              child: TextField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Select month",
+                  labelStyle: GoogleFonts.poppins(color: Colors.black),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today, color: Colors.black),
+                    onPressed: _selectMonth,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
                 ),
-                border: OutlineInputBorder(),
-              ),
-              controller: TextEditingController(
-                text: _selectedMonth ?? "Select month",
+                style: GoogleFonts.poppins(fontSize: 14),
+                controller: TextEditingController(
+                  text: _selectedMonth ?? "Select month",
+                ),
               ),
             ),
+
             const SizedBox(height: 20),
 
             // Sales Report Section
@@ -99,23 +121,36 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               "Sales Report",
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color.fromARGB(248, 202, 229, 206),
+                border: Border.all(color: Colors.black54),
+                borderRadius: BorderRadius.circular(0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(0, 1), // shadow direction: bottom only
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Sales Report",
-                    style: GoogleFonts.poppins(fontSize: 14),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   Text(
@@ -146,10 +181,8 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                                     builder:
                                         (context) => ReportDetailsPage(
                                           selectedDate: DateFormat(
-                                            'yyyy-MM',
-                                          ).parse(
-                                            _selectedMonth!,
-                                          ), // Converts "2024-03" to DateTime
+                                            'MMMM yyyy',
+                                          ).parse(_selectedMonth!),
                                           totalSales: _salesReport!.totalSales,
                                           totalOrders:
                                               _salesReport!.totalOrders,
@@ -158,13 +191,25 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                                 );
                               }
                               : null,
-                      child: const Text("View details"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero, // No border radius
+                        ),
+                      ),
+                      child: Text(
+                        "View details",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
             // Total Sales and Orders
             Row(
@@ -173,19 +218,34 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color.fromARGB(248, 202, 229, 206),
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.circular(0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(
+                            0,
+                            2,
+                          ), // shadow direction: bottom only
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
                         Text(
                           "Total Sales",
-                          style: GoogleFonts.poppins(fontSize: 14),
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           (_salesReport != null && _salesReport!.totalSales > 0)
-                              ? "RM${_salesReport!.totalSales}"
+                              ? "RM${_salesReport!.totalSales.toStringAsFixed(2)}"
                               : "No data found",
                           style: GoogleFonts.poppins(
                             fontSize: 14,
@@ -200,19 +260,34 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color.fromARGB(248, 202, 229, 206),
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.circular(0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(
+                            0,
+                            2,
+                          ), // shadow direction: bottom only
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
                         Text(
                           "Total Order",
-                          style: GoogleFonts.poppins(fontSize: 14),
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 5),
                         Text(

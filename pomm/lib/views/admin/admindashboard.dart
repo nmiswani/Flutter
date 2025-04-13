@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/models/admin.dart';
 import 'package:pomm/views/admin/order/adminorderpage.dart';
 import 'package:pomm/views/admin/product/productadminpage.dart';
@@ -37,9 +38,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     return Scaffold(
       body: tabchildren[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         onTap: onTabTapped,
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
+        selectedItemColor: const Color.fromARGB(255, 55, 97, 70),
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: const Color.fromARGB(255, 55, 97, 70),
+        ),
+        unselectedLabelStyle: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: Colors.grey,
+        ),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Product"),
           BottomNavigationBarItem(

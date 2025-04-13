@@ -82,6 +82,7 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

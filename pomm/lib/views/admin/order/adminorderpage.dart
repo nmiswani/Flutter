@@ -30,6 +30,7 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
   late double screenWidth, screenHeight;
   int axiscount = 2;
   String id = "";
+  String orderTracking = "";
   late List<Widget> tabchildren;
   String maintitle = "Order";
 
@@ -38,7 +39,7 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
   @override
   void initState() {
     super.initState();
-    loadOrders(id);
+    loadOrders(orderTracking);
   }
 
   @override
@@ -51,58 +52,120 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
       axiscount = 2;
     }
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Color.fromARGB(255, 55, 97, 70)),
-        title: Text(
-          "Order",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-        elevation: 0.0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white), // White icon
-            onPressed: _logout,
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80), // Adjust the height as needed
+        child: AppBar(
+          iconTheme: const IconThemeData(
+            color: Color.fromARGB(255, 55, 97, 70),
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+          elevation: 0.0,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _tabButton("New", 0),
-              _tabButton("Current", 1),
-              _tabButton("Completed", 2),
-              _tabButton("Canceled", 3),
+              const SizedBox(height: 10),
+              Text(
+                "Admin's Dashboard",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                "Utara Gadget Solution Store, UUM",
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+              ),
             ],
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              onPressed: _logout,
+            ),
+          ],
+        ),
+      ),
+
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Material(
+              elevation: 1.5,
+              shadowColor: Colors.black87,
+              child: TextField(
+                controller: searchController,
+                onChanged: (value) {
+                  setState(() {
+                    orderTracking = value;
+                  });
+                  loadOrders(value); // search function
+                },
+                style: GoogleFonts.poppins(fontSize: 14),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  hintText: 'Search order tracking...',
+                  hintStyle: GoogleFonts.poppins(color: Colors.black45),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 227, 227, 227),
+                  prefixIcon: const Icon(Icons.search, color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal, // horizontal scrolling
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  const SizedBox(width: 5),
+                  _tabButton("New", 0),
+                  const SizedBox(width: 10),
+                  _tabButton("Current", 1),
+                  const SizedBox(width: 10),
+                  _tabButton("Completed", 2),
+                  const SizedBox(width: 10),
+                  _tabButton("Canceled", 3),
+                ],
+              ),
+            ),
+          ),
+
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                loadOrders(id);
+                loadOrders(orderTracking);
               },
               child:
                   getFilteredOrders().isEmpty
                       ? const Center(child: Text("No Order"))
-                      : GridView.count(
-                        crossAxisCount: axiscount,
-                        childAspectRatio: 2,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5,
-                        padding: const EdgeInsets.all(10),
-                        children: List.generate(getFilteredOrders().length, (
-                          index,
-                        ) {
+                      : ListView.builder(
+                        padding: const EdgeInsets.all(15),
+                        itemCount: getFilteredOrders().length,
+                        itemBuilder: (context, index) {
                           return Card(
+                            elevation: 2,
+                            margin: const EdgeInsets.symmetric(vertical: 5.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(0),
                             ),
-                            color: const Color.fromARGB(248, 214, 227, 216),
+                            color: const Color.fromARGB(248, 202, 229, 206),
                             child: InkWell(
                               onTap: () async {
-                                // Get the correct order based on the filtered list
                                 Order order = Order.fromJson(
                                   getFilteredOrders()[index].toJson(),
                                 );
@@ -136,52 +199,44 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                                     ),
                                   );
                                 }
-                                loadOrders(id);
+                                loadOrders(orderTracking);
                               },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 5),
-                                          Text(
-                                            truncateString(
-                                              "Order Tracking : ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
-                                            ),
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Date : ${formatDate(getFilteredOrders()[index].orderDate)}",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Status : ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        ],
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      truncateString(
+                                        "Order Tracking : ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
+                                      ),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.black,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      "Date : ${formatDate(getFilteredOrders()[index].orderDate)}",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Status : ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 5),
+                                  ],
+                                ),
                               ),
                             ),
                           );
-                        }),
+                        },
                       ),
             ),
           ),
@@ -199,8 +254,8 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
   }
 
   String truncateString(String str) {
-    if (str.length > 20) {
-      str = str.substring(0, 20);
+    if (str.length > 100) {
+      str = str.substring(0, 100);
       return "$str...";
     } else {
       return str;
@@ -226,10 +281,16 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
         });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: _selectedIndex == index ? Colors.black : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero, // removes the rounded corners
+        ),
+        backgroundColor:
+            _selectedIndex == index
+                ? const Color.fromARGB(255, 55, 97, 70)
+                : Colors.white,
         foregroundColor: _selectedIndex == index ? Colors.white : Colors.black,
       ),
-      child: Text(title),
+      child: Text(title, style: GoogleFonts.poppins(fontSize: 14)),
     );
   }
 
@@ -243,11 +304,11 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
         : canceledOrders;
   }
 
-  void loadOrders(String id) {
+  void loadOrders(String orderTracking) {
     http
         .get(
           Uri.parse(
-            "${MyServerConfig.server}/pomm/php/load_order_clerkadmin.php?id=$id",
+            "${MyServerConfig.server}/pomm/php/load_order_clerkadmin.php?orderTracking=$orderTracking",
           ),
         )
         .then((response) {

@@ -29,6 +29,7 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -57,82 +58,97 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
         ],
         elevation: 0.0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Product Image
-            SizedBox(
-              height: screenHeight * 0.35,
-              width: screenWidth,
-              child: ClipRRect(
-                child: Image.network(
-                  "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg",
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            // Product Details Table
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.03), // Adjusted padding
-              child: Table(
-                border: TableBorder.all(color: Colors.black, width: 1.5),
-                columnWidths: const {
-                  0: FlexColumnWidth(1.5),
-                  1: FlexColumnWidth(3.5),
-                },
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  buildTableRow("Name", widget.product.productTitle.toString()),
-                  buildTableRow(
-                    "Description",
-                    widget.product.productDesc.toString(),
+                  // Product Image
+                  SizedBox(
+                    height: screenHeight * 0.35,
+                    width: screenWidth,
+                    child: ClipRRect(
+                      child: Image.network(
+                        "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                  buildTableRow("Price", "RM${widget.product.productPrice}"),
-                  buildTableRow("Quantity", "${widget.product.productQty}"),
+                  const SizedBox(height: 10),
+
+                  // Product Details Table
+                  Padding(
+                    padding: EdgeInsets.all(screenWidth * 0.03),
+                    child: Table(
+                      border: TableBorder.all(color: Colors.black, width: 1.5),
+                      columnWidths: const {
+                        0: FlexColumnWidth(1.5),
+                        1: FlexColumnWidth(3.5),
+                      },
+                      children: [
+                        buildTableRow(
+                          "Name",
+                          widget.product.productTitle.toString(),
+                        ),
+                        buildTableRow(
+                          "Description",
+                          widget.product.productDesc.toString(),
+                        ),
+                        buildTableRow(
+                          "Price",
+                          "RM${widget.product.productPrice}",
+                        ),
+                        buildTableRow(
+                          "Quantity",
+                          "${widget.product.productQty}",
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            // Add to Cart Button
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width / 2,
-                margin: const EdgeInsets.only(
-                  top: 80,
-                ), // Add margin for spacing
-                child: ElevatedButton(
-                  onPressed: () {
-                    deleteDialog();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        size: screenWidth * 0.05, // Adjusted icon size
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: screenWidth * 0.02), // Adjusted spacing
-                      Text(
-                        "Delete",
-                        style: GoogleFonts.poppins(
-                          fontSize: 15, // Adjusted font size
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
+          ),
+
+          // Delete Button (Fixed at Bottom)
+          Container(
+            width: MediaQuery.of(context).size.width / 2,
+            margin: const EdgeInsets.only(bottom: 80),
+            color: Colors.white,
+            child: ElevatedButton(
+              onPressed: () {
+                deleteDialog();
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
                 ),
               ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.delete,
+                    size: screenWidth * 0.05,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: screenWidth * 0.02),
+                  Text(
+                    "Delete",
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -146,7 +162,7 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
             child: Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -154,8 +170,8 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
         ),
         TableCell(
           child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
-            child: Text(value, style: GoogleFonts.poppins(fontSize: 13)),
+            padding: EdgeInsets.all(screenWidth * 0.03), // Adjusted padding
+            child: Text(value, style: GoogleFonts.poppins(fontSize: 14)),
           ),
         ),
       ],

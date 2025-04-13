@@ -65,7 +65,6 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
           ),
         ],
       ),
-
       body: Column(
         children: [
           // ✅ First Row: New, Current, Completed

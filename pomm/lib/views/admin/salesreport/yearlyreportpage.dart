@@ -48,14 +48,14 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text("Select Year"),
+            // title: const Text("Select Year"),
             content: SizedBox(
               width: double.maxFinite, // ✅ Ensures the dialog expands properly
               child: SingleChildScrollView(
                 // ✅ Allows content to be scrollable
                 child: ListBody(
                   // ✅ Prevents viewport error
-                  children: List.generate(25, (index) {
+                  children: List.generate(10, (index) {
                     int year = DateTime.now().year - index;
                     return ListTile(
                       title: Text(year.toString()),
@@ -87,27 +87,43 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
           "Yearly Report",
           style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
         ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 15),
             // Year Picker Field
-            TextField(
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: "Select Year",
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: _selectYear,
+            Material(
+              elevation: 1,
+              shadowColor: Colors.black,
+              borderRadius: BorderRadius.circular(0),
+              child: TextField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Select year",
+                  labelStyle: GoogleFonts.poppins(color: Colors.black),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.calendar_today, color: Colors.black),
+                    onPressed: _selectYear,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
                 ),
-                border: OutlineInputBorder(),
-              ),
-              controller: TextEditingController(
-                text: _selectedYear ?? "Select year",
+                style: GoogleFonts.poppins(fontSize: 14),
+                controller: TextEditingController(
+                  text: _selectedYear ?? "Select year",
+                ),
               ),
             ),
+
             const SizedBox(height: 20),
 
             // Sales Report Section
@@ -115,23 +131,36 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
               "Sales Report",
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color.fromARGB(248, 214, 227, 216),
+                border: Border.all(color: Colors.black54),
+                borderRadius: BorderRadius.circular(0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(0, 1), // shadow direction: bottom only
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Sales Report",
-                    style: GoogleFonts.poppins(fontSize: 14),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   Text(
@@ -172,13 +201,25 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
                                 );
                               }
                               : null,
-                      child: const Text("View details"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero, // No border radius
+                        ),
+                      ),
+                      child: Text(
+                        "View details",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
             // Total Sales and Orders
             Row(
@@ -187,19 +228,34 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color.fromARGB(248, 214, 227, 216),
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.circular(0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(
+                            0,
+                            2,
+                          ), // shadow direction: bottom only
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
                         Text(
                           "Total Sales",
-                          style: GoogleFonts.poppins(fontSize: 14),
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           (_salesReport != null && _salesReport!.totalSales > 0)
-                              ? "RM${_salesReport!.totalSales}"
+                              ? "RM${_salesReport!.totalSales.toStringAsFixed(2)}"
                               : "No data found",
                           style: GoogleFonts.poppins(
                             fontSize: 14,
@@ -214,19 +270,34 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color.fromARGB(248, 214, 227, 216),
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.circular(0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(
+                            0,
+                            2,
+                          ), // shadow direction: bottom only
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
                         Text(
                           "Total Order",
-                          style: GoogleFonts.poppins(fontSize: 14),
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 5),
                         Text(

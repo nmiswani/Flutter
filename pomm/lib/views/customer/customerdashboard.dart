@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/views/customer/order/orderpage.dart';
 import 'package:pomm/views/customer/product/productpage.dart';
@@ -40,6 +41,18 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
         onTap: onTabTapped,
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
+        selectedItemColor: const Color.fromARGB(255, 55, 97, 70),
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: const Color.fromARGB(255, 55, 97, 70),
+        ),
+        unselectedLabelStyle: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: Colors.grey,
+        ),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Product"),
           BottomNavigationBarItem(

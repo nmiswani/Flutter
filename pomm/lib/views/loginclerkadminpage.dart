@@ -243,7 +243,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Invalid User ID"),
+          content: Text("Invalid user ID or password"),
           backgroundColor: Colors.red,
         ),
       );
@@ -294,7 +294,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Login Failed. Please create a new account"),
+                  content: Text("Login failed. Please create a new account"),
                   backgroundColor: Colors.red,
                 ),
               );

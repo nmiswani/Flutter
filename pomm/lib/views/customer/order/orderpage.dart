@@ -90,10 +90,19 @@ class _OrderPageState extends State<OrderPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(0),
                             ),
-                            color: const Color.fromARGB(248, 214, 227, 216),
+                            color:
+                                _selectedIndex == 0
+                                    ? _getCardColor(
+                                      getFilteredOrders()[index].orderStatus,
+                                    )
+                                    : const Color.fromARGB(
+                                      248,
+                                      214,
+                                      227,
+                                      216,
+                                    ), // default color for other tabs
                             child: InkWell(
                               onTap: () async {
-                                // Get the correct order based on the filtered list
                                 Order order = Order.fromJson(
                                   getFilteredOrders()[index].toJson(),
                                 );
@@ -129,7 +138,6 @@ class _OrderPageState extends State<OrderPage> {
                                 }
                                 loadOrders(customerid);
                               },
-
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -212,6 +220,21 @@ class _OrderPageState extends State<OrderPage> {
         : _selectedIndex == 1
         ? completedOrders
         : canceledOrders;
+  }
+
+  Color _getCardColor(String? status) {
+    switch (status) {
+      case "Order placed":
+        return Colors.pink.shade100;
+      case "In process":
+        return Colors.orange.shade100;
+      case "Out for delivery":
+        return Colors.green.shade100;
+      case "Request to cancel":
+        return Colors.red.shade100;
+      default:
+        return const Color.fromARGB(248, 214, 227, 216); // default fallback
+    }
   }
 
   void loadOrders(String customerid) async {

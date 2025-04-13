@@ -19,21 +19,41 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Color.fromARGB(255, 55, 97, 70)),
-        title: Text(
-          "Sales Report",
-          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-        elevation: 0.0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white), // White icon
-            onPressed: _logout,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80), // Adjust the height as needed
+        child: AppBar(
+          iconTheme: const IconThemeData(
+            color: Color.fromARGB(255, 55, 97, 70),
           ),
-        ],
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+          elevation: 0.0,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 10),
+              Text(
+                "Admin's Dashboard",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                "Utara Gadget Solution Store, UUM",
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              onPressed: _logout,
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -50,15 +70,23 @@ class _ReportPageState extends State<ReportPage> {
 
   Widget _buildReportButton(String title, Widget page) {
     return Card(
+      color: const Color.fromARGB(255, 55, 97, 70),
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       child: ListTile(
         title: Center(
-          child: Text(title, style: GoogleFonts.poppins(fontSize: 16)),
+          child: Text(
+            title,
+            style: GoogleFonts.poppins(fontSize: 15, color: Colors.black),
+          ),
         ),
         onTap:
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => page),
             ),
+        tileColor: const Color.fromARGB(248, 202, 229, 206),
       ),
     );
   }
