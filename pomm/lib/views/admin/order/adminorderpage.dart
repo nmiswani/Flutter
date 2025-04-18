@@ -321,34 +321,52 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
               List<dynamic> ordersJson = data['data']['orders'];
 
               if (ordersJson.isNotEmpty) {
+                // Clear all lists before loading new data
                 orderList.clear();
-                orderList =
-                    ordersJson.map((json) => Order.fromJson(json)).toList();
-
                 newOrders.clear();
                 currentOrders.clear();
                 completedOrders.clear();
                 canceledOrders.clear();
 
+                Map<String, Order> uniqueOrderMap = {};
+
+                for (var json in ordersJson) {
+                  Order order = Order.fromJson(json);
+                  if (order.orderId != null &&
+                      !uniqueOrderMap.containsKey(order.orderId)) {
+                    uniqueOrderMap[order.orderId!] = order;
+                  }
+                }
+
+                // Assign unique orders to the list
+                orderList = uniqueOrderMap.values.toList();
+
+                // Categorize orders
                 for (var order in orderList) {
-                  if (order.orderStatus == "Order placed") {
-                    newOrders.add(order);
-                  } else if (order.orderStatus == "In process" ||
-                      order.orderStatus == "Out for delivery" ||
-                      order.orderStatus == "Ready for pickup" ||
-                      order.orderStatus == "Request to cancel") {
-                    currentOrders.add(order);
-                  } else if (order.orderStatus == "Received" ||
-                      order.orderStatus == "Delivered") {
-                    completedOrders.add(order);
-                  } else if (order.orderStatus == "Canceled") {
-                    canceledOrders.add(order);
+                  switch (order.orderStatus) {
+                    case "Order placed":
+                      newOrders.add(order);
+                      break;
+                    case "In process":
+                    case "Out for delivery":
+                    case "Ready for pickup":
+                    case "Request to cancel":
+                      currentOrders.add(order);
+                      break;
+                    case "Received":
+                    case "Delivered":
+                      completedOrders.add(order);
+                      break;
+                    case "Canceled":
+                      canceledOrders.add(order);
+                      break;
                   }
                 }
               }
             }
           }
-          log("Loaded ${orderList.length} orders");
+
+          log("Loaded ${orderList.length} unique orders");
           setState(() {});
         })
         .catchError((error) {

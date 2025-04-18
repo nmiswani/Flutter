@@ -6,7 +6,6 @@ import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/customer/order/billpage.dart';
-import 'package:pomm/views/customer/product/productpage.dart';
 
 class CheckoutPage extends StatefulWidget {
   final Customer customerdata;
@@ -193,7 +192,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         children: [
           _buildSummaryRow("Subtotal", calculateSubtotal()),
           _buildSummaryRow("Delivery Charge", deliveryCharge),
-          const Divider(color: Colors.white),
+          Divider(color: Colors.white),
           _buildSummaryRow("Total", calculateTotal(), isBold: true),
           const SizedBox(height: 10),
           ElevatedButton(
@@ -216,11 +215,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
               await loadUserCart();
 
-              final result = await Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder:
-                      (context) => BillPage(
+                      (content) => BillPage(
                         customer: widget.customerdata,
                         totalprice: calculateTotal(),
                         shippingAddress: shippingAddress,
@@ -230,33 +229,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                 ),
               );
-
-              if (result == "success") {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("✅ Payment completed successfully!"),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-
-                // Optional: Refresh cart or navigate back
-                setState(() {
-                  cartList.clear();
-                });
-
-                // Delay briefly before navigating
-                await Future.delayed(const Duration(seconds: 2));
-
-                // Navigate to homepage (replace this with your actual home route)
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            ProductPage(customerdata: widget.customerdata),
-                  ), // ⬅️ Change this
-                  (Route<dynamic> route) => false,
-                );
-              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 55, 97, 70),

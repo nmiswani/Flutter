@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ReportTable extends StatelessWidget {
+import 'package:pomm/shared/myserverconfig.dart';
+
+class ReportTable extends StatefulWidget {
   final DateTime selectedDate;
   final double totalSales;
   final int totalOrders;
@@ -15,100 +19,214 @@ class ReportTable extends StatelessWidget {
   });
 
   @override
+  State<ReportTable> createState() => _ReportTableState();
+}
+
+class _ReportTableState extends State<ReportTable> {
+  List<dynamic> productList = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProductDetails();
+  }
+
+  Future<void> _fetchProductDetails() async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(widget.selectedDate);
+
+    final detailsUrl = Uri.parse(
+      "${MyServerConfig.server}/pomm/php/load_sales_report_table.php?date=$formattedDate",
+    );
+
+    try {
+      final response = await http.get(detailsUrl);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          productList = data['products_sold'] ?? [];
+        });
+      } else {
+        setState(() {
+          productList = [];
+        });
+      }
+    } catch (e) {
+      print("Error loading product details: $e");
+      setState(() {
+        productList = [];
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
+    final displayDate = DateFormat('dd-MM-yyyy').format(widget.selectedDate);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Sales Report Table',
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+          "Sales Report - $displayDate",
+          style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
         ),
-        centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 55, 97, 70),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Report for: $formattedDate',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Total Sales: RM${widget.totalSales.toStringAsFixed(2)}",
+                      style: GoogleFonts.poppins(fontSize: 14),
+                    ),
+                    Text(
+                      "Total Orders: ${widget.totalOrders}",
+                      style: GoogleFonts.poppins(fontSize: 14),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child:
+                          productList.isEmpty
+                              ? Center(
+                                child: Text(
+                                  "No products sold on this day.",
+                                  style: GoogleFonts.poppins(fontSize: 14),
+                                ),
+                              )
+                              : SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Table(
+                                  border: TableBorder.all(
+                                    color: Colors.grey,
+                                    width: 1,
+                                  ),
+                                  children: [
+                                    // Table Headers
+                                    TableRow(
+                                      children: [
+                                        TableCell(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Product Title',
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        TableCell(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Product ID',
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        TableCell(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Quantity Sold',
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        TableCell(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Balance',
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // Product Rows
+                                    ...productList
+                                        .map(
+                                          (item) => TableRow(
+                                            children: [
+                                              TableCell(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                                  child: Text(
+                                                    item['product_title'] ??
+                                                        'Unknown Product',
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                                  child: Text(
+                                                    item['product_id']
+                                                        .toString(),
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                                  child: Text(
+                                                    item['quantity_sold']
+                                                        .toString(),
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                                  child: Text(
+                                                    item['balance_qty']
+                                                        .toString(),
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                        .toList(),
+                                  ],
+                                ),
+                              ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // Table summary
-            Table(
-              border: TableBorder.all(color: Colors.black54),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(color: Colors.green.shade100),
-                  children: [
-                    _buildTableHeader("Item"),
-                    _buildTableHeader("Value"),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    _buildTableCell("Total Sales"),
-                    _buildTableCell("RM${totalSales.toStringAsFixed(2)}"),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    _buildTableCell("Total Orders"),
-                    _buildTableCell("$totalOrders"),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back),
-                label: Text("Back", style: GoogleFonts.poppins(fontSize: 14)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 12.0,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTableHeader(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Text(
-        text,
-        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 14),
-      ),
-    );
-  }
-
-  Widget _buildTableCell(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Text(text, style: GoogleFonts.poppins(fontSize: 14)),
     );
   }
 }

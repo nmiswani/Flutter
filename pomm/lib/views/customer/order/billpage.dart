@@ -29,49 +29,24 @@ class _BillPageState extends State<BillPage> {
   @override
   void initState() {
     super.initState();
-
-    String cartIds = widget.cartList
-        .map((cart) => cart.cartId.toString())
-        .join(",");
-    String productIds = widget.cartList
-        .map((item) => item.productId.toString())
-        .join(",");
-
-    String url =
-        Uri.parse('https://wani.infinitebe.com/pomm/php/payment.php')
-            .replace(
-              queryParameters: {
-                "customerid": widget.customer.customerid.toString(),
-                "email": widget.customer.customeremail,
-                "phone": widget.customer.customerphone,
-                "name": widget.customer.customername,
-                "amount": widget.totalprice.toStringAsFixed(2),
-                "shipping": widget.shippingAddress,
-                "subtotal": widget.orderSubtotal.toStringAsFixed(2),
-                "deliverycharge": widget.deliveryCharge.toStringAsFixed(2),
-                "cartid": cartIds,
-                "productid": productIds,
-              },
-            )
-            .toString();
-
-    print("[BillPage] Payment URL: $url");
+    print(widget.customer.customerphone);
 
     controller =
         WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onNavigationRequest: (request) {
-                if (request.url.contains("return_url")) {
-                  Navigator.pop(context, "success");
-                  return NavigationDecision.prevent;
-                }
-                return NavigationDecision.navigate;
-              },
+          ..loadRequest(
+            Uri.parse(
+              'https://wani.infinitebe.com/pomm/php/payment.php'
+              '?customerid=${widget.customer.customerid}'
+              '&email=${widget.customer.customeremail}'
+              '&phone=${widget.customer.customerphone}'
+              '&name=${widget.customer.customername}'
+              '&amount=${widget.totalprice}'
+              '&shipping=${widget.shippingAddress}'
+              '&subtotal=${widget.orderSubtotal}'
+              '&deliverycharge=${widget.deliveryCharge}',
             ),
-          )
-          ..loadRequest(Uri.parse(url));
+          );
   }
 
   @override

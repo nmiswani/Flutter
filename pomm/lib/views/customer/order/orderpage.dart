@@ -253,13 +253,26 @@ class _OrderPageState extends State<OrderPage> {
           List<dynamic> ordersJson = data['data']['orders'];
 
           if (ordersJson.isNotEmpty) {
+            // Clear all lists first
             orderList.clear();
-            orderList = ordersJson.map((json) => Order.fromJson(json)).toList();
-
             currentOrders.clear();
             completedOrders.clear();
             canceledOrders.clear();
 
+            Map<String, Order> uniqueOrderMap = {};
+
+            for (var json in ordersJson) {
+              Order order = Order.fromJson(json);
+              if (order.orderId != null &&
+                  !uniqueOrderMap.containsKey(order.orderId)) {
+                uniqueOrderMap[order.orderId!] = order;
+              }
+            }
+
+            // Convert map values to list
+            orderList = uniqueOrderMap.values.toList();
+
+            // Sort into respective categories
             for (var order in orderList) {
               if (order.orderStatus == "Order placed" ||
                   order.orderStatus == "In process" ||
@@ -277,7 +290,7 @@ class _OrderPageState extends State<OrderPage> {
           }
         }
       }
-      log("Loaded ${orderList.length} orders");
+      log("Loaded ${orderList.length} unique orders");
       setState(() {});
     } catch (error) {
       print("Error loading orders: $error");
