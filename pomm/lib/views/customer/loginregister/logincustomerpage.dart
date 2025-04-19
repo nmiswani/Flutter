@@ -8,6 +8,7 @@ import 'package:pomm/views/customer/loginregister/registercustomerpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginCustomerPage extends StatefulWidget {
   const LoginCustomerPage({super.key});
@@ -20,8 +21,14 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  // bool _isChecked = false;
+  bool _isChecked = false;
   bool isPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadpref();
+  }
 
   void _navigateToResetPassword() {
     Navigator.push(
@@ -43,7 +50,6 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      // Displaying a SnackBar
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -67,7 +73,6 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
       return 'Enter registered password';
     } else {
       if (value.length < 6) {
-        // EDIT
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -99,7 +104,7 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
           child: TextFormField(
             controller: controller,
             obscureText: obscureText,
-            style: GoogleFonts.poppins(color: Colors.black),
+            style: GoogleFonts.inter(color: Colors.black),
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
@@ -117,30 +122,23 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
                       : null,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
               enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(91, 158, 113, 0.612),
-                ),
-                borderRadius: BorderRadius.zero,
+                borderSide: BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(91, 158, 113, 0.9),
-                ),
-                borderRadius: BorderRadius.zero,
+                borderSide: BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               errorBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red),
-                borderRadius: BorderRadius.zero,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               focusedErrorBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red),
-                borderRadius: BorderRadius.zero,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
-              errorStyle: GoogleFonts.poppins(color: Colors.white),
-              hintStyle: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 68, 68, 68),
-                fontSize: 14,
-              ),
+              errorStyle: GoogleFonts.inter(color: Colors.white),
+              hintStyle: GoogleFonts.inter(color: Colors.black54, fontSize: 15),
             ),
             validator: validator,
           ),
@@ -153,7 +151,7 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color.fromRGBO(91, 158, 113, 0.612),
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -163,13 +161,12 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 50),
                   Image.asset(
                     'assets/images/loginicon.png',
-                    height: 200,
-                    width: 200,
+                    height: 250,
+                    width: 250,
                   ),
-                  const SizedBox(height: 30),
                   makeInput(
                     icon: Icons.email,
                     hint: "Email",
@@ -189,15 +186,37 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
                     },
                     validator: _validatePassword,
                   ),
-                  const SizedBox(height: 5),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _isChecked,
+                            onChanged: (bool? value) {
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
+                              saveremovepref(value!);
+                              setState(() {
+                                _isChecked = value;
+                              });
+                            },
+                          ),
+                          Text(
+                            "Remember me",
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                       GestureDetector(
                         onTap: _navigateToResetPassword,
                         child: Text(
                           "Forgot password?",
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.inter(
                             fontSize: 13,
                             color: Colors.white,
                           ),
@@ -205,7 +224,7 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 75),
+                  const SizedBox(height: 55),
                   Center(
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width / 2.5,
@@ -216,14 +235,14 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Text(
                             "Login",
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.inter(
                               fontSize: 15,
                               color: Colors.black,
                             ),
@@ -233,21 +252,21 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
                     ),
                   ),
                   const SizedBox(height: 50),
-                  Column(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         "Don't have an account?",
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
                           color: Colors.white,
                         ),
                       ),
                       GestureDetector(
                         onTap: _navigateToRegisterPage,
                         child: Text(
-                          "Create a new account",
-                          style: GoogleFonts.poppins(
+                          " Create one",
+                          style: GoogleFonts.inter(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                             color: Colors.white,
@@ -307,5 +326,47 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
             }
           }
         });
+  }
+
+  void saveremovepref(bool value) async {
+    String email = emailController.text;
+    String password = passwordController.text;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (value) {
+      await prefs.setString('email', email);
+      await prefs.setString('pass', password);
+      await prefs.setBool('rem', value);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Preferences Stored"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      //remove pref
+      await prefs.setString('email', '');
+      await prefs.setString('pass', '');
+      await prefs.setBool('rem', false);
+      emailController.text = '';
+      passwordController.text = '';
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Preferences Removed"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> loadpref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String email = (prefs.getString('email')) ?? '';
+    String password = (prefs.getString('pass')) ?? '';
+    _isChecked = (prefs.getBool('rem')) ?? false;
+    if (_isChecked) {
+      emailController.text = email;
+      passwordController.text = password;
+    }
+    setState(() {});
   }
 }

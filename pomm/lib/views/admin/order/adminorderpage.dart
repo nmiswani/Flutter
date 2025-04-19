@@ -56,11 +56,9 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80), // Adjust the height as needed
         child: AppBar(
-          iconTheme: const IconThemeData(
-            color: Color.fromARGB(255, 55, 97, 70),
-          ),
+          iconTheme: IconThemeData(color: Colors.red[900]),
           centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+          backgroundColor: Colors.red[900],
           elevation: 0.0,
           title: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -29,6 +29,8 @@ class _ProductPageState extends State<ProductPage> {
   late List<Widget> tabchildren;
   String maintitle = "Product";
 
+  TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -37,27 +39,21 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    screenHeight = MediaQuery.of(context).size.height;
-    screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 500) {
-      axiscount = 3;
-    } else {
-      axiscount = 2;
-    }
+    // screenHeight = MediaQuery.of(context).size.height;
+    // screenWidth = MediaQuery.of(context).size.width;
+    // axiscount = screenWidth > 500 ? 3 : 2;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Color.fromARGB(255, 55, 97, 70)),
+        iconTheme: const IconThemeData(color: Colors.black),
         title: Text(
           "Product",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 18),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        backgroundColor: Colors.black, // Maroon color
         actions: [
-          IconButton(
-            onPressed: showSearchDialog,
-            icon: const Icon(Icons.search, color: Colors.white),
-          ),
           IconButton(
             onPressed: () {
               Navigator.push(
@@ -70,131 +66,185 @@ class _ProductPageState extends State<ProductPage> {
             icon: const Icon(Icons.shopping_cart, color: Colors.white),
           ),
         ],
-        elevation: 0.0,
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          loadProducts(title);
-        },
-        child:
-            productList.isEmpty
-                ? const Center(child: Text("No Product's Data"))
-                : Column(
-                  children: [
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: axiscount,
-                        childAspectRatio: 0.8,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5,
-                        padding: const EdgeInsets.all(10),
-                        children: List.generate(productList.length, (index) {
-                          return Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            color: const Color.fromARGB(248, 214, 227, 216),
-                            child: InkWell(
-                              onTap: () async {
-                                Product product = Product.fromJson(
-                                  productList[index].toJson(),
-                                );
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (content) => ProductDetailsPage(
-                                          customerdata: widget.customerdata,
-                                          product: product,
-                                        ),
-                                  ),
-                                );
-                                loadProducts(title);
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: ClipRRect(
-                                      child: Image.network(
-                                        "${MyServerConfig.server}/pomm/assets/products/${productList[index].productId}.jpg",
-                                        fit: BoxFit.cover,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Material(
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    curpage = 1;
+                    loadProducts(value);
+                  },
+                  style: GoogleFonts.inter(fontSize: 15),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    hintText: 'Search products',
+                    hintStyle: GoogleFonts.inter(
+                      color: Colors.black45,
+                      fontSize: 15,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: const Icon(Icons.search, color: Colors.black),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  loadProducts(title);
+                },
+                child:
+                    productList.isEmpty
+                        ? Center(
+                          child: Text(
+                            "No product's data",
+                            style: GoogleFonts.inter(fontSize: 15),
+                          ),
+                        )
+                        : Column(
+                          children: [
+                            Expanded(
+                              child: GridView.count(
+                                crossAxisCount: axiscount,
+                                childAspectRatio: 0.85,
+                                mainAxisSpacing: 2,
+                                crossAxisSpacing: 5,
+                                padding: const EdgeInsets.all(12),
+                                children: List.generate(productList.length, (
+                                  index,
+                                ) {
+                                  return Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(8),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
+                                    color: Colors.white,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        Product product = Product.fromJson(
+                                          productList[index].toJson(),
+                                        );
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (content) => ProductDetailsPage(
+                                                  customerdata:
+                                                      widget.customerdata,
+                                                  product: product,
+                                                ),
+                                          ),
+                                        );
+                                        loadProducts(title);
+                                      },
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                            CrossAxisAlignment.stretch,
                                         children: [
-                                          const SizedBox(height: 5),
-                                          Text(
-                                            truncateString(
-                                              productList[index].productTitle
-                                                  .toString(),
-                                            ),
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
+                                          Expanded(
+                                            flex: 4,
+                                            child: ClipRRect(
+                                              child: Image.network(
+                                                "${MyServerConfig.server}/pomm/assets/products/${productList[index].productId}.jpg",
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
-                                          Text(
-                                            "RM${productList[index].productPrice}",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${productList[index].productQty} available",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.red,
+                                          Expanded(
+                                            flex: 2,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    truncateString(
+                                                      productList[index]
+                                                          .productTitle
+                                                          .toString(),
+                                                    ),
+                                                    style: GoogleFonts.inter(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "RM${productList[index].productPrice}",
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 12,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${productList[index].productQty} available",
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 12,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  );
+                                }),
                               ),
                             ),
-                          );
-                        }),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: numofpage,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          if ((curpage - 1) == index) {
-                            color = Colors.black;
-                          } else {
-                            color = Colors.grey;
-                          }
-                          return TextButton(
-                            onPressed: () {
-                              curpage = index + 1;
-                              loadProducts(title);
-                            },
-                            child: Text(
-                              (index + 1).toString(),
-                              style: TextStyle(color: color, fontSize: 16),
+                            SizedBox(
+                              height: 40,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: numofpage,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  final isCurrentPage = (curpage - 1) == index;
+                                  final color =
+                                      isCurrentPage
+                                          ? Colors.black
+                                          : Colors.grey;
+
+                                  return TextButton(
+                                    onPressed: () {
+                                      curpage = index + 1;
+                                      loadProducts(title);
+                                    },
+                                    child: Text(
+                                      (index + 1).toString(),
+                                      style: TextStyle(
+                                        color: color,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                          ],
+                        ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -238,63 +288,5 @@ class _ProductPageState extends State<ProductPage> {
           }
           setState(() {});
         });
-  }
-
-  void showSearchDialog() {
-    TextEditingController searchController = TextEditingController();
-    title = searchController.text;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            "Search product",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: "Enter product name",
-                    border: InputBorder.none,
-                    prefixIcon: Icon(Icons.search, color: Colors.black),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  loadProducts(searchController.text);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  child: Text(
-                    "Search",
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 }

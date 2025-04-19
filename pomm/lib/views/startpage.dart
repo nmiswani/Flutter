@@ -4,56 +4,49 @@ import 'package:pomm/views/loginclerkadminpage.dart';
 import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'package:pomm/views/customer/loginregister/registercustomerpage.dart';
 
-class StartPage extends StatelessWidget {
+class StartPage extends StatefulWidget {
   const StartPage({super.key});
 
   @override
+  State<StartPage> createState() => _StartPageState();
+}
+
+class _StartPageState extends State<StartPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(91, 158, 113, 0.612),
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 50),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(height: 180),
-                // Image Section
-                Image.asset(
-                  'assets/images/loginicon.png', // Make sure the asset path is correct
-                  height: 200, // Adjust the height as needed
-                  width: 200, // Adjust the width as needed
-                ),
-
-                const SizedBox(height: 40),
-
-                // Register Button
+                const SizedBox(height: 130),
+                Image.asset('assets/images/login.png', height: 270, width: 270),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 2,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to Register Page
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  const LoginCustomerPage(), // Change to your actual RegisterPage class
+                          builder: (context) => const LoginCustomerPage(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Text(
                         "Login",
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.inter(
                           fontSize: 15,
                           color: Colors.black,
                         ),
@@ -61,35 +54,29 @@ class StartPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 15),
-
-                // Login Button
+                const SizedBox(height: 5),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 2,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to Login Page
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  const RegisterCustomerPage(), // Change to your actual LoginPage class
+                          builder: (context) => const RegisterCustomerPage(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Text(
                         "Register",
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.inter(
                           fontSize: 15,
                           color: Colors.black,
                         ),
@@ -97,35 +84,29 @@ class StartPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 150),
-
-                // Clerk or Admin Text
+                const SizedBox(height: 120),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      "Clerk or Admin?",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
+                      "Are you clerk or admin?",
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
                         color: Colors.white,
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Navigate to Login Page
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    const LoginClerkAdminPage(), // Change to your actual LoginPage class
+                            builder: (context) => const LoginClerkAdminPage(),
                           ),
                         );
                       },
                       child: Text(
                         " Login",
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                           color: Colors.white,

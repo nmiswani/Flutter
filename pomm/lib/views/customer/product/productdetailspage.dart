@@ -34,7 +34,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       appBar: AppBar(
         title: Text(
           widget.product.productTitle.toString(),
-          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+          style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
@@ -105,7 +105,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       SizedBox(width: screenWidth * 0.02), // Adjusted spacing
                       Text(
                         "Add to Cart",
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.inter(
                           fontSize: 15, // Adjusted font size
                           color: Colors.white,
                         ),
@@ -129,7 +129,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
             child: Text(
               label,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -139,7 +139,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         TableCell(
           child: Padding(
             padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
-            child: Text(value, style: GoogleFonts.poppins(fontSize: 13)),
+            child: Text(value, style: GoogleFonts.inter(fontSize: 13)),
           ),
         ),
       ],
