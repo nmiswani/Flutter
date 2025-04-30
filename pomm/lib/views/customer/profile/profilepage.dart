@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +9,7 @@ import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'package:pomm/views/customer/profile/aboutuspage.dart';
 import 'package:pomm/views/customer/profile/userdetailspage.dart';
 import 'package:pomm/views/customer/profile/helppage.dart';
+import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
   final Customer customerdata;
@@ -21,6 +23,54 @@ class _ProfilePageState extends State<ProfilePage> {
   late List<Widget> tabchildren;
   String maintitle = "Profile";
   int randomValue = Random().nextInt(100000);
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserProfile();
+  }
+
+  Future<void> loadUserProfile() async {
+    String customerId = widget.customerdata.customerid.toString();
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_profile.php?customerid=$customerId",
+        ),
+        body: {},
+      );
+      if (response.statusCode == 200) {
+        var customer = jsonDecode(response.body);
+        print(response.body);
+        if (customer['status'] == "success") {
+          setState(() {
+            widget.customerdata.customername = customer['customer_name'];
+            widget.customerdata.customeremail = customer['customer_email'];
+
+            print(customer['customer_name']);
+            print(customer['customer_email']);
+          });
+        } else {
+          setState(() {});
+        }
+      } else {
+        print("Server error: ${response.statusCode}");
+        throw Exception("Server returned status code ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Error loading profile data: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "An error occurred while loading profile",
+            style: GoogleFonts.inter(),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +162,14 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 4),
           _optionCard([
             _optionTile(Icons.logout, "Logout", () {
+              Future.delayed(const Duration(seconds: 1), () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginCustomerPage(),
+                  ),
+                );
+              });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -121,7 +179,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   backgroundColor: Colors.green,
                 ),
               );
-              
             }),
           ]),
         ],
