@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Camera & Storage Permissions -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:label="pomm"
@@ -12,6 +12,10 @@
         android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:usesCleartextTraffic="true">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAeGFxn_Dn_jLktueKoFOP6JftMfNYdI6g"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

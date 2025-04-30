@@ -5,10 +5,9 @@ import 'package:pomm/models/clerk.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/views/admin/admindashboard.dart';
 import 'package:pomm/views/clerk/order/clerkorderpage.dart';
-
+import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 
 class LoginClerkAdminPage extends StatefulWidget {
   const LoginClerkAdminPage({super.key});
@@ -23,101 +22,11 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
   final _formKey = GlobalKey<FormState>();
   bool isPasswordVisible = false;
 
-  String? _validateUserID(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Enter user ID';
-    }
-    if (!RegExp(
-      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
-    ).hasMatch(value)) {
-      return 'Enter valid user ID';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Enter password';
-    } else {
-      if (value.length < 6) {
-        return 'Enter valid password';
-      }
-    }
-    return null;
-  }
-
-  Widget makeInput({
-    required IconData icon,
-    required String hint,
-    required TextEditingController controller,
-    bool obscureText = false,
-    bool showVisibilityToggle = false,
-    VoidCallback? onTapVisibilityToggle,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: 75,
-          child: TextFormField(
-            controller: controller,
-            obscureText: obscureText,
-            style: GoogleFonts.poppins(color: Colors.black),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              hintText: hint,
-              prefixIcon: Icon(icon, color: Colors.black),
-              suffixIcon:
-                  showVisibilityToggle
-                      ? IconButton(
-                        icon: Icon(
-                          obscureText ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.black,
-                        ),
-                        onPressed: onTapVisibilityToggle,
-                      )
-                      : null,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(91, 158, 113, 0.612),
-                ),
-                borderRadius: BorderRadius.zero,
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(91, 158, 113, 0.9),
-                ),
-                borderRadius: BorderRadius.zero,
-              ),
-              errorBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red),
-                borderRadius: BorderRadius.zero,
-              ),
-              focusedErrorBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red),
-                borderRadius: BorderRadius.zero,
-              ),
-              errorStyle: GoogleFonts.poppins(color: Colors.white),
-              hintStyle: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 68, 68, 68),
-                fontSize: 14,
-              ),
-            ),
-            validator: validator,
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color.fromRGBO(91, 158, 113, 0.612),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -127,16 +36,26 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 120),
-                  // Replace "Welcome back!" text with an image
+                  const SizedBox(height: 100),
                   Image.asset(
-                    'assets/images/loginicon_ca.png', // Change to the correct image path
-                    height: 200, // Adjust the height as needed
-                    width: 200, // Adjust the width if needed
+                    'assets/images/loginicon_ca.png',
+                    height: 150,
+                    width: 250,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "CLERK & ADMIN OF\nUTARA GADGET SOLUTION",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 2,
+                    ),
                   ),
                   const SizedBox(height: 50),
                   makeInput(
-                    icon: Icons.person,
+                    icon: Icons.email,
                     hint: "User ID",
                     controller: userIDController,
                     validator: _validateUserID,
@@ -154,52 +73,52 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                     },
                     validator: _validatePassword,
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 60),
                   Center(
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
+                      width: MediaQuery.of(context).size.width / 1,
                       child: ElevatedButton(
                         onPressed: () {
                           _loginUser();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: Colors.red,
                           shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           child: Text(
                             "Login",
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.inter(
                               fontSize: 15,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Login as Customer?",
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Colors.white,
+                        "Login as customer?",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.black,
                         ),
                       ),
                       GestureDetector(
                         onTap: _navigateToLoginPage,
                         child: Text(
                           " Login",
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.inter(
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: Colors.white,
+                            fontSize: 13.5,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -214,45 +133,132 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
     );
   }
 
-  void _navigateToLoginPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                const LoginCustomerPage(), // Replace with actual register page
-      ),
+  Widget makeInput({
+    required IconData icon,
+    required String hint,
+    required TextEditingController controller,
+    bool obscureText = false,
+    bool showVisibilityToggle = false,
+    VoidCallback? onTapVisibilityToggle,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          height: 70,
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            style: GoogleFonts.inter(color: Colors.black, fontSize: 14),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color.fromARGB(255, 255, 236, 236),
+              hintText: hint,
+              prefixIcon: Icon(icon, color: Colors.black),
+              suffixIcon:
+                  showVisibilityToggle
+                      ? IconButton(
+                        icon: Icon(
+                          obscureText ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.black,
+                        ),
+                        onPressed: onTapVisibilityToggle,
+                      )
+                      : null,
+              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              errorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              focusedErrorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              errorStyle: GoogleFonts.inter(color: Colors.red),
+              hintStyle: GoogleFonts.inter(color: Colors.black54, fontSize: 14),
+            ),
+            validator: validator,
+          ),
+        ),
+      ],
     );
   }
 
+  void _navigateToLoginPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginCustomerPage()),
+    );
+  }
+
+  String? _validateUserID(String? value) {
+    if (value == null ||
+        !RegExp(
+          r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
+        ).hasMatch(value)) {
+      return 'Enter registered user ID';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.length < 6) {
+      return 'Enter registered password';
+    }
+    return null;
+  }
+
   void _loginUser() {
+    String email = userIDController.text.trim();
+    String password = passwordController.text.trim();
+    String loginUrl;
+
+    if (email.isEmpty && password.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "These field are required",
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      });
+      return;
+    }
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    String email = userIDController.text;
-    String pass = passwordController.text;
-    String loginUrl;
-
-    // Determine the URL based on user role (admin or clerk)
     if (email == "adminpomm@gmail.com") {
       loginUrl = "${MyServerConfig.server}/pomm/php/login_admin.php";
     } else if (email == "clerkpomm@gmail.com") {
-      loginUrl =
-          "${MyServerConfig.server}/pomm/php/login_clerk.php"; // Clerk login URL
+      loginUrl = "${MyServerConfig.server}/pomm/php/login_clerk.php";
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid user ID or password"),
+        SnackBar(
+          content: Text(
+            "Invalid user ID or password",
+            style: GoogleFonts.inter(),
+          ),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    // Send the POST request to the selected URL
     http
-        .post(Uri.parse(loginUrl), body: {"email": email, "password": pass})
+        .post(Uri.parse(loginUrl), body: {"email": email, "password": password})
         .then((response) {
           print(response.body);
           if (response.statusCode == 200) {
@@ -260,11 +266,12 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
             if (data['status'] == "success") {
               if (email == "adminpomm@gmail.com") {
                 Admin admin = Admin.fromJson(data['data']);
-
-                // Navigate to Admin Dashboard
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("You have successfully logged in"),
+                  SnackBar(
+                    content: Text(
+                      "You have successfully logged in",
+                      style: GoogleFonts.inter(),
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -276,11 +283,12 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                 );
               } else if (email == "clerkpomm@gmail.com") {
                 Clerk clerk = Clerk.fromJson(data['data']);
-
-                // Navigate to Clerk Dashboard
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("You have successfully logged in"),
+                  SnackBar(
+                    content: Text(
+                      "You have successfully logged in",
+                      style: GoogleFonts.inter(),
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -293,8 +301,11 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
               }
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Login failed. Please create a new account"),
+                SnackBar(
+                  content: Text(
+                    "Login failed. Invalid user ID or password",
+                    style: GoogleFonts.inter(),
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );

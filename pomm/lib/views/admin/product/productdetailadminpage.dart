@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +26,7 @@ class ProductDetailAdminPage extends StatefulWidget {
 
 class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
   late double screenWidth, screenHeight;
+  int randomValue = Random().nextInt(100000);
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +34,15 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           widget.product.productTitle.toString(),
-          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             onPressed: () {
@@ -56,7 +60,6 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
             icon: const Icon(Icons.edit, color: Colors.white),
           ),
         ],
-        elevation: 0.0,
       ),
       body: Column(
         children: [
@@ -65,22 +68,35 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Product Image
-                  SizedBox(
-                    height: screenHeight * 0.35,
-                    width: screenWidth,
-                    child: ClipRRect(
-                      child: Image.network(
-                        "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg",
-                        fit: BoxFit.cover,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                    child: Card(
+                      elevation: 3,
+                      child: SizedBox(
+                        height: screenHeight / 3,
+                        width: screenWidth * 0.91,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg?v=$randomValue",
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    const Icon(Icons.error, size: 50),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
 
                   // Product Details Table
                   Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.03),
+                    padding: EdgeInsets.all(screenWidth * 0.045),
                     child: Table(
                       border: TableBorder.all(color: Colors.black, width: 1.5),
                       columnWidths: const {
@@ -112,37 +128,29 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
             ),
           ),
 
-          // Delete Button (Fixed at Bottom)
           Container(
-            width: MediaQuery.of(context).size.width / 2,
-            margin: const EdgeInsets.only(bottom: 80),
+            width: MediaQuery.of(context).size.width / 1.10,
+            margin: const EdgeInsets.only(bottom: 51),
             color: Colors.white,
             child: ElevatedButton(
               onPressed: () {
                 deleteDialog();
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+                minimumSize: const Size(double.infinity, 48),
+                backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.delete,
-                    size: screenWidth * 0.05,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.delete, color: Colors.white),
                   SizedBox(width: screenWidth * 0.02),
                   Text(
-                    "Delete",
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: Colors.white,
-                    ),
+                    "Delete Product",
+                    style: GoogleFonts.inter(fontSize: 15, color: Colors.white),
                   ),
                 ],
               ),
@@ -156,22 +164,32 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
   TableRow buildTableRow(String label, String value) {
     return TableRow(
       children: [
+        // Column Label - Black background, white text
         TableCell(
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
+          verticalAlignment: TableCellVerticalAlignment.fill,
+          child: Container(
+            color: Colors.black,
+            padding: EdgeInsets.all(screenWidth * 0.03),
             child: Text(
               label,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
           ),
         ),
+        // Column Value - Black background, white text
         TableCell(
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.03), // Adjusted padding
-            child: Text(value, style: GoogleFonts.poppins(fontSize: 14)),
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(screenWidth * 0.03),
+            child: Text(
+              value,
+              style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
+            ),
           ),
         ),
       ],
@@ -183,21 +201,28 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            "Delete product",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-          content: const Text("Are you sure?"),
+          title: Text(
+            "Delete product",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            "Are you sure want to delete?",
+            style: GoogleFonts.inter(fontSize: 14),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text("Yes", style: TextStyle()),
+              child: Text("Yes", style: GoogleFonts.inter()),
               onPressed: () {
-                deleteProduct();
                 Navigator.of(context).pop();
+                deleteProduct();
               },
             ),
             TextButton(
-              child: const Text("No"),
+              child: Text("No", style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -218,17 +243,28 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
           if (response.statusCode == 200) {
             var jsondata = jsonDecode(response.body);
             if (jsondata['status'] == "success") {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text("Delete Success")));
-              // Navigate back to the product list
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    "Product deleted successful",
+                    style: GoogleFonts.inter(),
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
               Future.delayed(const Duration(seconds: 1), () {
                 Navigator.pop(context);
               });
             } else {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text("Failed")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    "Failed to delete product",
+                    style: GoogleFonts.inter(),
+                  ),
+                  backgroundColor: Colors.red,
+                ),
+              );
             }
           }
         });

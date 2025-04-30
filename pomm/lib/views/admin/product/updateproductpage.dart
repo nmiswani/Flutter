@@ -1,12 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pomm/models/admin.dart';
-import 'dart:convert';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/models/product.dart';
+import 'package:pomm/views/admin/product/productdetailadminpage.dart';
 
 class UpdateProductPage extends StatefulWidget {
   final Product product;
@@ -29,9 +34,11 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
 
+  File? _image;
   var val = 50;
   Random random = Random();
   bool isDisable = false;
+  int randomValue = Random().nextInt(100000);
 
   @override
   void initState() {
@@ -48,30 +55,65 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Update Product"),
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        title: Text(
+          "Update Product",
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: Card(
                 elevation: 3,
                 child: SizedBox(
                   height: screenHeight / 3,
-                  width: screenWidth * 0.9,
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg",
-                    fit: BoxFit.cover,
-                    placeholder:
-                        (context, url) =>
-                            const Center(child: CircularProgressIndicator()),
-                    errorWidget:
-                        (context, url, error) =>
-                            const Icon(Icons.error, size: 50),
+                  width: screenWidth * 0.91,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg?v=$randomValue",
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    const Icon(Icons.error, size: 50),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: isDisable ? null : _updateImageDialog,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.6),
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -83,62 +125,54 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
-                      textInputAction: TextInputAction.next,
+                    buildStyledTextFormField(
+                      controller: _nameController,
+                      label: "Product Name",
+                      icon: Icons.abc,
                       validator:
                           (val) =>
                               val == null || val.length < 3
                                   ? "Product name must be at least 3 characters"
                                   : null,
-                      controller: _nameController,
                       keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        labelText: 'Product Name',
-                        icon: Icon(Icons.abc),
-                        border: OutlineInputBorder(),
-                      ),
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      textInputAction: TextInputAction.next,
+
+                    buildStyledTextFormField(
+                      controller: _descriptionController,
+                      label: "Product Description",
+                      icon: Icons.description,
                       validator:
                           (val) =>
                               val == null || val.length < 10
                                   ? "Product description must be at least 10 characters"
                                   : null,
-                      maxLines: 3,
-                      controller: _descriptionController,
                       keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        labelText: 'Product Description',
-                        icon: Icon(Icons.description),
-                        border: OutlineInputBorder(),
-                      ),
+                      maxLines: 3,
                     ),
                     const SizedBox(height: 10),
+
                     Row(
                       children: [
                         Expanded(
-                          child: TextFormField(
-                            textInputAction: TextInputAction.next,
+                          child: buildStyledTextFormField(
+                            controller: _priceController,
+                            label: "Product Price",
+                            icon: Icons.money,
                             validator:
                                 (val) =>
                                     val == null || val.isEmpty
                                         ? "Enter a valid price"
                                         : null,
-                            controller: _priceController,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Product Price',
-                              icon: Icon(Icons.money),
-                              border: OutlineInputBorder(),
-                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: TextFormField(
-                            textInputAction: TextInputAction.done,
+                          child: buildStyledTextFormField(
+                            controller: _quantityController,
+                            label: "Quantity",
+                            icon: Icons.numbers,
                             validator:
                                 (val) =>
                                     val == null ||
@@ -147,34 +181,29 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                                             int.parse(val) <= 0
                                         ? "Quantity must be greater than 0"
                                         : null,
-                            controller: _quantityController,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Quantity',
-                              icon: Icon(Icons.numbers),
-                              border: OutlineInputBorder(),
-                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 42),
                     SizedBox(
-                      width: screenWidth * 0.8,
-                      height: 50,
+                      width: screenWidth * 1,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: updateDialog,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            55,
-                            97,
-                            70,
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "Update Product",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -188,6 +217,186 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     );
   }
 
+  // Helper function for styled TextFormField
+  Widget buildStyledTextFormField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required String? Function(String?) validator,
+    required TextInputType keyboardType,
+    int maxLines = 1,
+  }) {
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        icon: Icon(icon, color: Colors.black),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        filled: true,
+        fillColor: const Color.fromARGB(255, 236, 231, 231),
+      ),
+    );
+  }
+
+  _updateImageDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          title: Text(
+            "Select from",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              TextButton.icon(
+                onPressed:
+                    () => {Navigator.of(context).pop(), _galleryPicker()},
+                icon: const Icon(Icons.browse_gallery),
+                label: Text("Gallery", style: GoogleFonts.inter()),
+              ),
+              TextButton.icon(
+                onPressed: () => {Navigator.of(context).pop(), _cameraPicker()},
+                icon: const Icon(Icons.camera_alt),
+                label: Text("Camera", style: GoogleFonts.inter()),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _galleryPicker() async => _pickImage(ImageSource.gallery);
+  Future<void> _cameraPicker() async => _pickImage(ImageSource.camera);
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: source,
+      maxWidth: 600,
+      maxHeight: 600,
+      imageQuality: 75,
+    );
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      cropImage();
+    }
+    if (pickedFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("No image selected", style: GoogleFonts.inter()),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    File imageFile = File(pickedFile.path);
+
+    if (!await imageFile.exists()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Image file does not exist",
+            style: GoogleFonts.inter(),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _image = imageFile;
+    });
+  }
+
+  Future<void> cropImage() async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: _image!.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1), // Square crop
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Colors.black,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        IOSUiSettings(title: 'Crop Image', aspectRatioLockEnabled: false),
+      ],
+    );
+
+    if (croppedFile != null) {
+      setState(() {
+        _image = File(croppedFile.path);
+      });
+      _updateProductImage();
+    }
+  }
+
+  Future<void> _updateProductImage() async {
+    if (_image == null) {
+      return;
+    }
+    File imageFile = File(_image!.path);
+    print(imageFile);
+    String base64Image = base64Encode(imageFile.readAsBytesSync());
+    http
+        .post(
+          Uri.parse(
+            "${MyServerConfig.server}/pomm/php/update_product_image.php",
+          ),
+          body: {
+            "productid": widget.product.productId.toString(),
+            "image": base64Image.toString(),
+          },
+        )
+        .then((response) {
+          var jsondata = jsonDecode(response.body);
+          print(jsondata);
+          if (response.statusCode == 200 && jsondata['status'] == 'success') {
+            val = random.nextInt(1000);
+            setState(() {
+              randomValue = Random().nextInt(100000);
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Product image updated successful",
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Failed to update product image",
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        });
+  }
+
   void updateDialog() {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(
@@ -195,28 +404,41 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
       ).showSnackBar(const SnackBar(content: Text("Check your input")));
       return;
     }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-          title: const Text("Update product?", style: TextStyle()),
-          content: const Text("Are you sure?", style: TextStyle()),
+          title: Text(
+            "Update product",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            "Are you sure want to update?",
+            style: GoogleFonts.inter(fontSize: 14),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text("Yes", style: TextStyle()),
+              child: Text("Yes", style: GoogleFonts.inter()),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
                 updateProduct();
-                //registerUser();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ProductDetailAdminPage(
+                          admin: widget.admin,
+                          product: widget.product,
+                        ),
+                  ),
+                );
               },
             ),
             TextButton(
-              child: const Text("No", style: TextStyle()),
+              child: Text("No", style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -249,18 +471,36 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
             var jsondata = jsonDecode(response.body);
             if (jsondata['status'] == 'success') {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Update Product Success")),
+                SnackBar(
+                  content: Text(
+                    "Product updated successful",
+                    style: GoogleFonts.inter(),
+                  ),
+                  backgroundColor: Colors.green,
+                ),
               );
               Navigator.pop(context);
             } else {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text("Update Failed")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    "Failed to update product",
+                    style: GoogleFonts.inter(),
+                  ),
+                  backgroundColor: Colors.red,
+                ),
+              );
             }
           } else {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text("Update Failed")));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Failed to update product",
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
             Navigator.pop(context);
           }
         });

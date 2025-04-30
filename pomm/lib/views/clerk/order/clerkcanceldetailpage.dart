@@ -1,34 +1,33 @@
 import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pomm/models/admin.dart';
 import 'package:pomm/models/cart.dart';
+import 'package:pomm/models/clerk.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'package:pomm/views/admin/order/orderstatusadminpage.dart';
-import 'package:printing/printing.dart';
+import 'package:pomm/views/clerk/order/clerkorderpage.dart';
 
-class AdminOrderDetailPage extends StatefulWidget {
-  final Admin admin;
+class CancelDetailClerkPage extends StatefulWidget {
+  final Clerk clerk;
   final Order order;
   final Cart cart;
 
-  const AdminOrderDetailPage({
+  const CancelDetailClerkPage({
     super.key,
     required this.order,
-    required this.admin,
     required this.cart,
+    required this.clerk,
   });
 
   @override
-  State<AdminOrderDetailPage> createState() => _AdminOrderDetailPageState();
+  State<CancelDetailClerkPage> createState() => _CancelDetailClerkPageState();
 }
 
-class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
+class _CancelDetailClerkPageState extends State<CancelDetailClerkPage> {
   List<dynamic> orderItems = [];
   bool isLoading = true;
   bool hasError = false;
@@ -43,14 +42,14 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 231, 231),
+      backgroundColor: const Color.fromARGB(255, 255, 236, 236),
       appBar: AppBar(
         title: Text(
           "Order Details",
           style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.red,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body:
@@ -68,52 +67,34 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => OrderStatusAdminPage(
-                                  admin: widget.admin,
-                                  order: widget.order,
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${widget.order.orderStatus}",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                  ),
                                 ),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Shipping Information",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Order Tracking: ${widget.order.orderTracking}",
-                                    style: GoogleFonts.inter(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                size: 15,
-                                color: Colors.grey,
-                              ),
-                            ],
-                          ),
+                                Text(
+                                  "Order Tracking: ${widget.order.orderTracking}",
+                                  style: GoogleFonts.inter(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -151,6 +132,7 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
                         ),
                       ),
                     ),
+
                     Card(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -310,6 +292,7 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
                         ),
                       ),
                     ),
+
                     Card(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -353,21 +336,21 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
                                 ),
                               ],
                             ),
-                            if (widget.order.orderStatus == "Delivered" ||
-                                widget.order.orderStatus == "Picked up") ...[
+                            if (widget.order.orderStatus !=
+                                "Request to cancel") ...[
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Order Completed:",
+                                    "Cancellation Approved:",
                                     style: GoogleFonts.inter(fontSize: 12),
                                   ),
                                   Text(
-                                    widget.order.statusCompletedDate != null
+                                    widget.order.statusCanceledDate != null
                                         ? DateFormat('dd/MM/yyyy').format(
                                           DateTime.parse(
-                                            widget.order.statusCompletedDate!,
+                                            widget.order.statusCanceledDate!,
                                           ),
                                         )
                                         : 'N/A',
@@ -380,65 +363,126 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
                         ),
                       ),
                     ),
-                    if (widget.order.orderStatus == "Delivered" ||
-                        widget.order.orderStatus == "Picked up") ...[
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.order.orderId != null) {
-                            printingMethod(widget.order.orderId!);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Order ID is missing",
-                                  style: GoogleFonts.inter(),
-                                ),
-                                backgroundColor: Colors.red,
+
+                    if (widget.order.orderStatus == "Request to cancel")
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 70.0,
+                          horizontal: 5,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: approveDialog,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            );
-                          }
-                        },
-                        child: Card(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Order Receipt",
-                                      style: GoogleFonts.inter(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Receipt for #UGS${widget.order.orderId}",
-                                      style: GoogleFonts.inter(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 15,
-                                  color: Colors.grey,
-                                ),
-                              ],
+                            ),
+                            child: Text(
+                              "Approve Cancellation",
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ],
                   ],
                 ),
               ),
     );
+  }
+
+  void approveDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          title: Text(
+            "Approve Cancellation",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            "Are you sure want to approve?",
+            style: GoogleFonts.inter(fontSize: 14),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Yes", style: GoogleFonts.inter()),
+              onPressed: () {
+                approveCancellation("Canceled");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderClerkPage(clerk: widget.clerk),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: Text("No", style: GoogleFonts.inter()),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> approveCancellation(String newStatus) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${MyServerConfig.server}/pomm/php/update_order_status.php"),
+        body: {
+          "order_id": widget.order.orderId,
+          "status": newStatus,
+          "order_tracking": widget.order.orderTracking,
+        },
+      );
+
+      var data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['status'] == 'success') {
+        setState(() {
+          widget.order.orderStatus = newStatus;
+          widget.order.statusCanceledDate = DateTime.now().toIso8601String();
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Cancellation approved", style: GoogleFonts.inter()),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Failed to withdraw cancellation",
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating status: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error updating status", style: GoogleFonts.inter()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> fetchOrderDetails() async {
@@ -450,7 +494,6 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
         body: {'order_id': widget.order.orderId},
       );
 
-      print('statusCompletedDate: ${widget.order.statusCompletedDate}');
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['status'] == "success") {
@@ -475,51 +518,6 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
         hasError = true;
         isLoading = false;
       });
-    }
-  }
-
-  Future<void> printingMethod(String orderId) async {
-    final generateDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-    final url = Uri.parse(
-      "${MyServerConfig.server}/pomm/php/print_order_receipt.php?generateDate=$generateDate",
-    );
-
-    try {
-      final response = await http.post(url, body: {'order_id': orderId});
-
-      if (response.statusCode == 200) {
-        final htmlData = response.body;
-
-        await Printing.layoutPdf(
-          onLayout: (PdfPageFormat format) async {
-            return await Printing.convertHtml(format: format, html: htmlData);
-          },
-        );
-      } else {
-        print("Failed to load receipt. Status Code: ${response.statusCode}");
-        print("Response body: ${response.body}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Unable to load the receipt. Please try again later",
-              style: GoogleFonts.inter(),
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      print("Error loading receipt: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Network or server issue. Please check your connection",
-            style: GoogleFonts.inter(),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 }

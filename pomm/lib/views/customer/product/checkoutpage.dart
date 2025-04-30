@@ -40,22 +40,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           "Checkout",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(10),
               children: [
+                const SizedBox(height: 10),
+                _buildShippingContainer(),
                 ...cartList.map((item) => _buildCartItem(item)).toList(),
-                _buildShippingCard(),
               ],
             ),
           ),
@@ -63,6 +65,264 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildCartItem(Cart item) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.purple.shade200,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        minLeadingWidth: 0,
+        horizontalTitleGap: 10,
+        dense: true,
+        title: Text(
+          item.productTitle!,
+          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          "RM${double.parse(item.productPrice!).toStringAsFixed(2)}",
+          style: GoogleFonts.inter(fontSize: 12),
+        ),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            "${MyServerConfig.server}/pomm/assets/products/${item.productId}.jpg",
+            width: 50,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+        ),
+        trailing: Text(
+          "Qty: ${item.cartQty}",
+          style: GoogleFonts.inter(fontSize: 12),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShippingContainer() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.green.shade200,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Select Shipping Option",
+            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+          DropdownButton<String>(
+            value: selectedShippingOption,
+            isExpanded: true,
+            items:
+                shippingOptions.map((option) {
+                  return DropdownMenuItem(
+                    value: option,
+                    child: Text(
+                      option,
+                      style: GoogleFonts.inter(fontSize: 12.5),
+                    ),
+                  );
+                }).toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedShippingOption = value!;
+                selectedDeliveryAddress = null;
+                deliveryCharge =
+                    selectedShippingOption == "Delivery" ? 5.00 : 0.00;
+              });
+            },
+          ),
+          const SizedBox(height: 10),
+          if (selectedShippingOption == "Delivery") ...[
+            Text(
+              "Select Delivery Address",
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            DropdownButton<String>(
+              value: selectedDeliveryAddress,
+              isExpanded: true,
+              hint: Text(
+                "Choose your delivery address",
+                style: GoogleFonts.inter(fontSize: 12.5),
+              ),
+              items:
+                  deliveryaddresslist.map((address) {
+                    return DropdownMenuItem(
+                      value: address,
+                      child: Text(
+                        address,
+                        style: GoogleFonts.inter(fontSize: 13),
+                      ),
+                    );
+                  }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedDeliveryAddress = value!;
+                });
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderSummary() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(color: Colors.black),
+      child: Column(
+        children: [
+          _buildSummaryRow("Subtotal", calculateSubtotal(), fontSize: 14),
+          _buildSummaryRow("Delivery Charge", deliveryCharge, fontSize: 14),
+          Divider(color: Colors.white),
+          _buildSummaryRow(
+            "Total",
+            calculateTotal(),
+            fontSize: 14.5,
+            isBold: true,
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () async {
+              if (selectedShippingOption == "Delivery" &&
+                  selectedDeliveryAddress == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "Please select delivery address",
+                      style: GoogleFonts.inter(),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              String shippingAddress =
+                  selectedShippingOption == "Delivery"
+                      ? selectedDeliveryAddress!
+                      : "In-store Pickup";
+              await loadUserCart();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (content) => BillPage(
+                        customer: widget.customerdata,
+                        totalprice: calculateTotal(),
+                        shippingAddress: shippingAddress,
+                        orderSubtotal: calculateSubtotal(),
+                        deliveryCharge: deliveryCharge,
+                        cartList: cartList,
+                      ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 45),
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              "Place Order",
+              style: GoogleFonts.inter(fontSize: 15, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(
+    String label,
+    double value, {
+    bool isBold = false,
+    double fontSize = 14,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: fontSize,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            if (label == "Delivery Charge") ...[
+              GestureDetector(
+                onTap: () {
+                  _showDeliveryInfoDialog();
+                },
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 6.0),
+                  child: Icon(
+                    Icons.info_outline,
+                    size: 15,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+        Text(
+          "RM${value.toStringAsFixed(2)}",
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: fontSize,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ],
+    );
+  }
+
+  double calculateSubtotal() {
+    return cartList.fold(
+      0.0,
+      (sum, item) =>
+          sum + double.parse(item.productPrice!) * int.parse(item.cartQty!),
+    );
+  }
+
+  double calculateTotal() {
+    return calculateSubtotal() + deliveryCharge;
   }
 
   Future<void> loadUserCart() async {
@@ -89,8 +349,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
             cartList.clear();
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Cart is empty"),
+            SnackBar(
+              content: Text("Cart is empty", style: GoogleFonts.inter()),
               backgroundColor: Colors.red,
             ),
           );
@@ -104,176 +364,33 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  Widget _buildShippingCard() {
-    return Card(
-      color: Colors.green.shade100,
-      margin: const EdgeInsets.all(10),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Select Shipping Option",
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-            ),
-            DropdownButton<String>(
-              value: selectedShippingOption,
-              isExpanded: true,
-              items:
-                  shippingOptions.map((option) {
-                    return DropdownMenuItem(value: option, child: Text(option));
-                  }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedShippingOption = value!;
-                  selectedDeliveryAddress = null;
-                  deliveryCharge =
-                      (selectedShippingOption == "Delivery") ? 5.00 : 0.00;
-                });
+  void _showDeliveryInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          title: Text(
+            "Delivery info",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            "The delivery charge is RM5 and we will contact you when we are ready to deliver.",
+            style: GoogleFonts.inter(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              child: Text("OK", style: GoogleFonts.inter()),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
-            const SizedBox(height: 10),
-            if (selectedShippingOption == "Delivery") ...[
-              Text(
-                "Select Delivery Address",
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-              ),
-              DropdownButton<String>(
-                value: selectedDeliveryAddress,
-                isExpanded: true,
-                hint: const Text("Choose your delivery address"),
-                items:
-                    deliveryaddresslist.map((address) {
-                      return DropdownMenuItem(
-                        value: address,
-                        child: Text(address),
-                      );
-                    }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedDeliveryAddress = value!;
-                  });
-                },
-              ),
-            ],
           ],
-        ),
-      ),
+        );
+      },
     );
-  }
-
-  Widget _buildCartItem(Cart item) {
-    return Card(
-      child: ListTile(
-        leading: Image.network(
-          "${MyServerConfig.server}/pomm/assets/products/${item.productId}.jpg",
-          width: 50,
-          height: 50,
-          fit: BoxFit.cover,
-        ),
-        title: Text(
-          item.productTitle!,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          "RM${double.parse(item.productPrice!).toStringAsFixed(2)}",
-        ),
-        trailing: Text("Qty: ${item.cartQty}"),
-      ),
-    );
-  }
-
-  Widget _buildOrderSummary() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(color: Colors.black),
-      child: Column(
-        children: [
-          _buildSummaryRow("Subtotal", calculateSubtotal()),
-          _buildSummaryRow("Delivery Charge", deliveryCharge),
-          Divider(color: Colors.white),
-          _buildSummaryRow("Total", calculateTotal(), isBold: true),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () async {
-              if (selectedShippingOption == "Delivery" &&
-                  selectedDeliveryAddress == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Please select a delivery address"),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
-
-              String shippingAddress =
-                  (selectedShippingOption == "Delivery")
-                      ? selectedDeliveryAddress!
-                      : "In-store Pickup";
-
-              await loadUserCart();
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (content) => BillPage(
-                        customer: widget.customerdata,
-                        totalprice: calculateTotal(),
-                        shippingAddress: shippingAddress,
-                        orderSubtotal: calculateSubtotal(),
-                        deliveryCharge: deliveryCharge,
-                        cartList: cartList,
-                      ),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-            ),
-            child: Text(
-              "Place Order",
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, double value, {bool isBold = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-        Text(
-          "RM${value.toStringAsFixed(2)}",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ],
-    );
-  }
-
-  double calculateSubtotal() {
-    return cartList.fold(
-      0.0,
-      (sum, item) =>
-          sum + double.parse(item.productPrice!) * int.parse(item.cartQty!),
-    );
-  }
-
-  double calculateTotal() {
-    return calculateSubtotal() + deliveryCharge;
   }
 }

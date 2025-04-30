@@ -27,7 +27,8 @@ class _OrderPageState extends State<OrderPage> {
   int _selectedIndex = 0;
   late double screenWidth, screenHeight;
   int axiscount = 2;
-  String customerid = "";
+  String id = "";
+  String orderTracking = "";
   late List<Widget> tabchildren;
   String maintitle = "Order";
 
@@ -36,7 +37,7 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    loadOrders(customerid);
+    loadOrders(orderTracking);
   }
 
   @override
@@ -48,155 +49,181 @@ class _OrderPageState extends State<OrderPage> {
     } else {
       axiscount = 2;
     }
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Color.fromARGB(255, 55, 97, 70)),
         title: Text(
           "Order",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-        elevation: 0.0,
+        backgroundColor: Colors.black,
       ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _tabButton("Current", 0),
-              _tabButton("Completed", 1),
-              _tabButton("Canceled", 2),
-            ],
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                loadOrders(customerid);
-              },
-              child:
-                  getFilteredOrders().isEmpty
-                      ? const Center(child: Text("No Order"))
-                      : GridView.count(
-                        crossAxisCount: axiscount,
-                        childAspectRatio: 2,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5,
-                        padding: const EdgeInsets.all(10),
-                        children: List.generate(getFilteredOrders().length, (
-                          index,
-                        ) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            color:
-                                _selectedIndex == 0
-                                    ? _getCardColor(
-                                      getFilteredOrders()[index].orderStatus,
-                                    )
-                                    : const Color.fromARGB(
-                                      248,
-                                      214,
-                                      227,
-                                      216,
-                                    ), // default color for other tabs
-                            child: InkWell(
-                              onTap: () async {
-                                Order order = Order.fromJson(
-                                  getFilteredOrders()[index].toJson(),
-                                );
-                                Cart cart = Cart.fromJson(
-                                  getFilteredOrders()[index].toJson(),
-                                );
-
-                                if (order.orderStatus == "Canceled" ||
-                                    order.orderStatus == "Request to cancel") {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (content) => CancelDetailCustomerPage(
-                                            order: order,
-                                            customer: widget.customerdata,
-                                            cart: cart,
-                                          ),
-                                    ),
-                                  );
-                                } else {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (content) => OrderDetailPage(
-                                            customerdata: widget.customerdata,
-                                            order: order,
-                                            cart: cart,
-                                          ),
-                                    ),
-                                  );
-                                }
-                                loadOrders(customerid);
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 5),
-                                          Text(
-                                            "Order Tracking : ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Date : ${formatDate(getFilteredOrders()[index].orderDate)}",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Status : ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Material(
+                elevation: 1,
+                borderRadius: BorderRadius.circular(10),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      orderTracking = value;
+                    });
+                    loadOrders(value);
+                  },
+                  style: GoogleFonts.inter(fontSize: 14),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    hintText: 'Search order tracking',
+                    hintStyle: GoogleFonts.inter(color: Colors.black45),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: const Icon(Icons.search, color: Colors.black),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    _tabButton("Current", 0),
+                    const SizedBox(width: 10),
+                    _tabButton("Completed", 1),
+                    const SizedBox(width: 10),
+                    _tabButton("Canceled", 2),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  loadOrders(orderTracking);
+                },
+                child:
+                    getFilteredOrders().isEmpty
+                        ? Center(
+                          child: Text(
+                            "No order's data",
+                            style: GoogleFonts.inter(),
+                          ),
+                        )
+                        : ListView.builder(
+                          padding: const EdgeInsets.all(10),
+                          itemCount: getFilteredOrders().length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              elevation: 1.5,
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              color: _getCardColor(
+                                getFilteredOrders()[index].orderStatus,
+                              ),
+                              child: InkWell(
+                                onTap: () async {
+                                  Order order = Order.fromJson(
+                                    getFilteredOrders()[index].toJson(),
+                                  );
+                                  Cart cart = Cart.fromJson(
+                                    getFilteredOrders()[index].toJson(),
+                                  );
+
+                                  if (order.orderStatus == "Canceled" ||
+                                      order.orderStatus ==
+                                          "Request to cancel") {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (content) =>
+                                                CancelDetailCustomerPage(
+                                                  order: order,
+                                                  customer: widget.customerdata,
+                                                  cart: cart,
+                                                ),
+                                      ),
+                                    );
+                                  } else {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (content) => OrderDetailPage(
+                                              order: order,
+                                              cart: cart,
+                                              customerdata: widget.customerdata,
+                                            ),
+                                      ),
+                                    );
+                                  }
+                                  loadOrders(orderTracking);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        truncateString(
+                                          "Order Tracking: ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
+                                        ),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Created Date: ${formatDate(getFilteredOrders()[index].orderDate)}",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Status: ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  // Function to format date
-  String formatDate(String? dateString) {
-    if (dateString == null || dateString.isEmpty) return "No Date";
-    try {
-      DateTime parsedDate = DateTime.parse(dateString);
-      return DateFormat("dd/MM/yyyy").format(parsedDate);
-    } catch (e) {
-      return "Invalid Date";
-    }
   }
 
   Widget _tabButton(String title, int index) {
@@ -207,10 +234,11 @@ class _OrderPageState extends State<OrderPage> {
         });
       },
       style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: _selectedIndex == index ? Colors.black : Colors.white,
         foregroundColor: _selectedIndex == index ? Colors.white : Colors.black,
       ),
-      child: Text(title),
+      child: Text(title, style: GoogleFonts.inter()),
     );
   }
 
@@ -225,75 +253,108 @@ class _OrderPageState extends State<OrderPage> {
   Color _getCardColor(String? status) {
     switch (status) {
       case "Order placed":
-        return Colors.pink.shade100;
+        return Colors.purple.shade100;
       case "In process":
-        return Colors.orange.shade100;
+        return Colors.blue.shade200;
       case "Out for delivery":
-        return Colors.green.shade100;
+      case "Ready for pickup":
+        return Colors.brown.shade200;
+      case "Delivered":
+      case "Picked up":
+        return Colors.green.shade200;
       case "Request to cancel":
-        return Colors.red.shade100;
+        return Colors.orange.shade200;
+      case "Canceled":
+        return Colors.red.shade200;
       default:
-        return const Color.fromARGB(248, 214, 227, 216); // default fallback
+        return Colors.white;
     }
   }
 
-  void loadOrders(String customerid) async {
+  String truncateString(String str) {
+    if (str.length > 100) {
+      str = str.substring(0, 100);
+      return "$str...";
+    } else {
+      return str;
+    }
+  }
+
+  // Function to format date
+  String formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return "No Date";
     try {
-      String customerid = widget.customerdata.customerid.toString();
-      final response = await http.get(
-        Uri.parse(
-          "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
-        ),
-      );
+      DateTime parsedDate = DateTime.parse(dateString);
+      return DateFormat("dd/MM/yyyy").format(parsedDate);
+    } catch (e) {
+      return "Invalid Date";
+    }
+  }
 
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
+  void loadOrders(String orderTracking) {
+    String customerid = widget.customerdata.customerid.toString();
+    http
+        .get(
+          Uri.parse(
+            "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
+          ),
+        )
+        .then((response) {
+          log(response.body);
 
-        if (data['status'] == "success" && data['data'] != null) {
-          List<dynamic> ordersJson = data['data']['orders'];
+          if (response.statusCode == 200) {
+            var data = jsonDecode(response.body);
 
-          if (ordersJson.isNotEmpty) {
-            // Clear all lists first
-            orderList.clear();
-            currentOrders.clear();
-            completedOrders.clear();
-            canceledOrders.clear();
+            if (data['status'] == "success" && data['data'] != null) {
+              List<dynamic> ordersJson = data['data']['orders'];
 
-            Map<String, Order> uniqueOrderMap = {};
+              if (ordersJson.isNotEmpty) {
+                // Clear all lists first
+                orderList.clear();
+                currentOrders.clear();
+                completedOrders.clear();
+                canceledOrders.clear();
 
-            for (var json in ordersJson) {
-              Order order = Order.fromJson(json);
-              if (order.orderId != null &&
-                  !uniqueOrderMap.containsKey(order.orderId)) {
-                uniqueOrderMap[order.orderId!] = order;
-              }
-            }
+                Map<String, Order> uniqueOrderMap = {};
+                for (var json in ordersJson) {
+                  Order order = Order.fromJson(json);
+                  if (order.orderId != null &&
+                      !uniqueOrderMap.containsKey(order.orderId)) {
+                    uniqueOrderMap[order.orderId!] = order;
+                  }
+                }
 
-            // Convert map values to list
-            orderList = uniqueOrderMap.values.toList();
+                // Assign unique orders to the list
+                orderList = uniqueOrderMap.values.toList();
 
-            // Sort into respective categories
-            for (var order in orderList) {
-              if (order.orderStatus == "Order placed" ||
-                  order.orderStatus == "In process" ||
-                  order.orderStatus == "Out for delivery" ||
-                  order.orderStatus == "Ready for pickup" ||
-                  order.orderStatus == "Request to cancel") {
-                currentOrders.add(order);
-              } else if (order.orderStatus == "Received" ||
-                  order.orderStatus == "Delivered") {
-                completedOrders.add(order);
-              } else if (order.orderStatus == "Canceled") {
-                canceledOrders.add(order);
+                // Categorize orders
+                for (var order in orderList) {
+                  switch (order.orderStatus) {
+                    case "Order placed":
+                    case "In process":
+                    case "Out for delivery":
+                    case "Ready for pickup":
+                    case "Request to cancel":
+                      currentOrders.add(order);
+                      break;
+                    case "Delivered":
+                    case "Picked up":
+                      completedOrders.add(order);
+                      break;
+                    case "Canceled":
+                      canceledOrders.add(order);
+                      break;
+                  }
+                }
               }
             }
           }
-        }
-      }
-      log("Loaded ${orderList.length} unique orders");
-      setState(() {});
-    } catch (error) {
-      print("Error loading orders: $error");
-    }
+
+          log("Loaded ${orderList.length} unique orders");
+          setState(() {});
+        })
+        .catchError((error) {
+          print("Error loading orders: $error");
+        });
   }
 }

@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/product.dart';
@@ -25,6 +26,7 @@ class _ProductPageState extends State<ProductPage> {
   int numofresult = 0;
   int axiscount = 2;
   var color;
+  int randomValue = Random().nextInt(100000);
   String title = "";
   late List<Widget> tabchildren;
   String maintitle = "Product";
@@ -39,20 +41,16 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    // screenHeight = MediaQuery.of(context).size.height;
-    // screenWidth = MediaQuery.of(context).size.width;
-    // axiscount = screenWidth > 500 ? 3 : 2;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.black),
         title: Text(
           "Product",
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 18),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
         centerTitle: true,
-        backgroundColor: Colors.black, // Maroon color
+        backgroundColor: Colors.black,
         actions: [
           IconButton(
             onPressed: () {
@@ -67,6 +65,7 @@ class _ProductPageState extends State<ProductPage> {
           ),
         ],
       ),
+
       body: SafeArea(
         child: Column(
           children: [
@@ -74,28 +73,27 @@ class _ProductPageState extends State<ProductPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Material(
+                elevation: 0.5,
+                borderRadius: BorderRadius.circular(10),
                 child: TextField(
                   controller: searchController,
                   onChanged: (value) {
                     curpage = 1;
                     loadProducts(value);
                   },
-                  style: GoogleFonts.inter(fontSize: 15),
+                  style: GoogleFonts.inter(fontSize: 14),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
                     ),
                     hintText: 'Search products',
-                    hintStyle: GoogleFonts.inter(
-                      color: Colors.black45,
-                      fontSize: 15,
-                    ),
+                    hintStyle: GoogleFonts.inter(color: Colors.black45),
                     filled: true,
                     fillColor: Colors.grey[200],
                     prefixIcon: const Icon(Icons.search, color: Colors.black),
                     border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -112,7 +110,7 @@ class _ProductPageState extends State<ProductPage> {
                         ? Center(
                           child: Text(
                             "No product's data",
-                            style: GoogleFonts.inter(fontSize: 15),
+                            style: GoogleFonts.inter(),
                           ),
                         )
                         : Column(
@@ -120,17 +118,20 @@ class _ProductPageState extends State<ProductPage> {
                             Expanded(
                               child: GridView.count(
                                 crossAxisCount: axiscount,
-                                childAspectRatio: 0.85,
+                                childAspectRatio: 0.8,
                                 mainAxisSpacing: 2,
-                                crossAxisSpacing: 5,
+                                crossAxisSpacing: 4,
                                 padding: const EdgeInsets.all(12),
                                 children: List.generate(productList.length, (
                                   index,
                                 ) {
                                   return Card(
+                                    elevation: 10,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
-                                        Radius.circular(8),
+                                        Radius.circular(
+                                          10,
+                                        ), // Border radius for the card
                                       ),
                                     ),
                                     color: Colors.white,
@@ -159,12 +160,22 @@ class _ProductPageState extends State<ProductPage> {
                                           Expanded(
                                             flex: 4,
                                             child: ClipRRect(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(
+                                                  10,
+                                                ), // Border radius for the top-left corner
+                                                topRight: Radius.circular(
+                                                  10,
+                                                ), // Border radius for the top-right corner
+                                              ),
                                               child: Image.network(
-                                                "${MyServerConfig.server}/pomm/assets/products/${productList[index].productId}.jpg",
+                                                "${MyServerConfig.server}/pomm/assets/products/${productList[index].productId}.jpg?v=$randomValue",
+
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
                                           ),
+                                          // Rest of the content remains the same
                                           Expanded(
                                             flex: 2,
                                             child: Padding(
@@ -196,7 +207,15 @@ class _ProductPageState extends State<ProductPage> {
                                                     "${productList[index].productQty} available",
                                                     style: GoogleFonts.inter(
                                                       fontSize: 12,
-                                                      color: Colors.red,
+                                                      color:
+                                                          int.tryParse(
+                                                                    productList[index]
+                                                                        .productQty
+                                                                        .toString(),
+                                                                  ) ==
+                                                                  0
+                                                              ? Colors.red
+                                                              : Colors.green,
                                                     ),
                                                   ),
                                                 ],
@@ -230,10 +249,7 @@ class _ProductPageState extends State<ProductPage> {
                                     },
                                     child: Text(
                                       (index + 1).toString(),
-                                      style: TextStyle(
-                                        color: color,
-                                        fontSize: 16,
-                                      ),
+                                      style: GoogleFonts.inter(color: color),
                                     ),
                                   );
                                 },
@@ -250,8 +266,8 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   String truncateString(String str) {
-    if (str.length > 20) {
-      str = str.substring(0, 20);
+    if (str.length > 50) {
+      str = str.substring(0, 50);
       return "$str...";
     } else {
       return str;
@@ -266,9 +282,7 @@ class _ProductPageState extends State<ProductPage> {
           ),
         )
         .then((response) {
-          log(response.body);
           if (response.statusCode == 200) {
-            log(response.body);
             var data = jsonDecode(response.body);
             if (data['status'] == "success") {
               productList.clear();
@@ -278,15 +292,19 @@ class _ProductPageState extends State<ProductPage> {
               numofpage = int.parse(data['numofpage'].toString());
               numofresult = int.parse(data['numberofresult'].toString());
             } else {
+              productList.clear();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Product not found"),
+                SnackBar(
+                  content: Text(
+                    "Product not found",
+                    style: GoogleFonts.inter(),
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );
             }
+            setState(() {});
           }
-          setState(() {});
         });
   }
 }

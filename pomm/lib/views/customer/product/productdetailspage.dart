@@ -1,6 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:developer' as developer;
+import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // Import GoogleFonts
 import 'package:http/http.dart' as http;
@@ -25,98 +27,120 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late double screenWidth, screenHeight;
+  int randomValue = Random().nextInt(100000);
 
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           widget.product.productTitle.toString(),
-          style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-        elevation: 0.0,
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Product Image
-            SizedBox(
-              height: screenHeight * 0.35,
-              width: screenWidth,
-              child: ClipRRect(
-                child: Image.network(
-                  "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg",
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            // Product Details Table
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.03), // Adjusted padding
-              child: Table(
-                border: TableBorder.all(color: Colors.black, width: 1.5),
-                columnWidths: const {
-                  0: FlexColumnWidth(1.5),
-                  1: FlexColumnWidth(3.5),
-                },
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  buildTableRow("Name", widget.product.productTitle.toString()),
-                  buildTableRow(
-                    "Description",
-                    widget.product.productDesc.toString(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                    child: Card(
+                      elevation: 3,
+                      child: SizedBox(
+                        height: screenHeight / 3,
+                        width: screenWidth * 0.91,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg?v=$randomValue",
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    const Icon(Icons.error, size: 50),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  buildTableRow("Price", "RM${widget.product.productPrice}"),
-                  buildTableRow("Quantity", "${widget.product.productQty}"),
+
+                  // Product Details Table
+                  Padding(
+                    padding: EdgeInsets.all(screenWidth * 0.045),
+                    child: Table(
+                      border: TableBorder.all(color: Colors.black, width: 1.5),
+                      columnWidths: const {
+                        0: FlexColumnWidth(1.5),
+                        1: FlexColumnWidth(3.5),
+                      },
+                      children: [
+                        buildTableRow(
+                          "Name",
+                          widget.product.productTitle.toString(),
+                        ),
+                        buildTableRow(
+                          "Description",
+                          widget.product.productDesc.toString(),
+                        ),
+                        buildTableRow(
+                          "Price",
+                          "RM${widget.product.productPrice}",
+                        ),
+                        buildTableRow(
+                          "Quantity",
+                          "${widget.product.productQty}",
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            // Add to Cart Button
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width / 2,
-                margin: const EdgeInsets.only(
-                  top: 80,
-                ), // Add margin for spacing
-                child: ElevatedButton(
-                  onPressed: () {
-                    insertCartDialog();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: const Color.fromARGB(255, 55, 97, 70),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.shopping_cart,
-                        size: screenWidth * 0.05, // Adjusted icon size
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: screenWidth * 0.02), // Adjusted spacing
-                      Text(
-                        "Add to Cart",
-                        style: GoogleFonts.inter(
-                          fontSize: 15, // Adjusted font size
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
+          ),
+
+          Container(
+            width: MediaQuery.of(context).size.width / 1.10,
+            margin: const EdgeInsets.only(bottom: 50),
+            color: Colors.white,
+            child: ElevatedButton(
+              onPressed: () {
+                insertCartDialog();
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 47),
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.shopping_cart, color: Colors.white),
+                  SizedBox(width: screenWidth * 0.02),
+                  Text(
+                    "Add to Cart",
+                    style: GoogleFonts.inter(fontSize: 15, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -124,22 +148,32 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   TableRow buildTableRow(String label, String value) {
     return TableRow(
       children: [
+        // Column Label - Black background, white text
         TableCell(
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
+          verticalAlignment: TableCellVerticalAlignment.fill,
+          child: Container(
+            color: Colors.black,
+            padding: EdgeInsets.all(screenWidth * 0.03),
             child: Text(
               label,
               style: GoogleFonts.inter(
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
           ),
         ),
+        // Column Value - Black background, white text
         TableCell(
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.02), // Adjusted padding
-            child: Text(value, style: GoogleFonts.inter(fontSize: 13)),
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(screenWidth * 0.03),
+            child: Text(
+              value,
+              style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
+            ),
           ),
         ),
       ],
@@ -151,14 +185,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            "Insert to cart",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-          content: const Text("Are you sure?"),
+          title: Text(
+            "Insert to cart",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            "Are you sure want to add?",
+            style: GoogleFonts.inter(fontSize: 14),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text("Yes", style: TextStyle()),
+              child: Text("Yes", style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
 
@@ -170,8 +211,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   insertCart();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Product out of stock"),
+                    SnackBar(
+                      content: Text(
+                        "Product out of stock",
+                        style: GoogleFonts.inter(),
+                      ),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -179,7 +223,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               },
             ),
             TextButton(
-              child: const Text("No"),
+              child: Text("No", style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -202,13 +246,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           },
         )
         .then((response) {
-          log(response.body);
+          developer.log(response.body);
           if (response.statusCode == 200) {
             var data = jsonDecode(response.body);
             if (data['status'] == "success") {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Added to cart successfully"),
+                SnackBar(
+                  content: Text(
+                    "Added to cart successfully",
+                    style: GoogleFonts.inter(),
+                  ),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -220,8 +267,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Failed to add to cart"),
+                SnackBar(
+                  content: Text(
+                    "Failed to add to cart",
+                    style: GoogleFonts.inter(),
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );

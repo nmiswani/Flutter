@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
+import 'package:pomm/views/customer/customerdashboard.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BillPage extends StatefulWidget {
@@ -25,6 +27,7 @@ class BillPage extends StatefulWidget {
 
 class _BillPageState extends State<BillPage> {
   late WebViewController controller;
+  bool paymentDone = false;
 
   @override
   void initState() {
@@ -34,6 +37,17 @@ class _BillPageState extends State<BillPage> {
     controller =
         WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (String url) {
+                if (url.contains('payment_update.php')) {
+                  setState(() {
+                    paymentDone = true;
+                  });
+                }
+              },
+            ),
+          )
           ..loadRequest(
             Uri.parse(
               'https://wani.infinitebe.com/pomm/php/payment.php'
@@ -53,9 +67,30 @@ class _BillPageState extends State<BillPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          "Payment",
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text("Bill", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepOrange,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (paymentDone) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          CustomerDashboardPage(customerdata: widget.customer),
+                ),
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
       ),
       body: WebViewWidget(controller: controller),
     );

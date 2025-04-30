@@ -29,169 +29,164 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           "My Cart",
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 97, 70),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body:
           cartList.isEmpty
               ? Center(
-                child: Text(
-                  "Loading...",
-                  style: GoogleFonts.poppins(fontSize: 16),
-                ),
+                child: Text("No cart's data", style: GoogleFonts.inter()),
               )
               : Column(
                 children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: cartList.length,
-                      itemBuilder: (context, index) {
-                        final cartItem = cartList[index];
-
-                        return Container(
-                          margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(248, 214, 227, 216),
-                            borderRadius: BorderRadius.zero,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(8),
-                            title: Text(
-                              cartItem.productTitle.toString(),
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            subtitle: Text(
-                              "RM${cartItem.productPrice.toString()}",
-                              style: GoogleFonts.poppins(fontSize: 13),
-                            ),
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(0),
-                              child: Image.network(
-                                "${MyServerConfig.server}/pomm/assets/products/${cartItem.productId}.jpg",
-                                width: 45,
-                                height: 45,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => decrementQuantity(cartItem),
-                                  padding: EdgeInsets.zero,
-                                  iconSize: 18,
-                                  icon: const Icon(
-                                    Icons.remove,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  cartItem.cartQty.toString(),
-                                  style: GoogleFonts.poppins(fontSize: 14),
-                                ),
-                                IconButton(
-                                  onPressed: () => incrementQuantity(cartItem),
-                                  padding: EdgeInsets.zero,
-                                  iconSize: 18,
-                                  icon: const Icon(
-                                    Icons.add,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed:
-                                      () => showRemoveItemDialog(cartItem),
-                                  padding: EdgeInsets.zero,
-                                  iconSize: 20,
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(color: Colors.black),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Total RM${calculateSubtotal().toStringAsFixed(2)}",
-                              style: GoogleFonts.poppins(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 150,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (content) => CheckoutPage(
-                                            customerdata: widget.customer,
-                                          ),
-                                    ),
-                                  );
-                                  loadUserCart();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size(double.infinity, 50),
-                                  backgroundColor: const Color.fromARGB(
-                                    255,
-                                    55,
-                                    97,
-                                    70,
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero,
-                                  ),
-                                ),
-                                child: Text(
-                                  "Checkout",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 10),
+                  Expanded(child: _buildCartItemsList()),
+                  _buildCheckoutSection(),
                 ],
               ),
+    );
+  }
+
+  Widget _buildCartItemsList() {
+    return ListView.builder(
+      itemCount: cartList.length,
+      itemBuilder: (context, index) {
+        final cartItem = cartList[index];
+        return _buildCartItem(cartItem);
+      },
+    );
+  }
+
+  Widget _buildCartItem(Cart cartItem) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.purple.shade200,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        minLeadingWidth: 0,
+        horizontalTitleGap: 10,
+        dense: true,
+        title: Text(
+          cartItem.productTitle.toString(),
+          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          "RM${cartItem.productPrice.toString()}",
+          style: GoogleFonts.inter(fontSize: 12),
+        ),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            "${MyServerConfig.server}/pomm/assets/products/${cartItem.productId}.jpg",
+            width: 50,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+        ),
+        trailing: _buildCartItemActions(cartItem),
+      ),
+    );
+  }
+
+  Widget _buildCartItemActions(Cart cartItem) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () => decrementQuantity(cartItem),
+          child: const Icon(Icons.remove, color: Colors.black, size: 14),
+        ),
+        const SizedBox(width: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: Text(
+            cartItem.cartQty.toString(),
+            style: GoogleFonts.inter(fontSize: 12),
+          ),
+        ),
+        const SizedBox(width: 8),
+        GestureDetector(
+          onTap: () => incrementQuantity(cartItem),
+          child: const Icon(Icons.add, color: Colors.black, size: 14),
+        ),
+        const SizedBox(width: 15),
+        GestureDetector(
+          onTap: () => showRemoveItemDialog(cartItem),
+          child: const Icon(Icons.delete, color: Colors.red, size: 16),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCheckoutSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(color: Colors.black),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Total RM${calculateSubtotal().toStringAsFixed(2)}",
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(
+                width: 150,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (content) =>
+                                CheckoutPage(customerdata: widget.customer),
+                      ),
+                    );
+                    loadUserCart();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 45),
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "Checkout",
+                    style: GoogleFonts.inter(fontSize: 15, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -206,13 +201,13 @@ class _CartPageState extends State<CartPage> {
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        print("API Response: $data"); // ✅ Debug API response
+        print("API Response: $data");
 
         if (data['status'] == "success" && data['data'] != null) {
           cartList.clear();
           data['data']['carts'].forEach((v) {
             Cart cartItem = Cart.fromJson(v);
-            print("Cart Product ID: ${cartItem.productId}"); // ✅ Debug here
+            print("Cart Product ID: ${cartItem.productId}");
             cartList.add(cartItem);
           });
 
@@ -240,33 +235,41 @@ class _CartPageState extends State<CartPage> {
   void showRemoveItemDialog(Cart cartItem) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text(
-              "Remove product",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            content: Text(
-              "Are you sure want to remove ${cartItem.productTitle}?",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  RemoveCartItem(cartItem);
-                  Navigator.pop(context);
-                },
-                child: const Text("Remove"),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-            ],
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
+          title: Text(
+            "Remove product",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            "Are you sure want to remove ${cartItem.productTitle}?",
+            style: GoogleFonts.inter(fontSize: 14),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Yes", style: GoogleFonts.inter()),
+              onPressed: () {
+                removeCartItem(cartItem);
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("No", style: GoogleFonts.inter()),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
-  void RemoveCartItem(Cart cartItem) async {
+  void removeCartItem(Cart cartItem) async {
     try {
       final response = await http.post(
         Uri.parse("${MyServerConfig.server}/pomm/php/delete_cart.php"),
@@ -280,8 +283,11 @@ class _CartPageState extends State<CartPage> {
         loadUserCart();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Failed to remove item"),
+          SnackBar(
+            content: Text(
+              "Failed to remove product",
+              style: GoogleFonts.inter(),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -289,8 +295,8 @@ class _CartPageState extends State<CartPage> {
     } catch (error) {
       print("Error deleting cart item: $error");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("An error occurred"),
+        SnackBar(
+          content: Text("An error occurred", style: GoogleFonts.inter()),
           backgroundColor: Colors.red,
         ),
       );

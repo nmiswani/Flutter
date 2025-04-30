@@ -15,84 +15,102 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50),
-          child: Center(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 130),
-                Image.asset('assets/images/login.png', height: 270, width: 270),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginCustomerPage(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text(
-                        "Login",
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 70),
+                Image.asset('assets/images/login.png', height: 250),
+                const SizedBox(height: 40),
+                Text(
+                  "Essential Gadgets here!",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.gaegu(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 5),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterCustomerPage(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text(
-                        "Register",
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
+                const SizedBox(height: 10),
+                Text(
+                  "Shop for gadget accessories that match your needs at Utara Gadget Solution Store",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(fontSize: 14, color: Colors.black45),
                 ),
-                const SizedBox(height: 120),
+                const SizedBox(height: 70),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      height: 45,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginCustomerPage(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          "Login",
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 150,
+                      height: 45,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => const RegisterCustomerPage(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          "Register",
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 70),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     Text(
                       "Are you clerk or admin?",
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                     GestureDetector(
@@ -108,8 +126,8 @@ class _StartPageState extends State<StartPage> {
                         " Login",
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: Colors.white,
+                          fontSize: 13.5,
+                          color: Colors.black,
                         ),
                       ),
                     ),

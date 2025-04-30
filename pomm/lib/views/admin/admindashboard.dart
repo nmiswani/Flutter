@@ -42,15 +42,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         onTap: onTabTapped,
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
-        selectedItemColor: const Color.fromARGB(255, 55, 97, 70),
+        selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        selectedLabelStyle: GoogleFonts.poppins(
+        selectedLabelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: const Color.fromARGB(255, 55, 97, 70),
+          color: Colors.black,
         ),
-        unselectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 12,
+        unselectedLabelStyle: GoogleFonts.inter(
+          fontSize: 11,
           fontWeight: FontWeight.w400,
           color: Colors.grey,
         ),

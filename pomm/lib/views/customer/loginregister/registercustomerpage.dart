@@ -24,12 +24,7 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color.fromRGBO(
-        91,
-        158,
-        113,
-        0.612,
-      ), // Set background color to green
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -39,24 +34,21 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 115),
                   Text(
                     "Register",
-                    style: GoogleFonts.poppins(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                    style: GoogleFonts.inter(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     "Create an account, it's free!",
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
+                    style: GoogleFonts.inter(fontSize: 16, color: Colors.black),
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 50),
                   makeInput(
                     icon: Icons.account_circle,
                     hint: "Name",
@@ -88,55 +80,76 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     },
                     validator: _validatePassword,
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 35),
                   Center(
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
+                      width: MediaQuery.of(context).size.width / 1,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
+                          String name = nameController.text.trim();
+                          String email = emailController.text.trim();
+                          String phone = phoneNumberController.text.trim();
+                          String password = passwordController.text.trim();
+
+                          if (name.isEmpty &&
+                              email.isEmpty &&
+                              phone.isEmpty &&
+                              password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "These fields are required",
+                                  style: GoogleFonts.inter(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                          if (_formKey.currentState!.validate()) {
                             showConfirmationDialog(context);
                           }
                         },
+
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.white, // Set button color to white
+                          backgroundColor: Colors.black,
                           shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           child: Text(
                             "Register",
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.inter(
                               fontSize: 15,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         "Already have an account?",
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Colors.white,
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.black,
                         ),
                       ),
                       GestureDetector(
                         onTap: _navigateToLogin,
                         child: Text(
                           " Login",
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.inter(
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: Colors.white,
+                            fontSize: 13.5,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -164,59 +177,45 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(
-          height: 75, // Fixed height for TextField and error message
+          height: 70,
           child: TextFormField(
             controller: controller,
             obscureText: obscureText,
-            style: GoogleFonts.poppins(
-              color: Colors.black,
-            ), // Text color inside TextBox
+            style: GoogleFonts.inter(color: Colors.black, fontSize: 14),
             decoration: InputDecoration(
-              filled: true, // Enables background color for TextBox
-              fillColor: Colors.white, // Background color
-              hintText: hint, // Hint text that stays inside the TextBox
-              prefixIcon: Icon(
-                icon,
-                color: Colors.black, // Icon color set to black
-              ),
+              filled: true,
+              fillColor: const Color.fromARGB(255, 236, 231, 231),
+              hintText: hint,
+              prefixIcon: Icon(icon, color: Colors.black),
               suffixIcon:
                   showVisibilityToggle
                       ? IconButton(
                         icon: Icon(
                           obscureText ? Icons.visibility : Icons.visibility_off,
                           color: Colors.black,
-                        ), // Visibility icon color set to black
+                        ),
                         onPressed: onTapVisibilityToggle,
                       )
                       : null,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(91, 158, 113, 0.612),
-                ), // Border color
-                borderRadius: BorderRadius.zero, // Removed rounded borders
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(91, 158, 113, 0.9),
-                ), // Focused border
-                borderRadius: BorderRadius.zero, // Removed rounded borders
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               errorBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red), // Error border
-                borderRadius: BorderRadius.zero, // Removed rounded borders
+                borderSide: BorderSide(color: Colors.red),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               focusedErrorBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red), // Error focus border
-                borderRadius: BorderRadius.zero, // Removed rounded borders
+                borderSide: BorderSide(color: Colors.red),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
-              errorStyle: GoogleFonts.poppins(
-                color: Colors.white, // Set error text color to white
-              ),
-              hintStyle: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 68, 68, 68), // Hint text color
-                fontSize: 14, // Updated font size
-              ),
+              errorStyle: GoogleFonts.inter(color: Colors.red),
+              hintStyle: GoogleFonts.inter(color: Colors.black54, fontSize: 14),
             ),
             validator: validator,
           ),
@@ -233,65 +232,32 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
   }
 
   String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Enter name';
-    }
-    if (RegExp(r'[!@#\\$%^&*(),.?":{}|<>]').hasMatch(value)) {
-      return 'Name cannot contain symbols';
-    }
-    if (value.contains(RegExp(r'\s'))) {
-      return 'Name cannot contain space';
+    if (value == null || !RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+      return 'Name cannot have symbols or numbers';
     }
     return null;
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Enter email';
-    }
-    if (!RegExp(
-      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
-    ).hasMatch(value)) {
-      // EDIT
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Invalid email format"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      });
-      return 'Enter valid email (e.g. abu@gmail.com)';
+    if (value == null ||
+        !RegExp(
+          r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
+        ).hasMatch(value)) {
+      return 'Enter valid email (e.g. example@gmail.com)';
     }
     return null;
   }
 
   String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      // EDIT
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("These field are required"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      });
-      return 'Enter phone number';
-    }
-    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+    if (value == null || !RegExp(r'^[0-9]+$').hasMatch(value)) {
       return 'Enter valid phone number (e.g. 0123456789)';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Enter password';
-    } else {
-      if (value.length < 6) {
-        return 'Password must be at least 6 characters long';
-      }
+    if (value == null || value.length < 6) {
+      return 'Password must be at least 6 characters';
     }
     return null;
   }
@@ -302,31 +268,29 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
+          title: Text(
             'Register new account',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          content: const SingleChildScrollView(
-            child: ListBody(children: <Widget>[Text('Are you sure?')]),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure?', style: GoogleFonts.inter()),
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Yes'),
+              child: Text('Yes', style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
                 _registerSuccessful();
               },
             ),
             TextButton(
-              child: const Text('No'),
+              child: Text('No', style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Registration Canceled"),
-                    backgroundColor: Colors.red,
-                  ),
-                );
               },
             ),
           ],
@@ -336,19 +300,19 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
   }
 
   void _registerSuccessful() {
-    String _name = nameController.text;
-    String _email = emailController.text;
-    String _phone = phoneNumberController.text;
-    String _pass = passwordController.text;
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String phone = phoneNumberController.text.trim();
+    String password = passwordController.text.trim();
 
     http
         .post(
           Uri.parse("${MyServerConfig.server}/pomm/php/register_customer.php"),
           body: {
-            "name": _name,
-            "email": _email,
-            "phone": _phone,
-            "password": _pass,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "password": password,
           },
         )
         .then((response) {
@@ -357,8 +321,11 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
             print(data);
             if (data['status'] == "success") {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("You have successfully registered"),
+                SnackBar(
+                  content: Text(
+                    "You have successfully registered",
+                    style: GoogleFonts.inter(),
+                  ),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -370,8 +337,11 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Registration Failed"),
+                SnackBar(
+                  content: Text(
+                    "Registration failed. Email already exists",
+                    style: GoogleFonts.inter(),
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );
