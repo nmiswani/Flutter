@@ -5,17 +5,17 @@ import 'package:pomm/views/customer/order/orderpage.dart';
 import 'package:pomm/views/customer/product/productpage.dart';
 import 'package:pomm/views/customer/profile/profilepage.dart';
 
-class CustomerDashboardPage extends StatefulWidget {
+class DashboardPage extends StatefulWidget {
   final Customer customerdata;
-  const CustomerDashboardPage({super.key, required this.customerdata});
+  const DashboardPage({super.key, required this.customerdata});
 
   @override
-  State<CustomerDashboardPage> createState() => _CustomerDashboardPageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
+class _DashboardPageState extends State<DashboardPage> {
   late List<Widget> tabchildren;
-  int _currentIndex = 0;
+  int _currentIndex = 2;
   String maintitle = "Customer";
 
   @override

@@ -10,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pomm/views/customer/dashboard.dart';
 
 class UserDetailsPage extends StatefulWidget {
   final Customer customerdata;
@@ -44,8 +45,22 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) =>
+                        DashboardPage(customerdata: widget.customerdata),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          },
+        ),
       ),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

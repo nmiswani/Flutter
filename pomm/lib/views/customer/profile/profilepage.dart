@@ -20,56 +20,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late List<Widget> tabchildren;
-  String maintitle = "Profile";
   int randomValue = Random().nextInt(100000);
+  String? name;
+  String? email;
 
   @override
   void initState() {
     super.initState();
+    name = widget.customerdata.customername;
+    email = widget.customerdata.customeremail;
     loadUserProfile();
-  }
-
-  Future<void> loadUserProfile() async {
-    String customerId = widget.customerdata.customerid.toString();
-
-    try {
-      final response = await http.post(
-        Uri.parse(
-          "${MyServerConfig.server}/pomm/php/load_profile.php?customerid=$customerId",
-        ),
-        body: {},
-      );
-      if (response.statusCode == 200) {
-        var customer = jsonDecode(response.body);
-        print(response.body);
-        if (customer['status'] == "success") {
-          setState(() {
-            widget.customerdata.customername = customer['customer_name'];
-            widget.customerdata.customeremail = customer['customer_email'];
-
-            print(customer['customer_name']);
-            print(customer['customer_email']);
-          });
-        } else {
-          setState(() {});
-        }
-      } else {
-        print("Server error: ${response.statusCode}");
-        throw Exception("Server returned status code ${response.statusCode}");
-      }
-    } catch (error) {
-      print("Error loading profile data: $error");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "An error occurred while loading profile",
-            style: GoogleFonts.inter(),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 
   @override
@@ -119,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               title: Text(
-                widget.customerdata.customername ?? 'Unknown',
+                name ?? 'Unknown',
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -127,7 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               subtitle: Text(
-                widget.customerdata.customeremail ?? 'Unknown',
+                email ?? 'Unknown',
                 style: GoogleFonts.inter(fontSize: 12, color: Colors.black54),
               ),
               trailing: const Icon(Icons.qr_code, color: Colors.black),
@@ -152,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             }),
             _dividerLine(),
-            _optionTile(Icons.help_outline, "Help", () {
+            _optionTile(Icons.live_help_outlined, "Help", () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const HelpPage()),
@@ -205,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title,
         style: GoogleFonts.inter(
           fontSize: 14,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: Colors.black,
         ),
       ),
@@ -225,5 +185,27 @@ class _ProfilePageState extends State<ProfilePage> {
       indent: 15,
       endIndent: 15,
     );
+  }
+
+  void loadUserProfile() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_profile.php?customerid=${widget.customerdata.customerid}",
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        if (data['status'] == "success" && data['data'] != null) {
+          var customer = data['data'];
+          setState(() {
+            name = customer['customer_name'];
+            email = customer['customer_email'];
+          });
+        }
+      }
+    } catch (e) {}
   }
 }

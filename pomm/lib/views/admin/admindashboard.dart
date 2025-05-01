@@ -4,6 +4,7 @@ import 'package:pomm/models/admin.dart';
 import 'package:pomm/views/admin/order/adminorderpage.dart';
 import 'package:pomm/views/admin/product/productadminpage.dart';
 import 'package:pomm/views/admin/salesreport/reportpage.dart';
+import 'package:pomm/views/admin/settings/adminaboutuspage.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   final Admin admin;
@@ -25,6 +26,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ProductAdminPage(admin: widget.admin),
       AdminOrderPage(admin: widget.admin),
       ReportPage(),
+      AdminAboutUsPage(),
     ];
   }
 
@@ -64,6 +66,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             icon: Icon(Icons.bar_chart),
             label: "Sales Report",
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info_outline),
+            label: "About Us",
+          ),
         ],
       ),
     );
@@ -80,6 +86,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       }
       if (_currentIndex == 2) {
         maintitle = "Sales Report";
+      }
+      if (_currentIndex == 3) {
+        maintitle = "About Us";
       }
     });
   }

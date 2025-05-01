@@ -11,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pomm/models/admin.dart';
 import 'package:pomm/shared/myserverconfig.dart';
 import 'package:pomm/models/product.dart';
-import 'package:pomm/views/admin/product/productdetailadminpage.dart';
+import 'package:pomm/views/admin/admindashboard.dart';
 
 class UpdateProductPage extends StatefulWidget {
   final Product product;
@@ -40,6 +40,11 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
   bool isDisable = false;
   int randomValue = Random().nextInt(100000);
 
+  late String originalName;
+  late String originalDescription;
+  late String originalPrice;
+  late String originalQuantity;
+
   @override
   void initState() {
     super.initState();
@@ -47,6 +52,19 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     _descriptionController.text = widget.product.productDesc ?? "";
     _priceController.text = widget.product.productPrice?.toString() ?? "";
     _quantityController.text = widget.product.productQty?.toString() ?? "";
+
+    // Simpan nilai asal
+    originalName = _nameController.text;
+    originalDescription = _descriptionController.text;
+    originalPrice = _priceController.text;
+    originalQuantity = _quantityController.text;
+  }
+
+  bool isDataChanged() {
+    return _nameController.text != originalName ||
+        _descriptionController.text != originalDescription ||
+        _priceController.text != originalPrice ||
+        _quantityController.text != originalQuantity;
   }
 
   @override
@@ -64,7 +82,23 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
         centerTitle: true,
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (isDataChanged()) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AdminDashboardPage(admin: widget.admin),
+                ),
+              );
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -425,16 +459,6 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
               child: Text("Yes", style: GoogleFonts.inter()),
               onPressed: () {
                 updateProduct();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => ProductDetailAdminPage(
-                          admin: widget.admin,
-                          product: widget.product,
-                        ),
-                  ),
-                );
               },
             ),
             TextButton(
@@ -455,6 +479,25 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     String productprice = _priceController.text;
     String productquantity = _quantityController.text;
 
+    bool isChanged =
+        productname != widget.product.productTitle ||
+        productdescription != widget.product.productDesc ||
+        productprice != widget.product.productPrice?.toString() ||
+        productquantity != widget.product.productQty?.toString();
+
+    if (!isChanged) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "No changes made to the product",
+            style: GoogleFonts.inter(),
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     http
         .post(
           Uri.parse("${MyServerConfig.server}/pomm/php/update_product.php"),
@@ -473,7 +516,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    "Product updated successful",
+                    "Product updated successfully",
                     style: GoogleFonts.inter(),
                   ),
                   backgroundColor: Colors.green,

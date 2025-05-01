@@ -8,6 +8,7 @@ import 'package:pomm/views/clerk/order/clerkorderpage.dart';
 import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginClerkAdminPage extends StatefulWidget {
   const LoginClerkAdminPage({super.key});
@@ -21,6 +22,13 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool isPasswordVisible = false;
+  bool _isChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadpref();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +80,30 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                       });
                     },
                     validator: _validatePassword,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: _isChecked,
+                        onChanged: (bool? value) {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+                          saveremovepref(value!);
+                          setState(() {
+                            _isChecked = value;
+                          });
+                        },
+                      ),
+                      Text(
+                        "Remember me",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 60),
                   Center(
@@ -312,5 +344,47 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
             }
           }
         });
+  }
+
+  void saveremovepref(bool value) async {
+    String userID = userIDController.text;
+    String password = passwordController.text;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (value) {
+      await prefs.setString('userID', userID);
+      await prefs.setString('pass', password);
+      await prefs.setBool('rem', value);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Preferences stored", style: GoogleFonts.inter()),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      await prefs.setString('userID', '');
+      await prefs.setString('pass', '');
+      await prefs.setBool('rem', false);
+      userIDController.text = '';
+      passwordController.text = '';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Preferences removed", style: GoogleFonts.inter()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> loadpref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userID = (prefs.getString('userID')) ?? '';
+    String password = (prefs.getString('pass')) ?? '';
+    _isChecked = (prefs.getBool('rem')) ?? false;
+    if (_isChecked) {
+      userIDController.text = userID;
+      passwordController.text = password;
+    }
+    setState(() {});
   }
 }

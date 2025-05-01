@@ -220,7 +220,59 @@ class _CartPageState extends State<CartPage> {
   }
 
   incrementQuantity(Cart cartItem) async {
-    updateQuantity(cartItem, int.parse(cartItem.cartQty!) + 1);
+    final availableStock = await fetchProductStock(cartItem.productId!);
+
+    int currentQuantity = int.parse(cartItem.cartQty!);
+
+    if (availableStock == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error checking stock", style: GoogleFonts.inter()),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (currentQuantity >= availableStock) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Quantity available is only $availableStock left",
+            style: GoogleFonts.inter(),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    updateQuantity(cartItem, currentQuantity + 1);
+  }
+
+  Future<int?> fetchProductStock(String productId) async {
+    try {
+      final url =
+          "${MyServerConfig.server}/pomm/php/get_product_stock2.php?product_id=$productId";
+      print("Fetching stock from: $url");
+
+      final response = await http.get(Uri.parse(url));
+
+      print("Status code: ${response.statusCode}");
+      print("Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print("Parsed data: $data");
+
+        if (data['status'] == "success") {
+          return int.tryParse(data['qty'].toString());
+        }
+      }
+    } catch (e) {
+      print("Exception: $e");
+    }
+    return null;
   }
 
   decrementQuantity(Cart cartItem) async {
@@ -230,6 +282,24 @@ class _CartPageState extends State<CartPage> {
     } else {
       showRemoveItemDialog(cartItem);
     }
+  }
+
+  double calculateSubtotal() {
+    double subtotal = 0.0;
+
+    cartList.forEach((item) {
+      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
+    });
+    return subtotal;
+  }
+
+  int calculateTotalItems() {
+    int totalItems = 0;
+
+    cartList.forEach((item) {
+      totalItems += int.parse(item.cartQty!);
+    });
+    return totalItems;
   }
 
   void showRemoveItemDialog(Cart cartItem) {
@@ -280,6 +350,15 @@ class _CartPageState extends State<CartPage> {
         setState(() {
           cartList.remove(cartItem);
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Product removed successful",
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
         loadUserCart();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -343,23 +422,5 @@ class _CartPageState extends State<CartPage> {
     } catch (error) {
       print("Error updating cart quantity: $error");
     }
-  }
-
-  double calculateSubtotal() {
-    double subtotal = 0.0;
-
-    cartList.forEach((item) {
-      subtotal += double.parse(item.productPrice!) * int.parse(item.cartQty!);
-    });
-    return subtotal;
-  }
-
-  int calculateTotalItems() {
-    int totalItems = 0;
-
-    cartList.forEach((item) {
-      totalItems += int.parse(item.cartQty!);
-    });
-    return totalItems;
   }
 }

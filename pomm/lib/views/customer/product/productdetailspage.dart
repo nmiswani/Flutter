@@ -183,7 +183,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void insertCartDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Colors.white,
           shape: const RoundedRectangleBorder(
@@ -200,38 +200,176 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           actions: <Widget>[
             TextButton(
               child: Text("Yes", style: GoogleFonts.inter()),
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
 
+                final alreadyInCart = await checkCartTable();
                 final productQty = widget.product.productQty;
                 final qtyInt =
                     productQty != null ? int.tryParse(productQty) : null;
 
-                if (qtyInt != null && qtyInt > 0) {
-                  insertCart();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        "Product out of stock",
-                        style: GoogleFonts.inter(),
+                final productId = widget.product.productId.toString();
+                final availableStock = await fetchProductStock(productId);
+
+                if (!mounted) return;
+
+                if (availableStock == null || availableStock <= 0) {
+                  showSnackbar("Product out of stock", isError: true);
+                  return;
+                }
+
+                if (alreadyInCart) {
+                  final currentCartQty = await getCurrentCartQty(productId);
+
+                  if (currentCartQty == null) {
+                    showSnackbar(
+                      "Unable to retrieve cart quantity",
+                      isError: true,
+                    );
+                    return;
+                  }
+
+                  if (currentCartQty >= availableStock) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Product has already been inserted before",
+                          style: GoogleFonts.inter(),
+                        ),
+                        backgroundColor: Colors.orange,
                       ),
-                      backgroundColor: Colors.red,
+                    );
+
+                    return;
+                  }
+
+                  final updated =
+                      await updateCartQty(); // You must implement this
+                  if (updated) {
+                    showSnackbar("Quantity updated in cart", isError: false);
+                  } else {
+                    showSnackbar("Failed to update quantity", isError: true);
+                  }
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (content) => CartPage(customer: widget.customerdata),
                     ),
                   );
+                  return;
                 }
+
+                if (qtyInt == null || qtyInt <= 0) {
+                  showSnackbar("Product out of stock", isError: true);
+                  return;
+                }
+
+                insertCart(); // You must implement this
               },
             ),
             TextButton(
               child: Text("No", style: GoogleFonts.inter()),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
         );
       },
     );
+  }
+
+  void showSnackbar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: GoogleFonts.inter()),
+        backgroundColor: isError ? Colors.red : Colors.green,
+      ),
+    );
+  }
+
+  Future<int?> fetchProductStock(String productId) async {
+    try {
+      final url =
+          "${MyServerConfig.server}/pomm/php/get_product_stock2.php?product_id=$productId";
+      print("Fetching stock from: $url");
+
+      final response = await http.get(Uri.parse(url));
+
+      print("Status code: ${response.statusCode}");
+      print("Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print("Parsed data: $data");
+
+        if (data['status'] == "success") {
+          return int.tryParse(data['qty'].toString());
+        }
+      }
+    } catch (e) {
+      print("Exception: $e");
+    }
+    return null;
+  }
+
+  Future<int?> getCurrentCartQty(String productId) async {
+    try {
+      final url =
+          "${MyServerConfig.server}/pomm/php/get_cart_qty.php?product_id=$productId&customer_id=${widget.customerdata.customerid}";
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == "success") {
+          return int.tryParse(data['qty'].toString());
+        }
+      }
+    } catch (e) {
+      print("Error fetching cart qty: $e");
+    }
+    return null;
+  }
+
+  Future<bool> checkCartTable() async {
+    try {
+      var response = await http.post(
+        Uri.parse("${MyServerConfig.server}/pomm/php/check_cart_table.php"),
+        body: {
+          "product_id": widget.product.productId.toString(),
+          "customer_id": widget.customerdata.customerid.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == "exists") {
+          return true;
+        }
+      }
+    } catch (e) {
+      print("Error checking cart table: $e");
+    }
+    return false;
+  }
+
+  Future<bool> updateCartQty() async {
+    try {
+      var response = await http.post(
+        Uri.parse("${MyServerConfig.server}/pomm/php/update_cart_qty.php"),
+        body: {"product_id": widget.product.productId.toString()},
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        if (data['status'] == "success") {
+          return true; // Berjaya update qty
+        }
+      }
+    } catch (e) {
+      print("Error updating cart qty: $e");
+    }
+    return false;
   }
 
   void insertCart() {
@@ -253,7 +391,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    "Added to cart successfully",
+                    "Added to cart successful",
                     style: GoogleFonts.inter(),
                   ),
                   backgroundColor: Colors.green,
