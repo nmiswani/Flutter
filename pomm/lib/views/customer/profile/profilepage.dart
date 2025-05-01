@@ -105,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 4),
           _optionCard([
-            _optionTile(Icons.info_outline, "About Us", () {
+            _optionTile(Icons.info_outlined, "About Us", () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AboutUsPage()),
