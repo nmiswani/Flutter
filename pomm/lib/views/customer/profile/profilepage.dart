@@ -133,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    "You have been logged out",
+                    "You have successfully logged out",
                     style: GoogleFonts.inter(),
                   ),
                   backgroundColor: Colors.green,

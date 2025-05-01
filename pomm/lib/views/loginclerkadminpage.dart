@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                   const SizedBox(height: 100),
                   Image.asset(
                     'assets/images/loginicon_ca.png',
-                    height: 150,
+                    height: 135,
                     width: 250,
                   ),
                   const SizedBox(height: 20),
@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                       letterSpacing: 2,
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 45),
                   makeInput(
                     icon: Icons.email,
                     hint: "User ID",
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 32),
                   Center(
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width / 1,

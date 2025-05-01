@@ -1,7 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:pomm/models/aboutus.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/loginclerkadminpage.dart';
 
 class AdminAboutUsPage extends StatefulWidget {
   const AdminAboutUsPage({super.key});
@@ -14,6 +20,7 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
     with SingleTickerProviderStateMixin {
   String title = '';
   String description = '';
+  String sambungan = '';
   String contactNumber = '';
   String email = '';
   String operatingHours = '';
@@ -23,11 +30,22 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
   String locationAddress = '';
 
   late TabController _tabController;
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  bool isLoading = true;
+  AboutUs? aboutUsData;
+  int currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        currentTabIndex = _tabController.index;
+      });
+    });
     fetchAboutUs();
   }
 
@@ -44,8 +62,12 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
         if (jsonData['success']) {
           final data = jsonData['data'];
           setState(() {
+            aboutUsData = AboutUs.fromJson(jsonData['data']);
+            isLoading = false;
+
             title = data['title'] ?? '';
             description = data['description'] ?? '';
+            sambungan = data['sambungan'] ?? '';
             contactNumber = data['contact_number'] ?? '';
             email = data['email'] ?? '';
             operatingHours = data['operating_hours'] ?? '';
@@ -64,6 +86,7 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
   Future<void> updateAboutUsData({
     required String newTitle,
     required String newDescription,
+    required String newSambungan,
     required String newContact,
     required String newEmail,
     required String newHours,
@@ -77,6 +100,7 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
       body: {
         'title': newTitle,
         'description': newDescription,
+        'sambungan': newSambungan,
         'contact_number': newContact,
         'email': newEmail,
         'operating_hours': newHours,
@@ -90,6 +114,15 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData["success"]) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Information updated successful",
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
         // Berjaya
         print("Data berjaya dikemaskini.");
       } else {
@@ -108,6 +141,9 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
     );
     final descCtrl = TextEditingController(
       text: description.isNotEmpty ? description : '',
+    );
+    final sambunganCtrl = TextEditingController(
+      text: sambungan.isNotEmpty ? sambungan : '',
     );
     final phoneCtrl = TextEditingController(
       text: contactNumber.isNotEmpty ? contactNumber : '',
@@ -135,51 +171,130 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Edit About Us'),
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            ),
+            title: Text(
+              "Update information",
+              style: GoogleFonts.inter(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: [
                   TextField(
                     controller: titleCtrl,
-                    decoration: const InputDecoration(labelText: 'Title'),
+                    decoration: InputDecoration(
+                      labelText: 'Title',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   TextField(
                     controller: descCtrl,
-                    decoration: const InputDecoration(labelText: 'Description'),
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 3,
+                  ),
+                  TextField(
+                    controller: sambunganCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Next Description',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                     maxLines: 3,
                   ),
                   TextField(
                     controller: phoneCtrl,
-                    decoration: const InputDecoration(labelText: 'Phone'),
+                    decoration: InputDecoration(
+                      labelText: 'Phone',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   TextField(
                     controller: emailCtrl,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   TextField(
                     controller: hourCtrl,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Operating Hours',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   TextField(
                     controller: latCtrl,
-                    decoration: const InputDecoration(labelText: 'Latitude'),
+                    decoration: InputDecoration(
+                      labelText: 'Latitude',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   TextField(
                     controller: lngCtrl,
-                    decoration: const InputDecoration(labelText: 'Longitude'),
+                    decoration: InputDecoration(
+                      labelText: 'Longitude',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   TextField(
                     controller: locNameCtrl,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Location Name',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   TextField(
                     controller: locAddrCtrl,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Location Address',
+                      labelStyle: GoogleFonts.inter(),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                     maxLines: 2,
                   ),
@@ -189,14 +304,15 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
+                child: Text('Cancel', style: GoogleFonts.inter()),
               ),
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   updateAboutUsData(
                     newTitle: titleCtrl.text,
                     newDescription: descCtrl.text,
+                    newSambungan: sambunganCtrl.text,
                     newContact: phoneCtrl.text,
                     newEmail: emailCtrl.text,
                     newHours: hourCtrl.text,
@@ -206,7 +322,7 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
                     newLocAddress: locAddrCtrl.text,
                   );
                 },
-                child: const Text('Save'),
+                child: Text('Update', style: GoogleFonts.inter()),
               ),
             ],
           ),
@@ -215,56 +331,248 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin - About Us'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [Tab(text: 'Info'), Tab(text: 'Settings')],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Tab 1 - Info
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(105),
+          child: AppBar(
+            iconTheme: const IconThemeData(color: Colors.black),
+            backgroundColor: Colors.black,
+            centerTitle: true,
+            title: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Admin Dashboard",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
+                  const SizedBox(height: 2.5),
+                  Text(
+                    "Utara Gadget Solution Store",
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(top: 18, right: 0),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (content) => LoginClerkAdminPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.white),
                 ),
-                const SizedBox(height: 8),
-                Text(description),
-                const Divider(height: 32),
-                Text('Contact Number: $contactNumber'),
-                Text('Email: $email'),
-                Text('Operating Hours: $operatingHours'),
-                const SizedBox(height: 16),
-                const Text(
-                  'Location Info',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text("📍 $locationName"),
-                Text("🏠 $locationAddress"),
-                Text("🧭 Lat: $locationLat, Lng: $locationLng"),
+              ),
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              tabs: const [
+                Tab(text: 'Overview'),
+                Tab(text: 'Contact & Location'),
               ],
+              labelColor: Colors.white,
             ),
           ),
-          // Tab 2 - Settings
-          Center(
-            child: ElevatedButton(
-              onPressed: showEditDialog,
-              child: const Text('Edit About Us'),
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            /// Tab 1: Info
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  CarouselSlider(
+                    options: CarouselOptions(
+                      height: 200.0,
+                      autoPlay: true,
+                      enlargeCenterPage: true,
+                    ),
+                    items:
+                        [
+                          aboutUsData?.image1,
+                          aboutUsData?.image2,
+                          aboutUsData?.image3,
+                        ].map((imgPath) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network(
+                                  imgPath != null
+                                      ? "${MyServerConfig.server}/pomm/assets/aboutus/$imgPath"
+                                      : "${MyServerConfig.server}/pomm/assets/aboutus/default.jpg", // default image if null
+                                  fit: BoxFit.cover,
+                                  width: MediaQuery.of(context).size.width,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.broken_image);
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 15),
+                  Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          description,
+                          style: GoogleFonts.inter(fontSize: 14),
+                          textAlign: TextAlign.justify,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          sambungan,
+                          style: GoogleFonts.inter(fontSize: 14),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            "📞 Contact No: $contactNumber",
+                            style: GoogleFonts.inter(fontSize: 14),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "📧 Email: $email",
+                            style: GoogleFonts.inter(fontSize: 14),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "⏰ Operating Hours: $operatingHours",
+                            style: GoogleFonts.inter(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "📍 Located at",
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    margin: const EdgeInsets.all(2),
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      height: 300,
+                      width: MediaQuery.of(context).size.width,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: GoogleMap(
+                          mapType: MapType.normal,
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(
+                              double.tryParse(locationLat) ?? 0.0,
+                              double.tryParse(locationLng) ?? 0.0,
+                            ),
+                            zoom: 17.0,
+                          ),
+                          onMapCreated: (GoogleMapController controller) {
+                            if (!_controller.isCompleted) {
+                              _controller.complete(controller);
+                            }
+                          },
+                          markers: {
+                            Marker(
+                              markerId: const MarkerId('storeLocation'),
+                              position: LatLng(
+                                double.tryParse(locationLat) ?? 0.0,
+                                double.tryParse(locationLng) ?? 0.0,
+                              ),
+                              infoWindow: InfoWindow(
+                                title: locationName,
+                                snippet: locationAddress,
+                              ),
+                            ),
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton:
+            currentTabIndex == 0
+                ? FloatingActionButton(
+                  onPressed: showEditDialog,
+                  backgroundColor: Colors.black,
+                  shape: const CircleBorder(),
+                  child: const Icon(Icons.edit, color: Colors.white),
+                )
+                : null,
       ),
     );
   }

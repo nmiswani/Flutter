@@ -516,7 +516,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    "Product updated successfully",
+                    "Product updated successful",
                     style: GoogleFonts.inter(),
                   ),
                   backgroundColor: Colors.green,
