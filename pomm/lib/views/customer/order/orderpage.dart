@@ -191,21 +191,21 @@ class _OrderPageState extends State<OrderPage> {
                                         truncateString(
                                           "Order Tracking: ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
                                         ),
-                                        style: GoogleFonts.poppins(
+                                        style: GoogleFonts.inter(
                                           fontSize: 12,
                                           color: Colors.black,
                                         ),
                                       ),
                                       Text(
                                         "Created Date: ${formatDate(getFilteredOrders()[index].orderDate)}",
-                                        style: GoogleFonts.poppins(
+                                        style: GoogleFonts.inter(
                                           fontSize: 12,
                                           color: Colors.black,
                                         ),
                                       ),
                                       Text(
                                         "Status: ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
-                                        style: GoogleFonts.poppins(
+                                        style: GoogleFonts.inter(
                                           fontSize: 12,
                                           color: Colors.black,
                                         ),

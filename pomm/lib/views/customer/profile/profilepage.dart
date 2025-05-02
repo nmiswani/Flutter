@@ -10,6 +10,7 @@ import 'package:pomm/views/customer/profile/aboutuspage.dart';
 import 'package:pomm/views/customer/profile/userdetailspage.dart';
 import 'package:pomm/views/customer/profile/helppage.dart';
 import 'package:http/http.dart' as http;
+import 'package:pomm/views/customer/profile/userguidepage.dart';
 
 class ProfilePage extends StatefulWidget {
   final Customer customerdata;
@@ -111,6 +112,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 MaterialPageRoute(builder: (_) => const AboutUsPage()),
               );
             }),
+            _dividerLine(),
+            _optionTile(
+              Icons.supervised_user_circle_outlined,
+              "User Guide",
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const UserGuidePage()),
+                );
+              },
+            ),
             _dividerLine(),
             _optionTile(Icons.live_help_outlined, "Help", () {
               Navigator.push(

@@ -89,14 +89,67 @@ class _HelpPageState extends State<HelpPage> {
       'mailto:utgadgetsolution@gmail.com?subject=$encodedSubject',
     );
 
+    final String phoneNumber = '0123456789';
+
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Could not open email app", style: GoogleFonts.inter()),
-          backgroundColor: Colors.red,
-        ),
+      // Show fallback options if email can't be launched
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            ),
+            title: Text(
+              "Unable to open email",
+              style: GoogleFonts.inter(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            content: Text(
+              "We could not open your default email app. "
+              "Please contact us through one of the alternatives below:",
+              style: GoogleFonts.inter(fontSize: 14),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  final Uri whatsappUri = Uri.parse(
+                    "https://wa.me/60123456789",
+                  ); // Use country code, no '+' or dashes
+                  if (await canLaunchUrl(whatsappUri)) {
+                    await launchUrl(whatsappUri);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Could not open WhatsApp"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  "Contact via WhatsApp",
+                  style: GoogleFonts.inter(fontSize: 14),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await launch('tel:$phoneNumber');
+                },
+                child: Text("Call us", style: GoogleFonts.inter(fontSize: 14)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Close", style: GoogleFonts.inter()),
+              ),
+            ],
+          );
+        },
       );
     }
   }

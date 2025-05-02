@@ -8,7 +8,7 @@
     <application
         android:label="pomm"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/pomm"
         android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:usesCleartextTraffic="true">
