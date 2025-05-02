@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});
@@ -10,6 +11,9 @@ class HelpPage extends StatefulWidget {
 }
 
 class _HelpPageState extends State<HelpPage> {
+  final String phoneNumber = '60123456789'; // Format Malaysia betul
+  final String whatsappMessage = 'Hi, I need help regarding the POMM app.';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,8 +93,6 @@ class _HelpPageState extends State<HelpPage> {
       'mailto:utgadgetsolution@gmail.com?subject=$encodedSubject',
     );
 
-    final String phoneNumber = '0123456789';
-
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
@@ -117,20 +119,8 @@ class _HelpPageState extends State<HelpPage> {
             ),
             actions: [
               TextButton(
-                onPressed: () async {
-                  final Uri whatsappUri = Uri.parse(
-                    "https://wa.me/60123456789",
-                  ); // Use country code, no '+' or dashes
-                  if (await canLaunchUrl(whatsappUri)) {
-                    await launchUrl(whatsappUri);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Could not open WhatsApp"),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                onPressed: () {
+                  launchWhatsApp(phone: phoneNumber, message: whatsappMessage);
                 },
                 child: Text(
                   "Contact via WhatsApp",
@@ -139,7 +129,7 @@ class _HelpPageState extends State<HelpPage> {
               ),
               TextButton(
                 onPressed: () async {
-                  await launch('tel:$phoneNumber');
+                  await launchUrl(Uri.parse('tel:$phoneNumber'));
                 },
                 child: Text("Call us", style: GoogleFonts.inter(fontSize: 14)),
               ),
@@ -150,6 +140,20 @@ class _HelpPageState extends State<HelpPage> {
             ],
           );
         },
+      );
+    }
+  }
+
+  void launchWhatsApp({required String phone, required String message}) async {
+    final Uri whatsappUrl = Uri.parse(
+      "https://wa.me/$phone?text=${Uri.encodeComponent(message)}",
+    );
+
+    if (await canLaunchUrlString(whatsappUrl.toString())) {
+      await launchUrlString(whatsappUrl.toString());
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch WhatsApp')),
       );
     }
   }
