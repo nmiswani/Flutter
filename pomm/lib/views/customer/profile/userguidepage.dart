@@ -22,7 +22,7 @@ class UserGuidePage extends StatelessWidget {
         children: [
           Center(
             child: Text(
-              "How to Use POMM App:",
+              "How to use POMM app:",
               style: GoogleFonts.inter(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -64,6 +64,12 @@ class UserGuidePage extends StatelessWidget {
           ),
           _buildStep(
             number: "6",
+            title: "Email Notification",
+            description:
+                "All order status updates will be automatically sent to your registered email.",
+          ),
+          _buildStep(
+            number: "7",
             title: "Get Help or Refund",
             description:
                 "If you face any issue, go to the 'Help' page to report a problem or request a refund.",
@@ -71,7 +77,7 @@ class UserGuidePage extends StatelessWidget {
           const SizedBox(height: 10),
           Center(
             child: Text(
-              "Enjoy your shopping with POMM!",
+              "Enjoy your shopping with us!",
               style: GoogleFonts.inter(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -91,11 +97,11 @@ class UserGuidePage extends StatelessWidget {
     required String description,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 13),
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10), // updated radius
+        borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
@@ -104,13 +110,13 @@ class UserGuidePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            radius: 18, // smaller size
+            radius: 18,
             backgroundColor: Colors.red,
             child: Text(
               number,
               style: GoogleFonts.inter(
                 color: Colors.white,
-                fontSize: 13, // smaller text
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
             ),

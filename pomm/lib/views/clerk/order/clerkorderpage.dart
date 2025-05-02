@@ -237,21 +237,21 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
                                           "Order Tracking: ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
                                         ),
                                         style: GoogleFonts.inter(
-                                          fontSize: 12,
+                                          fontSize: 12.5,
                                           color: Colors.black,
                                         ),
                                       ),
                                       Text(
                                         "Created Date: ${formatDate(getFilteredOrders()[index].orderDate)}",
                                         style: GoogleFonts.inter(
-                                          fontSize: 12,
+                                          fontSize: 12.5,
                                           color: Colors.black,
                                         ),
                                       ),
                                       Text(
                                         "Status: ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
                                         style: GoogleFonts.inter(
-                                          fontSize: 12,
+                                          fontSize: 12.5,
                                           color: Colors.black,
                                         ),
                                       ),
