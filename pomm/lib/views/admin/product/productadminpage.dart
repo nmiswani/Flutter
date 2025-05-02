@@ -31,6 +31,7 @@ class _ProductPageState extends State<ProductAdminPage> {
   String title = "";
   late List<Widget> tabchildren;
   String maintitle = "Product";
+  String selectedSortOrder = "asc"; // Default: ascending
 
   TextEditingController searchController = TextEditingController();
 
@@ -145,6 +146,166 @@ class _ProductPageState extends State<ProductAdminPage> {
                     filled: true,
                     fillColor: Colors.grey[200],
                     prefixIcon: const Icon(Icons.search, color: Colors.black),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: Colors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10.0),
+                                ),
+                              ),
+                              title: Text(
+                                "Filter by price",
+                                style: GoogleFonts.inter(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Sort by Low to High
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedSortOrder =
+                                            "asc"; // Set to ascending
+                                      });
+                                      loadPriceProducts(
+                                        'searchQuery', // Gantikan dengan 'searchController.text' jika perlu
+                                        sortOrder: "asc",
+                                      );
+                                      Navigator.pop(context); // Close dialog
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.0,
+                                        horizontal: 16.0,
+                                      ),
+                                      margin: EdgeInsets.only(bottom: 8.0),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            selectedSortOrder == "asc"
+                                                ? Colors.blue.shade100
+                                                : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(
+                                          30.0,
+                                        ),
+                                        border: Border.all(
+                                          color:
+                                              selectedSortOrder == "asc"
+                                                  ? Colors.blue
+                                                  : Colors.grey,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_upward,
+                                            color:
+                                                selectedSortOrder == "asc"
+                                                    ? Colors.blue
+                                                    : Colors.black,
+                                          ),
+                                          SizedBox(width: 8.0),
+                                          Text(
+                                            "Price: Low to High",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 14,
+                                              color:
+                                                  selectedSortOrder == "asc"
+                                                      ? Colors.blue
+                                                      : Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Sort by High to Low
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedSortOrder =
+                                            "desc"; // Set to descending
+                                      });
+                                      loadPriceProducts(
+                                        'searchQuery', // Gantikan dengan 'searchController.text' jika perlu
+                                        sortOrder: "desc",
+                                      );
+                                      Navigator.pop(context); // Close dialog
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.0,
+                                        horizontal: 16.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            selectedSortOrder == "desc"
+                                                ? Colors.blue.shade100
+                                                : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(
+                                          30.0,
+                                        ),
+                                        border: Border.all(
+                                          color:
+                                              selectedSortOrder == "desc"
+                                                  ? Colors.blue
+                                                  : Colors.grey,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_downward,
+                                            color:
+                                                selectedSortOrder == "desc"
+                                                    ? Colors.blue
+                                                    : Colors.black,
+                                          ),
+                                          SizedBox(width: 8.0),
+                                          Text(
+                                            "Price: High to Low",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 14,
+                                              color:
+                                                  selectedSortOrder == "desc"
+                                                      ? Colors.blue
+                                                      : Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Close",
+                                    style: GoogleFonts.inter(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Icon(Icons.filter_list, color: Colors.black),
+                    ),
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       borderSide: BorderSide.none,
@@ -153,10 +314,11 @@ class _ProductPageState extends State<ProductAdminPage> {
                 ),
               ),
             ),
+            const SizedBox(height: 10),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  loadProducts(title);
+                  loadProducts(searchController.text);
                 },
                 child:
                     productList.isEmpty
@@ -182,8 +344,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                                 itemBuilder: (context, index) {
                                   final product = productList[index];
                                   final productId =
-                                      product.productId
-                                          .toString(); // update if needed
+                                      product.productId.toString();
                                   final quantitySold =
                                       todaySales[productId] ?? 0;
 
@@ -213,7 +374,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                                                         ),
                                               ),
                                             );
-                                            loadProducts(title);
+                                            loadProducts(searchController.text);
                                           },
                                           child: Column(
                                             crossAxisAlignment:
@@ -292,7 +453,6 @@ class _ProductPageState extends State<ProductAdminPage> {
                                           ),
                                         ),
                                       ),
-
                                       if (quantitySold > 10)
                                         Positioned(
                                           top: 0,
@@ -325,7 +485,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                                                       ),
                                                     ),
                                                     content: Text(
-                                                      "Upon reaching more than 10 sales this month",
+                                                      "Upon reaching more than 10 sales this month.",
                                                       style: GoogleFonts.inter(
                                                         fontSize: 14,
                                                       ),
@@ -389,7 +549,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                                   return TextButton(
                                     onPressed: () {
                                       curpage = index + 1;
-                                      loadProducts(title);
+                                      loadProducts(searchController.text);
                                     },
                                     child: Text(
                                       (index + 1).toString(),
@@ -461,5 +621,46 @@ class _ProductPageState extends State<ProductAdminPage> {
             setState(() {});
           }
         });
+  }
+
+  Future<void> loadPriceProducts(
+    String searchQuery, {
+    required String sortOrder,
+  }) async {
+    try {
+      var response = await http.post(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_filtered_products.php",
+        ),
+        body: {
+          'title': title,
+          'pageno': curpage.toString(),
+          'sortOrder': sortOrder, // NEW PARAM
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == "success") {
+          productList.clear();
+          data['data']['products'].forEach((v) {
+            productList.add(Product.fromJson(v));
+          });
+          numofpage = int.parse(data['numofpage'].toString());
+          numofresult = int.parse(data['numberofresult'].toString());
+        } else {
+          productList.clear();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Product not found", style: GoogleFonts.inter()),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        setState(() {});
+      }
+    } catch (e) {
+      print("Error loading products: $e");
+    }
   }
 }
