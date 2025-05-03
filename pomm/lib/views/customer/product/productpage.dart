@@ -300,7 +300,7 @@ class _ProductPageState extends State<ProductPage> {
                     productList.isEmpty
                         ? Center(
                           child: Text(
-                            "No product's data",
+                            "Please wait... or no products found.",
                             style: GoogleFonts.inter(),
                           ),
                         )

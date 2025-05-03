@@ -42,7 +42,10 @@ class _CartPageState extends State<CartPage> {
       body:
           cartList.isEmpty
               ? Center(
-                child: Text("No cart's data", style: GoogleFonts.inter()),
+                child: Text(
+                  "Please wait... or no products found.",
+                  style: GoogleFonts.inter(),
+                ),
               )
               : Column(
                 children: [

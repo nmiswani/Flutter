@@ -167,7 +167,7 @@ class _OrderClerkPageState extends State<OrderClerkPage> {
                     getFilteredOrders().isEmpty
                         ? Center(
                           child: Text(
-                            "No order's data",
+                            "Please wait... or no orders found.",
                             style: GoogleFonts.inter(),
                           ),
                         )
