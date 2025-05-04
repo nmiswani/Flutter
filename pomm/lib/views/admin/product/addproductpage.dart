@@ -89,8 +89,8 @@ class _AddProductPageState extends State<AddProductPage> {
                       icon: Icons.abc,
                       validator:
                           (val) =>
-                              val == null || val.length < 3
-                                  ? "Product name must be at least 3 characters"
+                              val == null || val.length > 15
+                                  ? "Product name must be no more than 15 characters"
                                   : null,
                       keyboardType: TextInputType.text,
                     ),
@@ -101,7 +101,7 @@ class _AddProductPageState extends State<AddProductPage> {
                       icon: Icons.description,
                       validator:
                           (val) =>
-                              val == null || val.length < 10
+                              val == null || val.length < 15
                                   ? "Product description must be at least 10 characters"
                                   : null,
                       keyboardType: TextInputType.text,
@@ -194,6 +194,7 @@ class _AddProductPageState extends State<AddProductPage> {
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
+        errorStyle: GoogleFonts.inter(fontSize: 12, color: Colors.red),
         icon: Icon(icon, color: Colors.black),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         filled: true,

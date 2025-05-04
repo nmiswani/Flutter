@@ -10,7 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pomm/views/customer/dashboard.dart';
+import 'package:pomm/views/customer/customerprofiledashboard.dart';
 
 class UserDetailsPage extends StatefulWidget {
   final Customer customerdata;
@@ -52,8 +52,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               context,
               MaterialPageRoute(
                 builder:
-                    (context) =>
-                        DashboardPage(customerdata: widget.customerdata),
+                    (context) => CustomerProfileDashboardPage(
+                      customerdata: widget.customerdata,
+                    ),
               ),
               (Route<dynamic> route) => false,
             );

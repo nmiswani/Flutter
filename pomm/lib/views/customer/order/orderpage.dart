@@ -121,7 +121,7 @@ class _OrderPageState extends State<OrderPage> {
                     getFilteredOrders().isEmpty
                         ? Center(
                           child: Text(
-                            "Please wait... or no orders found.",
+                            "Please wait... or no orders found",
                             style: GoogleFonts.inter(),
                           ),
                         )

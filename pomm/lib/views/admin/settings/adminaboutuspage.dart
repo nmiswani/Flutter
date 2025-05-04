@@ -6,11 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:pomm/models/aboutus.dart';
+import 'package:pomm/models/admin.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/admin/adminaboutdashboard.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
 
 class AdminAboutUsPage extends StatefulWidget {
-  const AdminAboutUsPage({super.key});
+  final Admin admin;
+  const AdminAboutUsPage({super.key, required this.admin});
 
   @override
   State<AdminAboutUsPage> createState() => _AdminAboutUsPageState();
@@ -308,7 +311,6 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
                   updateAboutUsData(
                     newTitle: titleCtrl.text,
                     newDescription: descCtrl.text,
@@ -320,6 +322,15 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
                     newLng: lngCtrl.text,
                     newLocName: locNameCtrl.text,
                     newLocAddress: locAddrCtrl.text,
+                  );
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              AdminAboutDashboardPage(admin: widget.admin),
+                    ),
                   );
                 },
                 child: Text('Update', style: GoogleFonts.inter()),

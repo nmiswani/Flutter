@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/customer/customerorderdashboard.dart';
 
 class OrderStatusPage extends StatefulWidget {
   final Customer customerdata;
@@ -306,7 +307,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           title: Text(
-            "Cancel Order",
+            "Cancel order",
             style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           content: Text(
@@ -316,9 +317,18 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
           actions: <Widget>[
             TextButton(
               child: Text("Yes", style: GoogleFonts.inter()),
-              onPressed: () {
-                cancelOrderStatus("Request to cancel");
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await cancelOrderStatus("Request to cancel");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => CustomerOrderDashboardPage(
+                          customerdata: widget.customerdata,
+                          admin: false,
+                        ),
+                  ),
+                );
               },
             ),
 

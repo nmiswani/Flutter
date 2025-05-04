@@ -134,14 +134,12 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 4),
           _optionCard([
             _optionTile(Icons.logout, "Logout", () {
-              Future.delayed(const Duration(seconds: 1), () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginCustomerPage(),
-                  ),
-                );
-              });
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginCustomerPage(),
+                ),
+              );
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(

@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pomm/models/admin.dart';
-import 'package:pomm/views/admin/order/adminorderpage.dart';
-import 'package:pomm/views/admin/product/productadminpage.dart';
-import 'package:pomm/views/admin/salesreport/reportpage.dart';
-import 'package:pomm/views/admin/settings/adminaboutuspage.dart';
+import 'package:pomm/models/customer.dart';
+import 'package:pomm/views/customer/order/orderpage.dart';
+import 'package:pomm/views/customer/product/productpage.dart';
+import 'package:pomm/views/customer/profile/profilepage.dart';
 
-class AdminDashboardPage extends StatefulWidget {
-  final Admin admin;
-  const AdminDashboardPage({super.key, required this.admin});
+class CustomerProfileDashboardPage extends StatefulWidget {
+  final Customer customerdata;
+  const CustomerProfileDashboardPage({super.key, required this.customerdata});
 
   @override
-  State<AdminDashboardPage> createState() => _AdminDashboardPageState();
+  State<CustomerProfileDashboardPage> createState() =>
+      _CustomerProfileDashboardPageState();
 }
 
-class _AdminDashboardPageState extends State<AdminDashboardPage> {
+class _CustomerProfileDashboardPageState
+    extends State<CustomerProfileDashboardPage> {
   late List<Widget> tabchildren;
-  int _currentIndex = 0;
-  String maintitle = "Admin";
+  int _currentIndex = 2;
+  String maintitle = "Customer";
 
   @override
   void initState() {
     super.initState();
     tabchildren = [
-      ProductAdminPage(admin: widget.admin),
-      AdminOrderPage(admin: widget.admin),
-      ReportPage(),
-      AdminAboutUsPage(admin: widget.admin),
+      ProductPage(customerdata: widget.customerdata),
+      OrderPage(customerdata: widget.customerdata),
+      ProfilePage(customerdata: widget.customerdata),
     ];
   }
 
@@ -38,6 +38,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: tabchildren[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
@@ -62,14 +63,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             icon: Icon(Icons.local_shipping),
             label: "Order",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: "Sales Report",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info_outlined),
-            label: "About Us",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
@@ -85,10 +79,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         maintitle = "Order";
       }
       if (_currentIndex == 2) {
-        maintitle = "Sales Report";
-      }
-      if (_currentIndex == 3) {
-        maintitle = "About Us";
+        maintitle = "Profile";
       }
     });
   }

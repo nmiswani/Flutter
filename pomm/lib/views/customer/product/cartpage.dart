@@ -43,7 +43,7 @@ class _CartPageState extends State<CartPage> {
           cartList.isEmpty
               ? Center(
                 child: Text(
-                  "Please wait... or no products found.",
+                  "Please wait... or no products found",
                   style: GoogleFonts.inter(),
                 ),
               )

@@ -265,14 +265,14 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
         {"status": "Delivered", "icon": Icons.check_circle},
       ];
     }
-    if (currentStatus == "Request to cancel") {
-      base.add({
-        "status": "Request to cancel",
-        "icon": Icons.cancel_schedule_send,
-      });
-    } else if (currentStatus == "Canceled") {
-      base.add({"status": "Canceled", "icon": Icons.cancel});
-    }
+    // if (currentStatus == "Request to cancel") {
+    //   base.add({
+    //     "status": "Request to cancel",
+    //     "icon": Icons.cancel_schedule_send,
+    //   });
+    // } else if (currentStatus == "Canceled") {
+    //   base.add({"status": "Canceled", "icon": Icons.cancel});
+    // }
     return base;
   }
 
@@ -299,7 +299,19 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
 
   List<Map<String, dynamic>> getNextStatusOptions() {
     List<Map<String, dynamic>> allStatuses = getStatusOptions();
-    String shipping = "In-store Pickup";
+    String shipping = widget.order.shippingAddress ?? "No Address Provided";
+
+    // Senarai shipping yang BUKAN In-store Pickup
+    List<String> deliveryOptions = [
+      "Laluan A",
+      "Laluan B",
+      "Laluan C",
+      "Laluan D",
+      "Luar Kampus",
+    ];
+
+    bool isPickup = shipping == "In-store Pickup";
+    bool isDelivery = deliveryOptions.contains(shipping);
 
     if (currentStatus == "Order placed") {
       return allStatuses.where((s) => s["status"] == "In process").toList();
@@ -308,16 +320,12 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
           .where(
             (s) =>
                 s["status"] ==
-                (shipping == "In-store Pickup"
-                    ? "Ready for pickup"
-                    : "Out for delivery"),
+                (isPickup ? "Ready for pickup" : "Out for delivery"),
           )
           .toList();
-    } else if (currentStatus == "Out for delivery" &&
-        shipping != "In-store Pickup") {
+    } else if (currentStatus == "Out for delivery" && isDelivery) {
       return allStatuses.where((s) => s["status"] == "Delivered").toList();
-    } else if (currentStatus == "Ready for pickup" &&
-        shipping == "In-store Pickup") {
+    } else if (currentStatus == "Ready for pickup" && isPickup) {
       return allStatuses.where((s) => s["status"] == "Picked up").toList();
     }
 
@@ -335,13 +343,13 @@ class _OrderStatusClerkPageState extends State<OrderStatusClerkPage> {
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           title: Text(
-            "Update Order Status",
+            "Update order status",
             style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           content:
               nextStatuses.isEmpty
                   ? Text(
-                    "No further status updates available",
+                    "No further status updates available.",
                     style: GoogleFonts.inter(fontSize: 14),
                   )
                   : Column(

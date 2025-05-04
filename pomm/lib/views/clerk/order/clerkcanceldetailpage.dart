@@ -407,7 +407,7 @@ class _CancelDetailClerkPageState extends State<CancelDetailClerkPage> {
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           title: Text(
-            "Approve Cancellation",
+            "Approve cancellation",
             style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           content: Text(

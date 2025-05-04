@@ -164,7 +164,7 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                     getFilteredOrders().isEmpty
                         ? Center(
                           child: Text(
-                            "Please wait... or no orders found.",
+                            "Please wait... or no orders found",
                             style: GoogleFonts.inter(),
                           ),
                         )

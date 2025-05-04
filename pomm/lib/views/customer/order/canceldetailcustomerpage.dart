@@ -9,6 +9,7 @@ import 'package:pomm/models/cart.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/order.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/customer/customerorderdashboard.dart';
 
 class CancelDetailCustomerPage extends StatefulWidget {
   final Customer customer;
@@ -93,40 +94,6 @@ class _CancelDetailCustomerPageState extends State<CancelDetailCustomerPage> {
                                   style: GoogleFonts.inter(fontSize: 12),
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              "Customer Information",
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              "Name: ${widget.order.customerName}",
-                              style: GoogleFonts.inter(fontSize: 12),
-                            ),
-                            Text(
-                              "Phone: ${widget.order.customerPhone}",
-                              style: GoogleFonts.inter(fontSize: 12),
-                            ),
-                            Text(
-                              "Email: ${widget.order.customerEmail}",
-                              style: GoogleFonts.inter(fontSize: 12),
                             ),
                           ],
                         ),
@@ -363,6 +330,37 @@ class _CancelDetailCustomerPageState extends State<CancelDetailCustomerPage> {
                         ),
                       ),
                     ),
+                    if (widget.order.orderStatus == "Canceled")
+                      Card(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Refund Issue",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Please contact us under the Help section.",
+                                    style: GoogleFonts.inter(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
 
                     if (widget.order.orderStatus == "Request to cancel")
                       Padding(
@@ -407,7 +405,7 @@ class _CancelDetailCustomerPageState extends State<CancelDetailCustomerPage> {
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           title: Text(
-            "Withdraw Cancellation",
+            "Withdraw cancellation",
             style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           content: Text(
@@ -417,9 +415,18 @@ class _CancelDetailCustomerPageState extends State<CancelDetailCustomerPage> {
           actions: <Widget>[
             TextButton(
               child: Text("Yes", style: GoogleFonts.inter()),
-              onPressed: () {
-                Navigator.of(context).pop();
-                withdrawCancellation("Order placed");
+              onPressed: () async {
+                await withdrawCancellation("Order placed");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => CustomerOrderDashboardPage(
+                          customerdata: widget.customer,
+                          admin: false,
+                        ),
+                  ),
+                );
               },
             ),
             TextButton(
@@ -438,7 +445,11 @@ class _CancelDetailCustomerPageState extends State<CancelDetailCustomerPage> {
     try {
       final response = await http.post(
         Uri.parse("${MyServerConfig.server}/pomm/php/update_order_status.php"),
-        body: {"order_id": widget.order.orderId, "status": newStatus},
+        body: {
+          "order_id": widget.order.orderId,
+          "status": newStatus,
+          "order_tracking": widget.order.orderTracking,
+        },
       );
 
       var data = jsonDecode(response.body);
