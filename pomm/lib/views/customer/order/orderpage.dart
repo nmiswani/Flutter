@@ -292,11 +292,10 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void loadOrders(String orderTracking) {
-    String customerid = widget.customerdata.customerid.toString();
     http
         .get(
           Uri.parse(
-            "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
+            "${MyServerConfig.server}/pomm/php/load_order_clerkadmin.php?orderTracking=$orderTracking",
           ),
         )
         .then((response) {

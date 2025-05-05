@@ -243,7 +243,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.length < 6) {
+    if (value == null || value.isEmpty) {
       return 'Enter registered password';
     }
     return null;

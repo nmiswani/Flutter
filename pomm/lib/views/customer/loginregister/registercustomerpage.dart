@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/views/customer/loginregister/logincustomerpage.dart';
 import 'dart:convert';
@@ -19,6 +20,8 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
   TextEditingController phoneNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool isPasswordVisible = false;
+  bool agreeWithTerms = false;
+  String eula = "";
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +37,11 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 115),
+                  const SizedBox(height: 100),
                   Text(
                     "Register",
                     style: GoogleFonts.inter(
-                      fontSize: 40,
+                      fontSize: 35,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
@@ -46,9 +49,9 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                   const SizedBox(height: 5),
                   Text(
                     "Create an account, it's free!",
-                    style: GoogleFonts.inter(fontSize: 16, color: Colors.black),
+                    style: GoogleFonts.inter(fontSize: 15, color: Colors.black),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
                   makeInput(
                     icon: Icons.account_circle,
                     hint: "Name",
@@ -80,52 +83,84 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     },
                     validator: _validatePassword,
                   ),
-                  const SizedBox(height: 35),
-                  Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width / 1,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          String name = nameController.text.trim();
-                          String email = emailController.text.trim();
-                          String phone = phoneNumberController.text.trim();
-                          String password = passwordController.text.trim();
-
-                          if (name.isEmpty &&
-                              email.isEmpty &&
-                              phone.isEmpty &&
-                              password.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "These fields are required",
-                                  style: GoogleFonts.inter(),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
-
-                          if (_formKey.currentState!.validate()) {
-                            showConfirmationDialog(context);
-                          }
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: agreeWithTerms,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            agreeWithTerms = value ?? false;
+                          });
                         },
-
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      GestureDetector(
+                        onTap: _showEULA,
+                        child: Text(
+                          "Agree with terms",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.black,
                           ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          child: Text(
-                            "Register",
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              color: Colors.white,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 19),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 1,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        String name = nameController.text.trim();
+                        String email = emailController.text.trim();
+                        String phone = phoneNumberController.text.trim();
+                        String password = passwordController.text.trim();
+
+                        if (name.isEmpty &&
+                            email.isEmpty &&
+                            phone.isEmpty &&
+                            password.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "These fields are required",
+                                style: GoogleFonts.inter(),
+                              ),
+                              backgroundColor: Colors.red,
                             ),
+                          );
+                          return;
+                        }
+
+                        if (!agreeWithTerms) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "You must agree to the terms",
+                                style: GoogleFonts.inter(),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_formKey.currentState!.validate()) {
+                          showConfirmationDialog(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        child: Text(
+                          "Register",
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -268,14 +303,21 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
           title: Text(
-            'Register new account',
-            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
+            "Register new account",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure?', style: GoogleFonts.inter()),
+                Text(
+                  "Are you sure want to register?",
+                  style: GoogleFonts.inter(fontSize: 14),
+                ),
               ],
             ),
           ),
@@ -284,7 +326,19 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
               child: Text('Yes', style: GoogleFonts.inter()),
               onPressed: () {
                 Navigator.of(context).pop();
-                _registerSuccessful();
+                if (agreeWithTerms) {
+                  _registerSuccessful();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Please agree to the terms",
+                        style: GoogleFonts.inter(),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
             ),
             TextButton(
@@ -348,5 +402,60 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
             }
           }
         });
+  }
+
+  void loadEula() async {
+    eula = await rootBundle.loadString('assets/eula.txt');
+  }
+
+  void _showEULA() {
+    loadEula();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          title: Text(
+            "EULA",
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    child: RichText(
+                      softWrap: true,
+                      textAlign: TextAlign.justify,
+                      text: TextSpan(
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: Colors.black,
+                        ),
+                        text: eula,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Close", style: GoogleFonts.inter()),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

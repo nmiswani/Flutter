@@ -264,7 +264,7 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.length < 6) {
+    if (value == null || value.isEmpty) {
       return 'Enter registered password';
     }
     return null;

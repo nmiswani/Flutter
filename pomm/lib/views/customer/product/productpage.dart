@@ -151,7 +151,7 @@ class _ProductPageState extends State<ProductPage> {
                                         selectedSortOrder =
                                             "asc"; // Set to ascending
                                       });
-                                      loadPriceProducts(
+                                      loadPriceProductsAsc(
                                         'searchQuery', // Gantikan dengan 'searchController.text' jika perlu
                                         sortOrder: "asc",
                                       );
@@ -211,7 +211,7 @@ class _ProductPageState extends State<ProductPage> {
                                         selectedSortOrder =
                                             "desc"; // Set to descending
                                       });
-                                      loadPriceProducts(
+                                      loadPriceProductsDesc(
                                         'searchQuery', // Gantikan dengan 'searchController.text' jika perlu
                                         sortOrder: "desc",
                                       );
@@ -590,14 +590,55 @@ class _ProductPageState extends State<ProductPage> {
         });
   }
 
-  Future<void> loadPriceProducts(
+  Future<void> loadPriceProductsAsc(
     String searchQuery, {
     required String sortOrder,
   }) async {
     try {
       var response = await http.post(
         Uri.parse(
-          "${MyServerConfig.server}/pomm/php/load_filtered_products.php",
+          "${MyServerConfig.server}/pomm/php/load_filtered_products_asc.php",
+        ),
+        body: {
+          'title': title,
+          'pageno': curpage.toString(),
+          'sortOrder': sortOrder, // NEW PARAM
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == "success") {
+          productList.clear();
+          data['data']['products'].forEach((v) {
+            productList.add(Product.fromJson(v));
+          });
+          numofpage = int.parse(data['numofpage'].toString());
+          numofresult = int.parse(data['numberofresult'].toString());
+        } else {
+          productList.clear();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Product not found", style: GoogleFonts.inter()),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        setState(() {});
+      }
+    } catch (e) {
+      print("Error loading products: $e");
+    }
+  }
+
+  Future<void> loadPriceProductsDesc(
+    String searchQuery, {
+    required String sortOrder,
+  }) async {
+    try {
+      var response = await http.post(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_filtered_products_desc.php",
         ),
         body: {
           'title': title,
