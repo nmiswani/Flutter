@@ -371,6 +371,16 @@ class _ProductPageState extends State<ProductPage> {
                                                   child: Image.network(
                                                     "${MyServerConfig.server}/pomm/assets/products/${product.productId}.jpg?v=$randomValue",
                                                     fit: BoxFit.cover,
+                                                    errorBuilder: (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      return Image.asset(
+                                                        "assets/images/default_product.jpg",
+                                                        fit: BoxFit.cover,
+                                                      );
+                                                    },
                                                   ),
                                                 ),
                                               ),

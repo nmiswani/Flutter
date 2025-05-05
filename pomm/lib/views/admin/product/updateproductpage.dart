@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
@@ -152,7 +153,6 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
@@ -161,31 +161,41 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                   children: [
                     buildStyledTextFormField(
                       controller: _nameController,
-                      label: "Product Name",
+                      label: 'Product Name',
                       icon: Icons.abc,
-                      validator:
-                          (val) =>
-                              val == null || val.length < 3
-                                  ? "Product name must be at least 3 characters"
-                                  : null,
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Field is required';
+                        } else if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(val)) {
+                          return 'Only letters, numbers, and spaces allowed';
+                        } else if (val.length > 15) {
+                          return 'Must be no more than 15 characters';
+                        }
+                        return null;
+                      },
                       keyboardType: TextInputType.text,
+                      allowOnlyTextAndNumbers: true,
                     ),
                     const SizedBox(height: 10),
-
                     buildStyledTextFormField(
                       controller: _descriptionController,
-                      label: "Product Description",
+                      label: 'Product Description',
                       icon: Icons.description,
-                      validator:
-                          (val) =>
-                              val == null || val.length < 10
-                                  ? "Product description must be at least 10 characters"
-                                  : null,
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Field is required';
+                        } else if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(val)) {
+                          return 'No symbols allowed';
+                        } else if (val.length < 15) {
+                          return 'Must be at least 15 characters';
+                        }
+                        return null;
+                      },
                       keyboardType: TextInputType.text,
                       maxLines: 3,
+                      allowOnlyTextAndNumbers: true,
                     ),
                     const SizedBox(height: 10),
-
                     Row(
                       children: [
                         Expanded(
@@ -213,7 +223,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                                             val.isEmpty ||
                                             int.tryParse(val) == null ||
                                             int.parse(val) <= 0
-                                        ? "Quantity must be greater than 0"
+                                        ? "Greater than 0"
                                         : null,
                             keyboardType: TextInputType.number,
                           ),
@@ -251,7 +261,6 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     );
   }
 
-  // Helper function for styled TextFormField
   Widget buildStyledTextFormField({
     required TextEditingController controller,
     required String label,
@@ -259,12 +268,17 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     required String? Function(String?) validator,
     required TextInputType keyboardType,
     int maxLines = 1,
+    bool allowOnlyTextAndNumbers = false, // default false
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      inputFormatters:
+          allowOnlyTextAndNumbers
+              ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9 ]'))]
+              : null,
       style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
       decoration: InputDecoration(
         labelText: label,
@@ -272,6 +286,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
+        errorStyle: GoogleFonts.inter(fontSize: 12, color: Colors.red),
         icon: Icon(icon, color: Colors.black),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         filled: true,

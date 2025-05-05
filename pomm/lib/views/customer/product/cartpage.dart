@@ -359,7 +359,7 @@ class _CartPageState extends State<CartPage> {
               "Product removed successful",
               style: GoogleFonts.inter(),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
           ),
         );
         loadUserCart();
@@ -367,6 +367,7 @@ class _CartPageState extends State<CartPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
+              
               "Failed to remove product",
               style: GoogleFonts.inter(),
             ),

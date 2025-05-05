@@ -549,7 +549,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  "Failed to update email",
+                  "Update failed or email is already in use",
                   style: GoogleFonts.inter(),
                 ),
                 backgroundColor: Colors.red,
