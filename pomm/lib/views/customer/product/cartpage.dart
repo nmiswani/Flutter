@@ -71,7 +71,7 @@ class _CartPageState extends State<CartPage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.purple.shade200,
+        color: Colors.purple.shade100,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -367,7 +367,6 @@ class _CartPageState extends State<CartPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              
               "Failed to remove product",
               style: GoogleFonts.inter(),
             ),

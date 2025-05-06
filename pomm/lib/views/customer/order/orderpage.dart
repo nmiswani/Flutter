@@ -27,8 +27,8 @@ class _OrderPageState extends State<OrderPage> {
   int _selectedIndex = 0;
   late double screenWidth, screenHeight;
   int axiscount = 2;
-  String id = "";
   String orderTracking = "";
+  String customerid = "";
   late List<Widget> tabchildren;
   String maintitle = "Order";
 
@@ -37,7 +37,7 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    loadOrders(orderTracking);
+    loadOrders(customerid);
   }
 
   @override
@@ -115,7 +115,7 @@ class _OrderPageState extends State<OrderPage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  loadOrders(orderTracking);
+                  loadOrders(customerid);
                 },
                 child:
                     getFilteredOrders().isEmpty
@@ -178,7 +178,7 @@ class _OrderPageState extends State<OrderPage> {
                                       ),
                                     );
                                   }
-                                  loadOrders(orderTracking);
+                                  loadOrders(customerid);
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(8),
@@ -291,69 +291,66 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
-  void loadOrders(String orderTracking) {
-    http
-        .get(
-          Uri.parse(
-            "${MyServerConfig.server}/pomm/php/load_order_clerkadmin.php?orderTracking=$orderTracking",
-          ),
-        )
-        .then((response) {
-          log(response.body);
+  void loadOrders(String customerid) async {
+    try {
+      String customerid = widget.customerdata.customerid.toString();
+      final response = await http.get(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/load_order_customer.php?customerid=$customerid",
+        ),
+      );
 
-          if (response.statusCode == 200) {
-            var data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
 
-            if (data['status'] == "success" && data['data'] != null) {
-              List<dynamic> ordersJson = data['data']['orders'];
+        if (data['status'] == "success" && data['data'] != null) {
+          List<dynamic> ordersJson = data['data']['orders'];
 
-              if (ordersJson.isNotEmpty) {
-                // Clear all lists first
-                orderList.clear();
-                currentOrders.clear();
-                completedOrders.clear();
-                canceledOrders.clear();
+          if (ordersJson.isNotEmpty) {
+            // Clear all lists first
+            orderList.clear();
+            currentOrders.clear();
+            completedOrders.clear();
+            canceledOrders.clear();
 
-                Map<String, Order> uniqueOrderMap = {};
-                for (var json in ordersJson) {
-                  Order order = Order.fromJson(json);
-                  if (order.orderId != null &&
-                      !uniqueOrderMap.containsKey(order.orderId)) {
-                    uniqueOrderMap[order.orderId!] = order;
-                  }
-                }
+            Map<String, Order> uniqueOrderMap = {};
+            for (var json in ordersJson) {
+              Order order = Order.fromJson(json);
+              if (order.orderId != null &&
+                  !uniqueOrderMap.containsKey(order.orderId)) {
+                uniqueOrderMap[order.orderId!] = order;
+              }
+            }
 
-                // Assign unique orders to the list
-                orderList = uniqueOrderMap.values.toList();
+            // Assign unique orders to the list
+            orderList = uniqueOrderMap.values.toList();
 
-                // Categorize orders
-                for (var order in orderList) {
-                  switch (order.orderStatus) {
-                    case "Order placed":
-                    case "In process":
-                    case "Out for delivery":
-                    case "Ready for pickup":
-                    case "Request to cancel":
-                      currentOrders.add(order);
-                      break;
-                    case "Delivered":
-                    case "Picked up":
-                      completedOrders.add(order);
-                      break;
-                    case "Canceled":
-                      canceledOrders.add(order);
-                      break;
-                  }
-                }
+            // Categorize orders
+            for (var order in orderList) {
+              switch (order.orderStatus) {
+                case "Order placed":
+                case "In process":
+                case "Out for delivery":
+                case "Ready for pickup":
+                case "Request to cancel":
+                  currentOrders.add(order);
+                  break;
+                case "Delivered":
+                case "Picked up":
+                  completedOrders.add(order);
+                  break;
+                case "Canceled":
+                  canceledOrders.add(order);
+                  break;
               }
             }
           }
-
-          log("Loaded ${orderList.length} unique orders");
-          setState(() {});
-        })
-        .catchError((error) {
-          print("Error loading orders: $error");
-        });
+        }
+      }
+      log("Loaded ${orderList.length} unique orders");
+      setState(() {});
+    } catch (error) {
+      print("Error loading orders: $error");
+    }
   }
 }
