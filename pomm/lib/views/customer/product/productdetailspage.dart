@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/customer/customerdashboard.dart';
 import 'package:pomm/views/customer/product/cartpage.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -43,7 +44,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => CustomerDashboardPage(
+                      customerdata: widget.customerdata,
+                    ),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          },
+        ),
       ),
       body: Column(
         children: [

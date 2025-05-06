@@ -176,6 +176,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                       keyboardType: TextInputType.text,
                       allowOnlyTextAndNumbers: true,
                     ),
+
                     const SizedBox(height: 10),
                     buildStyledTextFormField(
                       controller: _descriptionController,
@@ -184,8 +185,10 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                       validator: (val) {
                         if (val == null || val.isEmpty) {
                           return 'Field is required';
-                        } else if (!RegExp(r'^[a-zA-Z0-9 ]*$').hasMatch(val)) {
-                          return 'No symbols allowed';
+                        } else if (!RegExp(
+                          r'^[a-zA-Z0-9\s.]+$',
+                        ).hasMatch(val)) {
+                          return 'Only letters, numbers, spaces and dot (.) allowed';
                         } else if (val.length < 15) {
                           return 'Must be at least 15 characters';
                         }
@@ -193,8 +196,9 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                       },
                       keyboardType: TextInputType.text,
                       maxLines: 3,
-                      allowOnlyTextAndNumbers: true,
+                      allowTextNumberDot: true,
                     ),
+
                     const SizedBox(height: 10),
                     Row(
                       children: [
@@ -268,7 +272,8 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     required String? Function(String?) validator,
     required TextInputType keyboardType,
     int maxLines = 1,
-    bool allowOnlyTextAndNumbers = false, // default false
+    bool allowOnlyTextAndNumbers = false, // for Product Name
+    bool allowTextNumberDot = false, // for Product Description
   }) {
     return TextFormField(
       controller: controller,
@@ -277,7 +282,13 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
       maxLines: maxLines,
       inputFormatters:
           allowOnlyTextAndNumbers
-              ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9 ]'))]
+              ? [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s]')),
+              ] // No dot
+              : allowTextNumberDot
+              ? [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s.]')),
+              ] // Allow dot
               : null,
       style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
       decoration: InputDecoration(

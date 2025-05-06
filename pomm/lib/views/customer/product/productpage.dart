@@ -40,6 +40,7 @@ class _ProductPageState extends State<ProductPage> {
     super.initState();
     loadProducts(title);
     loadHotProductSales();
+    loadCurrentCart();
   }
 
   Map<String, int> todaySales = {}; // Simpan quantity_sold ikut productId
@@ -70,6 +71,33 @@ class _ProductPageState extends State<ProductPage> {
     }
   }
 
+  int currentCart = 0; // Simpan total kuantiti barang dalam cart
+
+  Future<void> loadCurrentCart() async {
+    String customerId = widget.customerdata.customerid.toString();
+    try {
+      var response = await http.post(
+        Uri.parse(
+          "${MyServerConfig.server}/pomm/php/get_current_cart.php?customer_id=$customerId",
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        if (jsonData['status'] == 'success') {
+          setState(() {
+            currentCart = jsonData['total_cart_items'] ?? 0;
+            print("Total items in cart: $currentCart");
+          });
+        }
+      } else {
+        print("Failed to load cart. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error loading cart: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,16 +111,44 @@ class _ProductPageState extends State<ProductPage> {
         centerTitle: true,
         backgroundColor: Colors.black,
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (content) => CartPage(customer: widget.customerdata),
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (content) => CartPage(customer: widget.customerdata),
+                    ),
+                  ).then((_) {
+                    // Bila user balik dari CartPage, update currentCart
+                    loadCurrentCart();
+                  });
+                },
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
+              ),
+              if (currentCart > 0)
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      currentCart.toString(),
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
-              );
-            },
-            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+            ],
           ),
         ],
       ),
