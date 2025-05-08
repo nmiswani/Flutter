@@ -111,7 +111,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         if (val == null || val.isEmpty) {
                           return 'Field is required';
                         } else if (!RegExp(
-                          r'^[a-zA-Z0-9\s.]+$',
+                          r'^[a-zA-Z0-9\s.,()@%&/]+$',
                         ).hasMatch(val)) {
                           return 'Only letters, numbers, spaces and dot (.) allowed';
                         } else if (val.length < 15) {
@@ -211,7 +211,9 @@ class _AddProductPageState extends State<AddProductPage> {
               ] // No dot
               : allowTextNumberDot
               ? [
-                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s.]')),
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'[a-zA-Z0-9\s.,()@%&/]'),
+                ),
               ] // Allow dot
               : null,
       style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
