@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:pomm/models/customer.dart';
 import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/customer/chat/chatcustomerpage.dart';
 import 'package:pomm/views/customer/product/cartpage.dart';
 import 'package:pomm/views/customer/product/productdetailspage.dart';
 
@@ -111,6 +112,21 @@ class _ProductPageState extends State<ProductPage> {
         centerTitle: true,
         backgroundColor: Colors.black,
         actions: [
+          // Chat dulu
+          IconButton(
+            icon: const Icon(Icons.chat, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          ChatCustomerPage(customerdata: widget.customerdata),
+                ),
+              );
+            },
+          ),
+          // Cart last (kanan)
           Stack(
             children: [
               IconButton(
@@ -119,10 +135,9 @@ class _ProductPageState extends State<ProductPage> {
                     context,
                     MaterialPageRoute(
                       builder:
-                          (content) => CartPage(customer: widget.customerdata),
+                          (context) => CartPage(customer: widget.customerdata),
                     ),
                   ).then((_) {
-                    // Bila user balik dari CartPage, update currentCart
                     loadCurrentCart();
                   });
                 },

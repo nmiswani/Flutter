@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:pomm/models/admin.dart';
 import 'package:pomm/models/product.dart';
 import 'package:pomm/shared/myserverconfig.dart';
+import 'package:pomm/views/admin/chat/chatlistadminpage.dart';
 import 'package:pomm/views/admin/product/addproductpage.dart';
 import 'package:pomm/views/admin/product/productdetailadminpage.dart';
 import 'package:pomm/views/loginclerkadminpage.dart';
@@ -80,6 +81,24 @@ class _ProductPageState extends State<ProductAdminPage> {
           iconTheme: const IconThemeData(color: Colors.black),
           backgroundColor: Colors.black,
           centerTitle: true,
+
+          // Chat icon di sebelah kiri (leading)
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 18, left: 10),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ChatListAdminPage(admin: widget.admin),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.chat, color: Colors.white),
+            ),
+          ),
+
           title: Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Column(
@@ -102,6 +121,7 @@ class _ProductPageState extends State<ProductAdminPage> {
               ],
             ),
           ),
+
           actions: [
             Padding(
               padding: const EdgeInsets.only(top: 18, right: 0),
@@ -110,7 +130,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (content) => LoginClerkAdminPage(),
+                      builder: (context) => LoginClerkAdminPage(),
                     ),
                   );
                 },
@@ -120,6 +140,7 @@ class _ProductPageState extends State<ProductAdminPage> {
           ],
         ),
       ),
+
       body: SafeArea(
         child: Column(
           children: [
