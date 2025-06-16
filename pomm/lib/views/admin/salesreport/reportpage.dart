@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pomm/views/admin/salesreport/dailyreportpage.dart';
 import 'package:pomm/views/admin/salesreport/monthlyreportpage.dart';
 import 'package:pomm/views/admin/salesreport/yearlyreportpage.dart';
-import 'package:pomm/views/loginclerkadminpage.dart'; // Import Login Page
+import 'package:pomm/views/loginclerkadminpage.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});
@@ -13,13 +13,10 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-  String maintitle = "Sales Report";
-  late List<Widget> tabchildren;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 242, 243, 247),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: AppBar(
@@ -29,8 +26,6 @@ class _ReportPageState extends State<ReportPage> {
           title: Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   "Admin Dashboard",
@@ -50,14 +45,12 @@ class _ReportPageState extends State<ReportPage> {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(top: 18, right: 0),
+              padding: const EdgeInsets.only(top: 18),
               child: IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (content) => LoginClerkAdminPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => LoginClerkAdminPage()),
                   );
                 },
                 icon: const Icon(Icons.logout, color: Colors.white),
@@ -67,36 +60,60 @@ class _ReportPageState extends State<ReportPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(14.5),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildReportButton("Daily Report", const DailyReportPage()),
-            _buildReportButton("Monthly Report", const MonthlyReportPage()),
-            _buildReportButton("Yearly Report", const YearlyReportPage()),
+            _buildImageCard(
+              imagePath: 'assets/images/daily.jpg',
+              label: 'DAILY REPORT',
+              page: const DailyReportPage(),
+            ),
+            const SizedBox(height: 4),
+            _buildImageCard(
+              imagePath: 'assets/images/monthly.jpg',
+              label: 'MONTHLY REPORT',
+              page: const MonthlyReportPage(),
+            ),
+            const SizedBox(height: 4),
+            _buildImageCard(
+              imagePath: 'assets/images/yearly.jpg',
+              label: 'YEARLY REPORT',
+              page: const YearlyReportPage(),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildReportButton(String title, Widget page) {
-    return Card(
-      color: Colors.black,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: ListTile(
-        title: Center(
-          child: Text(
-            title,
-            style: GoogleFonts.inter(fontSize: 15, color: Colors.white),
-          ),
-        ),
-        onTap:
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => page),
+  Widget _buildImageCard({
+    required String imagePath,
+    required String label,
+    required Widget page,
+  }) {
+    return GestureDetector(
+      onTap:
+          () =>
+              Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
+      child: Card(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 4,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            Image.asset(
+              imagePath,
+              width: double.infinity,
+              height: 120,
+              fit: BoxFit.cover,
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(label, style: GoogleFonts.inter(fontSize: 13)),
+            ),
+          ],
+        ),
       ),
     );
   }

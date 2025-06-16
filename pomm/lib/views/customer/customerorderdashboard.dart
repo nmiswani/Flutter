@@ -7,7 +7,11 @@ import 'package:pomm/views/customer/profile/profilepage.dart';
 
 class CustomerOrderDashboardPage extends StatefulWidget {
   final Customer customerdata;
-  const CustomerOrderDashboardPage({super.key, required this.customerdata, required admin});
+  const CustomerOrderDashboardPage({
+    super.key,
+    required this.customerdata,
+    required admin,
+  });
 
   @override
   State<CustomerOrderDashboardPage> createState() =>

@@ -71,7 +71,7 @@ class _CartPageState extends State<CartPage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.purple.shade100,
+        color: const Color.fromARGB(255, 242, 243, 247),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

@@ -58,7 +58,7 @@ class _AboutUsPageState extends State<AboutUsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 242, 243, 247),
       appBar: AppBar(
         title: Text(
           "About Us",
@@ -133,7 +133,12 @@ class _AboutUsPageState extends State<AboutUsPage>
                         Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                            color: const Color.fromARGB(
+                              255,
+                              242,
+                              243,
+                              247,
+                            ).withOpacity(0.9),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(

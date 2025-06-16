@@ -12,12 +12,12 @@ class HelpPage extends StatefulWidget {
 
 class _HelpPageState extends State<HelpPage> {
   final String phoneNumber = '60123456789'; // Format Malaysia betul
-  final String whatsappMessage = 'Hi, I need help regarding the POMM app.';
+  final String whatsappMessage = 'Hi, I need help regarding the U.Get App.';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 231, 231),
+      backgroundColor: const Color.fromARGB(255, 242, 243, 247),
       appBar: AppBar(
         title: Text(
           "Help",
@@ -34,14 +34,14 @@ class _HelpPageState extends State<HelpPage> {
             icon: Icons.report_problem,
             title: "Report Issue",
             subtitle: "Report an app issue",
-            emailSubject: "Report Issue - POMM App",
+            emailSubject: "Report Issue - U.Get App",
             backgroundColor: Colors.red.shade400,
           ),
           _buildContactCard(
             icon: Icons.money_off,
             title: "Refund Request",
             subtitle: "Request for refund",
-            emailSubject: "Refund Request - POMM App",
+            emailSubject: "Refund Request - U.Get App",
             backgroundColor: Colors.blue.shade400,
           ),
         ],

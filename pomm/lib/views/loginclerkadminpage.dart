@@ -44,13 +44,15 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 10),
+                  // ✅ Replaced PNG with GIF
                   Image.asset(
-                    'assets/images/loginicon_ca.png',
-                    height: 135,
+                    'assets/images/clerkadmin.gif',
+                    height: 245,
                     width: 250,
+                    gaplessPlayback: true,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 20),
                   Text(
                     "CLERK & ADMIN OF\nUTARA GADGET SOLUTION",
                     textAlign: TextAlign.center,
@@ -114,7 +116,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
                           _loginUser();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: const Color(0xFF011343),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
@@ -185,7 +187,7 @@ class _LoginPageState extends State<LoginClerkAdminPage> {
             style: GoogleFonts.inter(color: Colors.black, fontSize: 14),
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color.fromARGB(255, 255, 236, 236),
+              fillColor: const Color.fromARGB(72, 183, 214, 229),
               hintText: hint,
               prefixIcon: Icon(icon, color: Colors.black),
               suffixIcon:

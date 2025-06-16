@@ -7,7 +7,7 @@ class UserGuidePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 231, 231),
+      backgroundColor: const Color.fromARGB(255, 242, 243, 247),
       appBar: AppBar(
         title: Text(
           "User Guide",
@@ -22,7 +22,7 @@ class UserGuidePage extends StatelessWidget {
         children: [
           Center(
             child: Text(
-              "How to use POMM app:",
+              "How to use U.Get App:",
               style: GoogleFonts.inter(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -73,18 +73,6 @@ class UserGuidePage extends StatelessWidget {
             title: "Get Help or Refund",
             description:
                 "If you face any issue, go to the 'Help' page to report a problem or request a refund.",
-          ),
-          const SizedBox(height: 10),
-          Center(
-            child: Text(
-              "Enjoy your shopping with us!",
-              style: GoogleFonts.inter(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.center,
-            ),
           ),
         ],
       ),

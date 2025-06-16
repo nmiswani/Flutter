@@ -63,7 +63,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             label: "Order",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
+            icon: Icon(Icons.show_chart_outlined),
             label: "Sales Report",
           ),
           BottomNavigationBarItem(

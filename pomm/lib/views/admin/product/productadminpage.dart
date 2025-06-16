@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,11 +37,56 @@ class _ProductPageState extends State<ProductAdminPage> {
 
   TextEditingController searchController = TextEditingController();
 
+  late Timer _unreadTimer; // 1. Declare timer globally
+
   @override
   void initState() {
     super.initState();
     loadProducts(title);
     loadHotProductSales();
+    loadTotalUnreadMessages();
+
+    // 2. Simpan timer dalam variable supaya boleh cancel dalam dispose
+    _unreadTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (!mounted) {
+        timer.cancel();
+      } else {
+        loadTotalUnreadMessages();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _unreadTimer.cancel(); // 3. Cancel timer bila widget dibuang
+    super.dispose();
+  }
+
+  int totalUnread = 0;
+
+  void loadTotalUnreadMessages() async {
+    final response = await http.post(
+      Uri.parse("${MyServerConfig.server}/pomm/php/get_chat_users.php"),
+    );
+
+    if (response.statusCode == 200) {
+      List jsonData = json.decode(response.body);
+      int count = 0;
+
+      for (var data in jsonData) {
+        final unread = int.tryParse(data['unread_count'].toString()) ?? 0;
+        if (unread > 0) {
+          count++; // ✅ Kira berapa customer dengan unread messages
+        }
+      }
+
+      if (!mounted) return;
+      setState(() {
+        totalUnread = count;
+      });
+    } else {
+      print("Failed to fetch unread messages");
+    }
   }
 
   Map<String, int> todaySales = {}; // Simpan quantity_sold ikut productId
@@ -82,20 +128,38 @@ class _ProductPageState extends State<ProductAdminPage> {
           backgroundColor: Colors.black,
           centerTitle: true,
 
-          // Chat icon di sebelah kiri (leading)
           leading: Padding(
             padding: const EdgeInsets.only(top: 18, left: 10),
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => ChatListAdminPage(admin: widget.admin),
+            child: Stack(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ChatListAdminPage(admin: widget.admin),
+                      ),
+                    ).then(
+                      (_) => loadTotalUnreadMessages(),
+                    ); // refresh bila balik
+                  },
+                  icon: const Icon(Icons.chat, color: Colors.white),
+                ),
+                if (totalUnread > 0)
+                  Positioned(
+                    right: 4,
+                    top: 4,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ),
-                );
-              },
-              icon: const Icon(Icons.chat, color: Colors.white),
+              ],
             ),
           ),
 
@@ -165,7 +229,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                     hintText: 'Search products',
                     hintStyle: GoogleFonts.inter(color: Colors.black45),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: const Color.fromARGB(83, 182, 224, 232),
                     prefixIcon: const Icon(Icons.search, color: Colors.black),
                     suffixIcon: GestureDetector(
                       onTap: () {
@@ -204,7 +268,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                        vertical: 12.0,
+                                        vertical: 10.0,
                                         horizontal: 16.0,
                                       ),
                                       margin: EdgeInsets.only(bottom: 8.0),
@@ -264,7 +328,7 @@ class _ProductPageState extends State<ProductAdminPage> {
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                        vertical: 12.0,
+                                        vertical: 10.0,
                                         horizontal: 16.0,
                                       ),
                                       decoration: BoxDecoration(
@@ -335,7 +399,6 @@ class _ProductPageState extends State<ProductAdminPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {

@@ -41,14 +41,14 @@ class _CancelDetailAdminPageState extends State<CancelDetailAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 236, 236),
+      backgroundColor: const Color.fromARGB(255, 242, 243, 247),
       appBar: AppBar(
         title: Text(
           "Order Details",
           style: GoogleFonts.inter(color: Colors.white, fontSize: 17),
         ),
         centerTitle: true,
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body:

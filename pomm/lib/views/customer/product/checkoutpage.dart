@@ -71,7 +71,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.purple.shade200,
+        color: const Color.fromARGB(255, 242, 243, 247),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -119,7 +119,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.green.shade200,
+        color: const Color.fromARGB(255, 242, 243, 247),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

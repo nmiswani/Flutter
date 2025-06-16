@@ -36,11 +36,14 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 30),
+                  // ✅ Replaced PNG with GIF
                   Image.asset(
-                    'assets/images/loginicon.png',
-                    height: 170,
+                    'assets/images/welcome.gif',
+                    height: 240,
                     width: 240,
+                    gaplessPlayback: true,
+                    fit: BoxFit.contain,
                   ),
                   Text(
                     "UTARA GADGET SOLUTION",
@@ -97,7 +100,7 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
                           _loginUser();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: const Color(0xFF011343),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
@@ -192,7 +195,7 @@ class _LoginCustomerPageState extends State<LoginCustomerPage> {
             style: GoogleFonts.inter(color: Colors.black, fontSize: 14),
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color.fromARGB(255, 255, 236, 236),
+              fillColor: const Color.fromARGB(72, 183, 214, 229),
               hintText: hint,
               prefixIcon: Icon(icon, color: Colors.black),
               suffixIcon:

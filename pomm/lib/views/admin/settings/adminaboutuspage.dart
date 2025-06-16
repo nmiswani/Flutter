@@ -345,7 +345,7 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 242, 243, 247),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(105),
           child: AppBar(
@@ -455,7 +455,12 @@ class _AdminAboutUsPageState extends State<AdminAboutUsPage>
                   Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: const Color.fromARGB(
+                        255,
+                        242,
+                        243,
+                        247,
+                      ).withOpacity(0.9),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(

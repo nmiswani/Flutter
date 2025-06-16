@@ -117,7 +117,7 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
             style: GoogleFonts.inter(color: Colors.black, fontSize: 14),
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color.fromARGB(255, 236, 231, 231),
+              fillColor: const Color.fromARGB(161, 236, 231, 231),
               hintText: hint,
               prefixIcon: Icon(icon, color: Colors.black),
               suffixIcon:

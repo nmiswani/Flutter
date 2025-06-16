@@ -36,7 +36,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: const Color.fromARGB(255, 236, 231, 231),
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -44,13 +44,12 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
           children: [
             const SizedBox(height: 15),
             Material(
-              elevation: 1,
+              elevation: 3,
               shadowColor: Colors.black,
               borderRadius: BorderRadius.circular(10),
               child: TextField(
                 readOnly: true,
                 decoration: InputDecoration(
-                  labelText: "Select month",
                   labelStyle: GoogleFonts.inter(color: Colors.black),
                   filled: true,
                   fillColor: Colors.white,
@@ -58,8 +57,13 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                     icon: const Icon(Icons.calendar_today, color: Colors.black),
                     onPressed: _selectMonth,
                   ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
                 ),
                 style: GoogleFonts.inter(fontSize: 14),
@@ -68,206 +72,135 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 20),
-            Text(
-              "Sales Report",
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
+            const SizedBox(height: 30),
+            Center(
+              child: Text(
+                "Summary of Report",
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
             const SizedBox(height: 15),
-
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white, // White background for the card
-                border: Border.all(color: Colors.black54),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 2,
-                    offset: const Offset(0, 1), // shadow direction: bottom only
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Sales Report",
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+            Material(
+              elevation: 3,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    (_salesReport != null &&
-                            (_salesReport!.totalSales > 0 ||
-                                _salesReport!.totalOrders > 0))
-                        ? "Summary of sales activities."
-                        : "No data found",
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color:
-                          (_salesReport != null &&
-                                  (_salesReport!.totalSales > 0 ||
-                                      _salesReport!.totalOrders > 0))
-                              ? Colors.black
-                              : Colors.red,
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Sales Report",
+                      style: GoogleFonts.inter(fontSize: 14),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed:
-                          isDataAvailable
-                              ? () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      "Sales report retrieved successful",
-                                      style: GoogleFonts.inter(),
+                    const SizedBox(height: 5),
+                    Text(
+                      isDataAvailable
+                          ? "Summary of sales activities"
+                          : "No data found",
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight:
+                            isDataAvailable
+                                ? FontWeight.normal
+                                : FontWeight.normal,
+                        color: isDataAvailable ? Colors.black : Colors.red,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed:
+                            isDataAvailable
+                                ? () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        "Sales report retrieved successful",
+                                        style: GoogleFonts.inter(),
+                                      ),
+                                      backgroundColor: Colors.green,
                                     ),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => ReportMonthlyTable(
-                                          selectedDate: DateFormat(
-                                            'MMMM yyyy',
-                                          ).parse(_selectedMonth!),
-                                          totalSales: _salesReport!.totalSales,
-                                          totalOrders:
-                                              _salesReport!.totalOrders,
-                                        ),
-                                  ),
-                                );
-                              }
-                              : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                                  );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => ReportMonthlyTable(
+                                            selectedDate: DateFormat(
+                                              'MMMM yyyy',
+                                            ).parse(_selectedMonth!),
+                                            totalSales:
+                                                _salesReport!.totalSales,
+                                            totalOrders:
+                                                _salesReport!.totalOrders,
+                                          ),
+                                    ),
+                                  );
+                                }
+                                : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        "View details",
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: Colors.white,
+                        child: Text(
+                          "View details",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 15),
-
-            // Total Sales and Orders
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // White background for the card
-                      border: Border.all(color: Colors.black54),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: const Offset(
-                            0,
-                            2,
-                          ), // shadow direction: bottom only
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Total Sales",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          (_salesReport != null && _salesReport!.totalSales > 0)
-                              ? "RM${_salesReport!.totalSales.toStringAsFixed(2)}"
-                              : "No data found",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color:
-                                (_salesReport != null &&
-                                        _salesReport!.totalSales > 0)
-                                    ? Colors.black
-                                    : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: _buildStatsCard(
+                    icon: Icons.attach_money,
+                    title: "Total Sales",
+                    value:
+                        (_salesReport != null && _salesReport!.totalSales > 0)
+                            ? "RM${_salesReport!.totalSales.toStringAsFixed(2)}"
+                            : "No data found",
+                    iconColor: Colors.black,
+                    isDataAvailable:
+                        _salesReport != null && _salesReport!.totalSales > 0,
                   ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // White background for the card
-                      border: Border.all(color: Colors.black54),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: const Offset(
-                            0,
-                            2,
-                          ), // shadow direction: bottom only
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Total Order",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          (_salesReport != null &&
-                                  _salesReport!.totalOrders > 0)
-                              ? "${_salesReport!.totalOrders}"
-                              : "No data found",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color:
-                                (_salesReport != null &&
-                                        _salesReport!.totalOrders > 0)
-                                    ? Colors.black
-                                    : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: _buildStatsCard(
+                    icon: Icons.shopping_bag_outlined,
+                    title: "Total Order",
+                    value:
+                        (_salesReport != null && _salesReport!.totalOrders > 0)
+                            ? "${_salesReport!.totalOrders}"
+                            : "No data found",
+                    iconColor: Colors.black,
+                    isDataAvailable:
+                        _salesReport != null && _salesReport!.totalOrders > 0,
                   ),
                 ),
               ],
@@ -278,7 +211,55 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Future<void> _fetchSalesReport(sqlFormattedDate) async {
+  Widget _buildStatsCard({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color iconColor,
+    required bool isDataAvailable,
+  }) {
+    return Material(
+      elevation: 3,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 2,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: GoogleFonts.inter(fontSize: 14, color: Colors.black54),
+            ),
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight:
+                    isDataAvailable ? FontWeight.w600 : FontWeight.normal,
+                color: isDataAvailable ? Colors.black : Colors.red,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _fetchSalesReport(String sqlFormattedDate) async {
     if (sqlFormattedDate.isEmpty) return;
 
     final url = Uri.parse(

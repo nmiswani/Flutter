@@ -162,7 +162,6 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                     buildStyledTextFormField(
                       controller: _nameController,
                       label: 'Product Name',
-                      icon: Icons.abc,
                       validator: (val) {
                         if (val == null || val.isEmpty) {
                           return 'Field is required';
@@ -177,11 +176,10 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                       allowOnlyTextAndNumbers: true,
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
                     buildStyledTextFormField(
                       controller: _descriptionController,
                       label: 'Product Description',
-                      icon: Icons.description,
                       validator: (val) {
                         if (val == null || val.isEmpty) {
                           return 'Field is required';
@@ -199,14 +197,13 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                       allowTextNumberDot: true,
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
                     Row(
                       children: [
                         Expanded(
                           child: buildStyledTextFormField(
                             controller: _priceController,
                             label: "Product Price",
-                            icon: Icons.money,
                             validator:
                                 (val) =>
                                     val == null || val.isEmpty
@@ -215,12 +212,11 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                             keyboardType: TextInputType.number,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 15),
                         Expanded(
                           child: buildStyledTextFormField(
                             controller: _quantityController,
                             label: "Quantity",
-                            icon: Icons.numbers,
                             validator:
                                 (val) =>
                                     val == null ||
@@ -234,7 +230,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 42),
+                    const SizedBox(height: 70),
                     SizedBox(
                       width: screenWidth * 1,
                       height: 48,
@@ -268,7 +264,6 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
   Widget buildStyledTextFormField({
     required TextEditingController controller,
     required String label,
-    required IconData icon,
     required String? Function(String?) validator,
     required TextInputType keyboardType,
     int maxLines = 1,
@@ -300,10 +295,9 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
           fontWeight: FontWeight.w500,
         ),
         errorStyle: GoogleFonts.inter(fontSize: 12, color: Colors.red),
-        icon: Icon(icon, color: Colors.black),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         filled: true,
-        fillColor: const Color.fromARGB(255, 236, 231, 231),
+        fillColor: Colors.white,
       ),
     );
   }

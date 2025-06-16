@@ -74,24 +74,22 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 2.5),
+                const SizedBox(height: 2),
                 Text(
                   "Utara Gadget Solution Store",
-                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 15),
+                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(top: 18, right: 0),
+              padding: const EdgeInsets.only(top: 18, right: 10),
               child: IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (content) => LoginClerkAdminPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => LoginClerkAdminPage()),
                   );
                 },
                 icon: const Icon(Icons.logout, color: Colors.white),
@@ -126,7 +124,7 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                     hintText: 'Search order tracking',
                     hintStyle: GoogleFonts.inter(color: Colors.black45),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: const Color.fromARGB(83, 182, 224, 232),
                     prefixIcon: const Icon(Icons.search, color: Colors.black),
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -172,7 +170,9 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                           padding: const EdgeInsets.all(10),
                           itemCount: getFilteredOrders().length,
                           itemBuilder: (context, index) {
+                            final order = getFilteredOrders()[index];
                             return Card(
+                              color: Colors.white,
                               elevation: 1.5,
                               margin: const EdgeInsets.symmetric(
                                 vertical: 4,
@@ -181,81 +181,93 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              color: _getCardColor(
-                                getFilteredOrders()[index].orderStatus,
-                              ),
-                              child: InkWell(
-                                onTap: () async {
-                                  Order order = Order.fromJson(
-                                    getFilteredOrders()[index].toJson(),
-                                  );
-                                  Cart cart = Cart.fromJson(
-                                    getFilteredOrders()[index].toJson(),
-                                  );
+                              child: Stack(
+                                children: [
+                                  InkWell(
+                                    onTap: () async {
+                                      Order o = Order.fromJson(order.toJson());
+                                      Cart c = Cart.fromJson(order.toJson());
 
-                                  if (order.orderStatus == "Canceled" ||
-                                      order.orderStatus ==
-                                          "Request to cancel") {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (content) => CancelDetailAdminPage(
-                                              order: order,
-                                              admin: widget.admin,
-                                              cart: cart,
+                                      if (order.orderStatus == "Canceled" ||
+                                          order.orderStatus ==
+                                              "Request to cancel") {
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (_) => CancelDetailAdminPage(
+                                                  order: o,
+                                                  admin: widget.admin,
+                                                  cart: c,
+                                                ),
+                                          ),
+                                        );
+                                      } else {
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (_) => AdminOrderDetailPage(
+                                                  order: o,
+                                                  admin: widget.admin,
+                                                  cart: c,
+                                                ),
+                                          ),
+                                        );
+                                      }
+                                      loadOrders(orderTracking);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            truncateString(
+                                              "Order Tracking: ${order.orderTracking ?? "No Tracking"}",
                                             ),
-                                      ),
-                                    );
-                                  } else {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (content) => AdminOrderDetailPage(
-                                              order: order,
-                                              cart: cart,
-                                              admin: widget.admin,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12.5,
+                                              color: Colors.black,
                                             ),
+                                          ),
+                                          Text(
+                                            "Created Date: ${formatDate(order.orderDate)}",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12.5,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Status: ${order.orderStatus ?? "No Status"}",
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12.5,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                        ],
                                       ),
-                                    );
-                                  }
-                                  loadOrders(orderTracking);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        truncateString(
-                                          "Order Tracking: ${getFilteredOrders()[index].orderTracking ?? "No Tracking"}",
-                                        ),
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12.5,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Created Date: ${formatDate(getFilteredOrders()[index].orderDate)}",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12.5,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Status: ${getFilteredOrders()[index].orderStatus ?? "No Status"}",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12.5,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 5),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                  Positioned(
+                                    top: 0,
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: 25,
+                                      decoration: BoxDecoration(
+                                        color: _getCardColor(order.orderStatus),
+                                        borderRadius: const BorderRadius.only(
+                                          topRight: Radius.circular(10),
+                                          bottomRight: Radius.circular(10),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -297,19 +309,19 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
   Color _getCardColor(String? status) {
     switch (status) {
       case "Order placed":
-        return Colors.purple.shade100;
+        return Colors.purple.shade200;
       case "In process":
         return Colors.blue.shade200;
       case "Out for delivery":
       case "Ready for pickup":
-        return Colors.brown.shade200;
+        return Colors.brown.shade300;
       case "Delivered":
       case "Picked up":
-        return Colors.green.shade200;
+        return Colors.green.shade300;
       case "Request to cancel":
-        return Colors.orange.shade200;
+        return Colors.orange.shade300;
       case "Canceled":
-        return Colors.red.shade200;
+        return Colors.red.shade400;
       default:
         return Colors.white;
     }

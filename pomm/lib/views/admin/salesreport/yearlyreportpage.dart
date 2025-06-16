@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:pomm/models/salesreport.dart';
 import 'package:pomm/shared/myserverconfig.dart';
-import 'dart:convert';
-
 import 'package:pomm/views/admin/salesreport/reportyearlytable.dart';
 
 class YearlyReportPage extends StatefulWidget {
@@ -34,232 +33,163 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: const Color.fromARGB(255, 236, 231, 231),
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 15),
             Material(
-              elevation: 1,
+              elevation: 3,
               shadowColor: Colors.black,
               borderRadius: BorderRadius.circular(10),
               child: TextField(
                 readOnly: true,
+                controller: TextEditingController(
+                  text: _selectedYear ?? "Select Year",
+                ),
                 decoration: InputDecoration(
-                  labelText: "Select year",
                   labelStyle: GoogleFonts.inter(color: Colors.black),
                   filled: true,
-                  fillColor: Colors.white, // White background for the date card
+                  fillColor: Colors.white,
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_today, color: Colors.black),
+                    icon: const Icon(Icons.calendar_today, color: Colors.black),
                     onPressed: _selectYear,
                   ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), // Radius set to 10
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
                 ),
                 style: GoogleFonts.inter(fontSize: 14),
-                controller: TextEditingController(
-                  text: _selectedYear ?? "Select year",
+              ),
+            ),
+            const SizedBox(height: 30),
+            Center(
+              child: Text(
+                "Summary of Report",
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Text(
-              "Sales Report",
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-            ),
             const SizedBox(height: 15),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white, // White background for the card
-                border: Border.all(color: Colors.black54),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Sales Report",
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+
+            /// Sales Report Card
+            Material(
+              elevation: 3,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Sales Report",
+                      style: GoogleFonts.inter(fontSize: 14),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    isDataAvailable
-                        ? "Summary of sales activities."
-                        : "No data found",
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color:
-                          (_salesReport != null &&
-                                  (_salesReport!.totalSales > 0 ||
-                                      _salesReport!.totalOrders > 0))
-                              ? Colors.black
-                              : Colors.red,
+                    const SizedBox(height: 5),
+                    Text(
+                      isDataAvailable
+                          ? "Summary of sales activities"
+                          : "No data found",
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: isDataAvailable ? Colors.black : Colors.red,
+                      ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed:
-                          isDataAvailable
-                              ? () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      "Sales report retrieved successful",
-                                      style: GoogleFonts.inter(),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed:
+                            isDataAvailable
+                                ? () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        "Sales report retrieved successful",
+                                        style: GoogleFonts.inter(),
+                                      ),
+                                      backgroundColor: Colors.green,
                                     ),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => ReportYearlyTable(
-                                          selectedDate: DateTime(
-                                            int.parse(_selectedYear!),
-                                          ), // Converts year string to DateTime
-                                          totalSales: _salesReport!.totalSales,
-                                          totalOrders:
-                                              _salesReport!.totalOrders,
-                                        ),
-                                  ),
-                                );
-                              }
-                              : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                                  );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => ReportYearlyTable(
+                                            selectedDate: DateTime(
+                                              int.parse(_selectedYear!),
+                                            ),
+                                            totalSales:
+                                                _salesReport!.totalSales,
+                                            totalOrders:
+                                                _salesReport!.totalOrders,
+                                          ),
+                                    ),
+                                  );
+                                }
+                                : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        "View details",
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: Colors.white,
+                        child: Text(
+                          "View details",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+
             const SizedBox(height: 15),
+
+            /// Stats Card Row
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // White background for the card
-                      border: Border.all(color: Colors.black54),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: const Offset(
-                            0,
-                            2,
-                          ), // shadow direction: bottom only
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Total Sales",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          (_salesReport != null && _salesReport!.totalSales > 0)
-                              ? "RM${_salesReport!.totalSales.toStringAsFixed(2)}"
-                              : "No data found",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color:
-                                (_salesReport != null &&
-                                        _salesReport!.totalSales > 0)
-                                    ? Colors.black
-                                    : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: _buildStatsCard(
+                    icon: Icons.attach_money,
+                    title: "Total Sales",
+                    value:
+                        (_salesReport != null && _salesReport!.totalSales > 0)
+                            ? "RM${_salesReport!.totalSales.toStringAsFixed(2)}"
+                            : "No data found",
+                    iconColor: Colors.black,
+                    isDataAvailable:
+                        _salesReport != null && _salesReport!.totalSales > 0,
                   ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // White background for the card
-                      border: Border.all(color: Colors.black54),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: const Offset(
-                            0,
-                            2,
-                          ), // shadow direction: bottom only
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Total Order",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          (_salesReport != null &&
-                                  _salesReport!.totalOrders > 0)
-                              ? "${_salesReport!.totalOrders}"
-                              : "No data found",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color:
-                                (_salesReport != null &&
-                                        _salesReport!.totalOrders > 0)
-                                    ? Colors.black
-                                    : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: _buildStatsCard(
+                    icon: Icons.shopping_bag_outlined,
+                    title: "Total Order",
+                    value:
+                        (_salesReport != null && _salesReport!.totalOrders > 0)
+                            ? "${_salesReport!.totalOrders}"
+                            : "No data found",
+                    iconColor: Colors.black,
+                    isDataAvailable:
+                        _salesReport != null && _salesReport!.totalOrders > 0,
                   ),
                 ),
               ],
@@ -270,17 +200,56 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
     );
   }
 
+  /// Stats Card Widget
+  Widget _buildStatsCard({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color iconColor,
+    required bool isDataAvailable,
+  }) {
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 26, color: iconColor),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: GoogleFonts.inter(fontSize: 14, color: Colors.black54),
+            ),
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight:
+                    isDataAvailable ? FontWeight.w600 : FontWeight.normal,
+                color: isDataAvailable ? Colors.black : Colors.red,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Fetch Yearly Sales Report
   Future<void> _fetchSalesReport() async {
     if (_selectedYear == null) return;
-
     final url = Uri.parse(
       "${MyServerConfig.server}/pomm/php/sales_yearly.php?date=$_selectedYear",
     );
 
     try {
       final response = await http.get(url);
-      print("API Response: ${response.body}"); // ✅ Debugging Line
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
@@ -296,37 +265,34 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
     }
   }
 
+  /// Year Picker Dialog
   void _selectYear() {
     showDialog(
       context: context,
       builder:
-          (context) => Theme(
-            data: Theme.of(context).copyWith(
-              dialogTheme: DialogTheme(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              ),
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: AlertDialog(
-              backgroundColor: Colors.white,
-              content: SizedBox(
-                width: double.infinity,
-                child: SingleChildScrollView(
-                  child: ListBody(
-                    children: List.generate(6, (index) {
-                      int year = DateTime.now().year - index;
-                      return ListTile(
-                        title: Text(year.toString()),
-                        onTap: () {
-                          setState(() {
-                            _selectedYear = year.toString();
-                          });
-                          Navigator.pop(context);
-                          _fetchSalesReport();
-                        },
-                      );
-                    }),
-                  ),
-                ),
+            backgroundColor: Colors.white,
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: 6,
+                itemBuilder: (context, index) {
+                  int year = DateTime.now().year - index;
+                  return ListTile(
+                    title: Text(year.toString()),
+                    onTap: () {
+                      setState(() {
+                        _selectedYear = year.toString();
+                      });
+                      Navigator.pop(context);
+                      _fetchSalesReport();
+                    },
+                  );
+                },
               ),
             ),
           ),

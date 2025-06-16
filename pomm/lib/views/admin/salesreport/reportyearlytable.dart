@@ -84,7 +84,7 @@ class _ReportYearlyTableState extends State<ReportYearlyTable> {
                           hintText: 'Search products',
                           hintStyle: GoogleFonts.inter(color: Colors.black45),
                           filled: true,
-                          fillColor: Colors.grey[200],
+                          fillColor: const Color.fromARGB(83, 182, 224, 232),
                           prefixIcon: const Icon(
                             Icons.search,
                             color: Colors.black,
@@ -99,17 +99,11 @@ class _ReportYearlyTableState extends State<ReportYearlyTable> {
                     const SizedBox(height: 16),
                     Text(
                       "Total Sales: RM${widget.totalSales.toStringAsFixed(2)}",
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 14),
                     ),
                     Text(
                       "Total Orders: ${widget.totalOrders}",
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 14),
                     ),
                     const SizedBox(height: 16),
                     Expanded(
@@ -137,7 +131,7 @@ class _ReportYearlyTableState extends State<ReportYearlyTable> {
                                           child: DataTable(
                                             headingRowColor:
                                                 MaterialStateProperty.all(
-                                                  Colors.black,
+                                                  const Color(0xFF011343),
                                                 ),
                                             headingTextStyle: GoogleFonts.inter(
                                               color: Colors.white,

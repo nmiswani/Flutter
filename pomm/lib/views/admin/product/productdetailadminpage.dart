@@ -63,64 +63,61 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
       ),
       body: Column(
         children: [
+          // Gambar full width tanpa padding
+          SizedBox(
+            height: screenHeight / 3,
+            width: screenWidth,
+            child: CachedNetworkImage(
+              imageUrl:
+                  "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg?v=$randomValue",
+              fit: BoxFit.cover,
+              placeholder:
+                  (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
+              errorWidget:
+                  (context, url, error) => const Icon(Icons.error, size: 50),
+            ),
+          ),
+
           Expanded(
             child: SingleChildScrollView(
+              padding: EdgeInsets.all(screenWidth * 0.045),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                    child: Card(
-                      elevation: 3,
-                      child: SizedBox(
-                        height: screenHeight / 3,
-                        width: screenWidth * 0.91,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                "${MyServerConfig.server}/pomm/assets/products/${widget.product.productId}.jpg?v=$randomValue",
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                            errorWidget:
-                                (context, url, error) =>
-                                    const Icon(Icons.error, size: 50),
-                          ),
-                        ),
-                      ),
+                  Text(
+                    widget.product.productTitle.toString(),
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  // Product Details Table
-                  Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.045),
-                    child: Table(
-                      border: TableBorder.all(color: Colors.black, width: 1.5),
-                      columnWidths: const {
-                        0: FlexColumnWidth(1.5),
-                        1: FlexColumnWidth(3.5),
-                      },
-                      children: [
-                        buildTableRow(
-                          "Name",
-                          widget.product.productTitle.toString(),
-                        ),
-                        buildTableRow(
-                          "Description",
-                          widget.product.productDesc.toString(),
-                        ),
-                        buildTableRow(
-                          "Price",
-                          "RM${widget.product.productPrice}",
-                        ),
-                        buildTableRow(
-                          "Quantity",
-                          "${widget.product.productQty}",
-                        ),
-                      ],
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.product.productDesc.toString(),
+                    textAlign: TextAlign.justify,
+                    style: GoogleFonts.inter(fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "RM${widget.product.productPrice}",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.product.productQty == "0"
+                        ? "No stock"
+                        : "${widget.product.productQty} available stock",
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      color:
+                          widget.product.productQty == "0"
+                              ? Colors.red
+                              : Colors.green,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -128,10 +125,10 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
             ),
           ),
 
+          // Butang Delete
           Container(
             width: MediaQuery.of(context).size.width / 1.10,
-            margin: const EdgeInsets.only(bottom: 51),
-            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 13),
             child: ElevatedButton(
               onPressed: () {
                 deleteDialog();
@@ -146,7 +143,7 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.delete, color: Colors.white),
+                  const Icon(Icons.delete, color: Colors.white),
                   SizedBox(width: screenWidth * 0.02),
                   Text(
                     "Delete Product",
@@ -158,41 +155,6 @@ class _ProductDetailAdminPageState extends State<ProductDetailAdminPage> {
           ),
         ],
       ),
-    );
-  }
-
-  TableRow buildTableRow(String label, String value) {
-    return TableRow(
-      children: [
-        // Column Label - Black background, white text
-        TableCell(
-          verticalAlignment: TableCellVerticalAlignment.fill,
-          child: Container(
-            color: Colors.black,
-            padding: EdgeInsets.all(screenWidth * 0.03),
-            child: Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-        // Column Value - Black background, white text
-        TableCell(
-          verticalAlignment: TableCellVerticalAlignment.middle,
-          child: Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(screenWidth * 0.03),
-            child: Text(
-              value,
-              style: GoogleFonts.inter(fontSize: 14, color: Colors.black),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

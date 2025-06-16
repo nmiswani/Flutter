@@ -191,7 +191,7 @@ class _ProductPageState extends State<ProductPage> {
                     hintText: 'Search products',
                     hintStyle: GoogleFonts.inter(color: Colors.black45),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: const Color.fromARGB(83, 182, 224, 232),
                     prefixIcon: const Icon(Icons.search, color: Colors.black),
                     suffixIcon: GestureDetector(
                       onTap: () {
@@ -230,7 +230,7 @@ class _ProductPageState extends State<ProductPage> {
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                        vertical: 12.0,
+                                        vertical: 10.0,
                                         horizontal: 16.0,
                                       ),
                                       margin: EdgeInsets.only(bottom: 8.0),
@@ -290,7 +290,7 @@ class _ProductPageState extends State<ProductPage> {
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                        vertical: 12.0,
+                                        vertical: 10.0,
                                         horizontal: 16.0,
                                       ),
                                       decoration: BoxDecoration(
@@ -361,7 +361,6 @@ class _ProductPageState extends State<ProductPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {

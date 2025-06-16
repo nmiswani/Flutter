@@ -23,14 +23,22 @@ class _StartPageState extends State<StartPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 70),
-                Image.asset('assets/images/login.png', height: 250),
                 const SizedBox(height: 40),
+
+                // ✅ GIF animation
+                Image.asset(
+                  'assets/images/startpage.gif',
+                  height: 280,
+                  gaplessPlayback: true,
+                  fit: BoxFit.contain,
+                ),
+
+                const SizedBox(height: 10),
                 Text(
-                  "Essential Gadgets here!",
+                  "Essential Gadgets Here!",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.gaegu(
-                    fontSize: 22,
+                    fontSize: 22.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -39,9 +47,13 @@ class _StartPageState extends State<StartPage> {
                 Text(
                   "Shop for gadget accessories that match your needs at Utara Gadget Solution Store",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.black45),
+                  style: GoogleFonts.inter(
+                    fontSize: 14.2,
+                    color: Colors.black45,
+                  ),
                 ),
-                const SizedBox(height: 70),
+
+                const SizedBox(height: 80),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -58,7 +70,7 @@ class _StartPageState extends State<StartPage> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: const Color(0xFF011343),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -102,7 +114,8 @@ class _StartPageState extends State<StartPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 70),
+
+                const SizedBox(height: 87.5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
